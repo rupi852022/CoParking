@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Class_demo.Models.DAL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
