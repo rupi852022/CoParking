@@ -1,43 +1,89 @@
 ﻿using ParkingProject.Models;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Web.Configuration;
 
-
-namespace Class_demo.Models.DAL
+namespace ParkingProject.Models.DAL
 {
     public class DataServices
     {
 
-            public int InsertUser(User U)
+        SqlConnection Connect(string connectionStringName)
+        {
+            string connectionString = WebConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+
+            SqlConnection con = new SqlConnection(connectionString);
+
+            con.Open();
+
+            return con;
+        }
+
+        public User[] GetAllUsers()
+        {
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand("SELECT * FROM [CoParkingUsers_2022]", con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            List<User> users = new List<User>();
+            while (dr.Read())
             {
-                SqlConnection con = null;
-                try
-                {
-                    // C - Connect
-                    con = Connect("webOsDB");
+                int id = Convert.ToInt32(dr["id"]);
+                string currentEmail = (string)dr["email"];
+                string password = (string)dr["password"];
+                string fName = (string)dr["lName"];
+                string lName = (string)dr["fName"];
+                string phoneNumber = (string)dr["phoneNumber"];
+                string gender = (string)dr["gender"];
 
-                    // C - Create Command
-                    SqlCommand command = CreateInsertUser(U, con);
-
-                    // E - Execute
-                    int affected = command.ExecuteNonQuery();
-
-                    return affected;
-
-                }
-                catch (Exception ex)
-                {
-                    // write to log file
-                    throw new Exception("Failed in Insert of User", ex);
-                }
-
-                finally
-                {
-                    // Close Connection
-                    con.Close();
-                }
+                User user = new User(id, fName, lName, currentEmail, password, gender, phoneNumber);
+                users.Add(user);
             }
+
+            return users.ToArray();
+        }
+
+        public int InsertUser(User U)
+        {
+            SqlConnection con = null;
+            try
+            {
+                User user = this.ReadUser(U.Email);
+
+                if (user != null)
+                {
+                    return -1;
+                }
+
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // C - Create Command
+                SqlCommand command = CreateInsertUser(U, con);
+
+                // E - Execute
+                int affected = command.ExecuteNonQuery();
+
+                return affected;
+
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                throw new Exception("Failed in Insert of User", ex);
+            }
+
+            finally
+            {
+                // Close Connection
+                con.Close();
+            }
+        }
 
 
         public int InsertCars(Cars C)
@@ -104,10 +150,11 @@ namespace Class_demo.Models.DAL
         SqlCommand CreateUpdateCar(Cars C, SqlConnection con)
         {
             SqlCommand command = new SqlCommand(
-                  "DELETE FROM [CoParkingCars_2022] WHERE [numberCar]='" + C.NumberCar + "'",
+                  "UPDATE [CoParkingCars_2022] " +
+                  "SET [manufacturer]= '" + C.Manufacturer + "' WHERE [numberCar]='" + C.NumberCar + "'",
                     con);
-            string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [manufacturer], [model], [year], [color], [size],[handicapped],[carPicture]) VALUES('" + C.NumberCar + "', '" + C.Manufacturer + "', '" + C.Model + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "', '" + C.Handicapped + "', '" + C.CarPicture + "')";
-            SqlCommand command = new SqlCommand(insertStr, con);
+            //string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [manufacturer], [model], [year], [color], [size],[handicapped],[carPicture]) VALUES('" + C.NumberCar + "', '" + C.Manufacturer + "', '" + C.Model + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "', '" + C.Handicapped + "', '" + C.CarPicture + "')";
+
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
@@ -149,7 +196,7 @@ namespace Class_demo.Models.DAL
         SqlCommand DeleteNumberOfCar(int NumberCar, SqlConnection con)
         {
             SqlCommand command = new SqlCommand(
-                   "DELETE FROM [CoParkingCars_2022] WHERE [numberCar]='"+ NumberCar + "'",
+                   "DELETE FROM [CoParkingCars_2022] WHERE [numberCar]='" + NumberCar + "'",
                      con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
@@ -159,17 +206,17 @@ namespace Class_demo.Models.DAL
 
 
 
-            SqlCommand CreateInsertUser(User U, SqlConnection con)
-            {
+        SqlCommand CreateInsertUser(User U, SqlConnection con)
+        {
 
-                string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "')";
-                SqlCommand command = new SqlCommand(insertStr, con);
-                // TBC - Type and Timeout
-                command.CommandType = System.Data.CommandType.Text;
-                command.CommandTimeout = 30;
-                return command;
+            string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "')";
+            SqlCommand command = new SqlCommand(insertStr, con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
 
-            }
+        }
 
         SqlCommand CreateInsertCar(Cars C, SqlConnection con)
         {
@@ -183,98 +230,131 @@ namespace Class_demo.Models.DAL
 
         }
 
-
-
-
-        //Read
         public User ReadUser(string email)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+
+            try
             {
-                SqlConnection con = null;
-                SqlDataReader dr = null;
+                // C - Connect
+                con = Connect("webOsDB");
 
-                try
+                // Create the select command
+                SqlCommand selectCommand = creatSelectUserCommand(con, email);
+
+                // Create the reader
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                // Read the records
+                // Execute the command
+                //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+                if (dr == null || !dr.Read())
                 {
-                    // Connect
-                    con = Connect("webOsDB");
-
-                    // Create the select command
-                    SqlCommand selectCommand = creatSelectUserCommand(con, email, password);
-
-                    // Create the reader
-                    dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
-
-                    // Read the records
-                    // Execute the command
-                    //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
-
-                    if (dr == null || !dr.Read())
-                    {
-                        return null;
-                    }
-
-                    int id = Convert.ToInt32(dr["id"]);
-                    string email = (string)dr["email"];
-                    string password = (string)dr["password"];
-                    string fName = (string)dr["lName"];
-                    string lName = (string)dr["fName"];
-                    string phoneNumber = (string)dr["phoneNumber"];
-                    string gender = (string)dr["gender"];
-
-
-
-                    User user = new User();
-
-                    if (dr.Read())
-                    {
-                        return null;
-                    }
-
-                    return user;
+                    return null;
                 }
-                catch (Exception ex)
+
+                int id = Convert.ToInt32(dr["id"]);
+                string currentEmail = (string)dr["email"];
+                string password = (string)dr["password"];
+                string fName = (string)dr["lName"];
+                string lName = (string)dr["fName"];
+                string phoneNumber = (string)dr["phoneNumber"];
+                string gender = (string)dr["gender"];
+
+                User user = new User(id, fName, lName, currentEmail, password, gender, phoneNumber);
+
+                if (dr.Read())
                 {
-                    // write the error to log
-                    throw new Exception("failed in Log In", ex);
+                    return null;
                 }
-                finally
-                {
-                    if (dr != null)
-                    {
-                        dr.Close();
-                    }
 
-                    // Close the connection
-                    if (con != null)
-                        con.Close();
-                }
+                return user;
             }
-
-
-
-            private SqlCommand creatSelectUserCommand(SqlConnection con, string email)
+            catch (Exception ex)
             {
-                string commandStr = "SELECT * FROM CoParkingUsers_2022 WHERE email=@email";
-                SqlCommand cmd = createCommand(con, commandStr);
-                cmd.Parameters.AddWithValue("@email", email);
-
-                return cmd;
+                // write the error to log
+                throw new Exception("failed in Log In", ex);
             }
-
-
-            SqlCommand createCommand(SqlConnection con, string CommandSTR)
+            finally
             {
+                if (dr != null)
+                {
+                    dr.Close();
+                }
 
-                SqlCommand cmd = new SqlCommand();  // create the command object
-                cmd.Connection = con;               // assign the connection to the command object
-                cmd.CommandText = CommandSTR;       // can be Select, Insert, Update, Delete
-                cmd.CommandType = System.Data.CommandType.Text;
-                cmd.CommandTimeout = 5; // seconds
-
-                return cmd;
+                // Close the connection
+                if (con != null)
+                    con.Close();
             }
         }
 
 
 
+        private SqlCommand creatSelectUserCommand(SqlConnection con, string email)
+        {
+            string commandStr = "SELECT * FROM CoParkingUsers_2022 WHERE email=@email";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@email", email);
+
+            return cmd;
+        }
+
+
+        SqlCommand createCommand(SqlConnection con, string CommandSTR)
+        {
+
+            SqlCommand cmd = new SqlCommand();  // create the command object
+            cmd.Connection = con;               // assign the connection to the command object
+            cmd.CommandText = CommandSTR;       // can be Select, Insert, Update, Delete
+            cmd.CommandType = System.Data.CommandType.Text;
+            cmd.CommandTimeout = 5; // seconds
+
+            return cmd;
+        }
+
+        public void CreateTables()
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = this.Connect("webOsDB");
+
+                SqlCommand usersCmd = this.createUserTable(con);
+                usersCmd.ExecuteNonQuery();
+
+                /*SqlCommand usersCmd = this.createUserTable(con);//לתקן לרכבים
+                usersCmd.ExecuteNonQuery();*/
+            } 
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        SqlCommand createUserTable(SqlConnection con)
+        {
+            string commandStr = "IF OBJECT_ID (N'[CoParkingUsers_2022]', N'U') IS NULL BEGIN " +
+                "CREATE TABLE [CoParkingUsers_2022] (" +
+                "[id] int IDENTITY(1, 1) NOT NULL," +
+                "[email] nvarchar(100) NOT NULL," +
+                "[password] nvarchar(100) NOT NULL," +
+                "[fName] nvarchar(100) NOT NULL," +
+                "[lName] nvarchar(100) NOT NULL," +
+                "[phoneNumber] nvarchar(100) NOT NULL," +
+                "[gender] nvarchar(100) NOT NULL," +
+                "Primary key(id));" +
+                " END;";
+            SqlCommand cmd = createCommand(con, commandStr);
+            return cmd;
+        }
     }
+
+
+
+}
 

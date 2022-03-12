@@ -1,4 +1,4 @@
-﻿using Class_demo.Models.DAL;
+﻿using ParkingProject.Models.DAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,10 +40,10 @@ namespace ParkingProject.Models
         public bool Handicapped { get => handicapped; set => handicapped = value; }
         public string CarPicture { get => carPicture; set => carPicture = value; }
 
-        public int InsertCar()
+        public static int InsertCar(Cars C)
         {
             DataServices ds = new DataServices();
-            int status = ds.InsertCars(this);
+            int status = ds.InsertCars(C);
             return status;
         }
 
@@ -54,10 +54,9 @@ namespace ParkingProject.Models
             return status;
         }
 
-        public int UpdateCar()
+        public static int UpdateCar(Cars cars)
         {
             DataServices ds = new DataServices();
-            Cars cars = (this);
 
             if (cars == null)
             {

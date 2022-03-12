@@ -19,7 +19,7 @@ namespace ParkingProject.Controllers
         // GET api/<controller>/5
         public User Get(string email, string password)
         {
-            return User.readUser(email, password);
+            return ParkingProject.Models.User.readUser(email, password);
         }
 
         // POST api/<controller>
@@ -30,13 +30,15 @@ namespace ParkingProject.Controllers
         }
 
         // PUT api/<controller>/5
-        public void Put(int id, [FromBody] string value)
+        public string Put()
         {
+            return "hello";
         }
 
         // DELETE api/<controller>/5
-        public void Delete(int id)
+        public User[] Delete()
         {
+            return ParkingProject.Models.User.GetAll();
         }
     }
 }
