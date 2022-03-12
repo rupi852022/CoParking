@@ -8,7 +8,7 @@ using System.Web.Http;
 
 namespace ParkingProject.Controllers
 {
-    public class CarsController : ApiController
+    public class CarsUpdateController : ApiController
     {
         // GET api/<controller>
         public IEnumerable<string> Get()
@@ -25,7 +25,7 @@ namespace ParkingProject.Controllers
         // POST api/<controller>
         public int Post([FromBody] Cars C)
         {
-            int id = C.InsertCar();
+            int id = C.UpdateCar();
             return id;
         }
 
@@ -35,10 +35,8 @@ namespace ParkingProject.Controllers
         }
 
         // DELETE api/<controller>/5
-        public int Delete(Cars C)
+        public void Delete(int id)
         {
-            int satatus = C.DeleteCar();
-            return satatus;
         }
     }
 }

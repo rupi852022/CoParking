@@ -71,10 +71,95 @@ namespace Class_demo.Models.DAL
         }
 
 
+        public int UpdateCars(Cars C)
+        {
+            SqlConnection con = null;
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // C - Create Command
+                SqlCommand command = CreateUpdateCar(C, con);
+
+                // E - Execute
+                int affected = command.ExecuteNonQuery();
+
+                return affected;
+
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                throw new Exception("Failed in Insert of Car", ex);
+            }
+
+            finally
+            {
+                // Close Connection
+                con.Close();
+            }
+        }
+
+        SqlCommand CreateUpdateCar(Cars C, SqlConnection con)
+        {
+            SqlCommand command = new SqlCommand(
+                  "DELETE FROM [CoParkingCars_2022] WHERE [numberCar]='" + C.NumberCar + "'",
+                    con);
+            string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [manufacturer], [model], [year], [color], [size],[handicapped],[carPicture]) VALUES('" + C.NumberCar + "', '" + C.Manufacturer + "', '" + C.Model + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "', '" + C.Handicapped + "', '" + C.CarPicture + "')";
+            SqlCommand command = new SqlCommand(insertStr, con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+
+        }
+
+
+        public int deleteCar(int NumberCar)
+        {
+            SqlConnection con = null;
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // C - Create Command
+                SqlCommand command = DeleteNumberOfCar(NumberCar, con);
+
+                // E - Execute
+                int affected = command.ExecuteNonQuery();
+
+                return affected;
+
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                throw new Exception("Failed in Insert of Car", ex);
+            }
+
+            finally
+            {
+                // Close Connection
+                con.Close();
+            }
+        }
+
+        SqlCommand DeleteNumberOfCar(int NumberCar, SqlConnection con)
+        {
+            SqlCommand command = new SqlCommand(
+                   "DELETE FROM [CoParkingCars_2022] WHERE [numberCar]='"+ NumberCar + "'",
+                     con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+        }
 
 
 
-        SqlCommand CreateInsertUser(User U, SqlConnection con)
+
+            SqlCommand CreateInsertUser(User U, SqlConnection con)
             {
 
                 string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "')";
@@ -163,6 +248,8 @@ namespace Class_demo.Models.DAL
                         con.Close();
                 }
             }
+
+
 
             private SqlCommand creatSelectUserCommand(SqlConnection con, string email)
             {

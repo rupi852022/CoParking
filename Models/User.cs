@@ -42,14 +42,14 @@ namespace ParkingProject.Models
             public int Insert()
             {
                 DataServices ds = new DataServices();
-                User user = ds.ReadUser(this.email);
+                User user = (this);
 
                 if (user != null)
                 {
                     return -1; // USER already exist
                 }
 
-                int status = ds.InsertUser(this);
+                int status = ds.InsertUser(user);
                 return status;
             }
 

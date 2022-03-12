@@ -43,16 +43,33 @@ namespace ParkingProject.Models
         public int InsertCar()
         {
             DataServices ds = new DataServices();
-            Cars cars = ds.ReadUser(this.numberCar);
-
-            if (cars != null)
-            {
-                return -1; // USER already exist
-            }
-
-            int status = ds.InsertCar(this);
+            int status = ds.InsertCars(this);
             return status;
         }
+
+        public int DeleteCar()
+        {
+            DataServices ds = new DataServices();
+            int status =  ds.deleteCar(this.numberCar);
+            return status;
+        }
+
+        public int UpdateCar()
+        {
+            DataServices ds = new DataServices();
+            Cars cars = (this);
+
+            if (cars == null)
+            {
+                return -1; // Cars not exist
+            }
+
+            int status = ds.UpdateCars(cars);
+            return status;
+
+        }
+
+
 
     }
 }
