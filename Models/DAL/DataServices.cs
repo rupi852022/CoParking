@@ -8,8 +8,6 @@ namespace Class_demo.Models.DAL
 {
     public class DataServices
     {
-        public class DataServices
-        {
 
             public int InsertUser(User U)
             {
@@ -42,7 +40,41 @@ namespace Class_demo.Models.DAL
             }
 
 
-            SqlCommand CreateInsertUser(User U, SqlConnection con)
+        public int InsertCars(Cars C)
+        {
+            SqlConnection con = null;
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // C - Create Command
+                SqlCommand command = CreateInsertCar(C, con);
+
+                // E - Execute
+                int affected = command.ExecuteNonQuery();
+
+                return affected;
+
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                throw new Exception("Failed in Insert of Car", ex);
+            }
+
+            finally
+            {
+                // Close Connection
+                con.Close();
+            }
+        }
+
+
+
+
+
+        SqlCommand CreateInsertUser(User U, SqlConnection con)
             {
 
                 string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "')";
@@ -54,9 +86,23 @@ namespace Class_demo.Models.DAL
 
             }
 
+        SqlCommand CreateInsertCar(Cars C, SqlConnection con)
+        {
 
-            //Read
-            public User ReadUser(string email)
+            string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [manufacturer], [model], [year], [color], [size],[handicapped],[carPicture]) VALUES('" + C.NumberCar + "', '" + C.Manufacturer + "', '" + C.Model + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "', '" + C.Handicapped + "', '" + C.CarPicture + "')";
+            SqlCommand command = new SqlCommand(insertStr, con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+
+        }
+
+
+
+
+        //Read
+        public User ReadUser(string email)
             {
                 SqlConnection con = null;
                 SqlDataReader dr = null;
@@ -144,5 +190,4 @@ namespace Class_demo.Models.DAL
 
 
     }
-}
 

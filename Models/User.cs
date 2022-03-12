@@ -8,8 +8,6 @@ namespace ParkingProject.Models
 {
     public class User
     {
-        public class User
-        {
 
             private int id;
             private string fName;
@@ -70,5 +68,4 @@ namespace ParkingProject.Models
 
         }
     }
-}
 
