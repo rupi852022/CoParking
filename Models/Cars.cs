@@ -15,11 +15,11 @@ namespace ParkingProject.Models
         private string year;
         private string color;
         private string size;
-        private bool handicapped;
+        private string handicapped;
         private string carPicture;
 
         public Cars() { }
-        public Cars(int numberCar, string manufacturer, string model, string year, string color, string size, bool handicapped, string carPicture)
+        public Cars(int numberCar, string manufacturer, string model, string year, string color, string size, string handicapped, string carPicture)
         {
             this.numberCar = numberCar;
             this.manufacturer = manufacturer;
@@ -37,7 +37,7 @@ namespace ParkingProject.Models
         public string Year { get => year; set => year = value; }
         public string Color { get => color; set => color = value; }
         public string Size { get => size; set => size = value; }
-        public bool Handicapped { get => handicapped; set => handicapped = value; }
+        public string Handicapped { get => handicapped; set => handicapped = value; }
         public string CarPicture { get => carPicture; set => carPicture = value; }
 
         public static int InsertCar(Cars C)
@@ -66,6 +66,13 @@ namespace ParkingProject.Models
             int status = ds.UpdateCars(cars);
             return status;
 
+        }
+
+        public static Cars readCar(int numberCar)
+        {
+            DataServices ds = new DataServices();
+            Cars cars = ds.ReadUser(numberCar);
+            return cars;
         }
 
 

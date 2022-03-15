@@ -151,7 +151,7 @@ namespace ParkingProject.Models.DAL
         {
             SqlCommand command = new SqlCommand(
                   "UPDATE [CoParkingCars_2022] " +
-                  "SET [manufacturer]= '" + C.Manufacturer + "' WHERE [numberCar]='" + C.NumberCar + "'",
+                  "SET [manufacturer] = '" + C.Manufacturer + "', [model]= '" + C.Model + "', [year] = '" + C.Year + "', [color] = '" + C.Color + "', [size] = '" + C.Size + "', [handicapped] = '" + C.Handicapped + "', [carPicture] = '" + C.CarPicture + "' WHERE [numberCar] = '" + C.NumberCar + "'",
                     con);
             //string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [manufacturer], [model], [year], [color], [size],[handicapped],[carPicture]) VALUES('" + C.NumberCar + "', '" + C.Manufacturer + "', '" + C.Model + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "', '" + C.Handicapped + "', '" + C.CarPicture + "')";
 
@@ -221,7 +221,8 @@ namespace ParkingProject.Models.DAL
         SqlCommand CreateInsertCar(Cars C, SqlConnection con)
         {
 
-            string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [manufacturer], [model], [year], [color], [size],[handicapped],[carPicture]) VALUES('" + C.NumberCar + "', '" + C.Manufacturer + "', '" + C.Model + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "', '" + C.Handicapped + "', '" + C.CarPicture + "')";
+
+            string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [manufacturer], [model], [year], [color], [size],[handicapped],[carPicture]) VALUES('" + Convert.ToString(C.NumberCar) + "', '" + C.Manufacturer + "', '" + C.Model + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "', '" + C.Handicapped + "', '" + C.CarPicture + "')";
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -272,6 +273,8 @@ namespace ParkingProject.Models.DAL
 
                 return user;
             }
+
+
             catch (Exception ex)
             {
                 // write the error to log
@@ -290,13 +293,83 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+        public Cars ReadUser(int numberCar)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
 
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // Create the select command
+                SqlCommand selectCommand = creatSelectCarsCommand(con, numberCar);
+
+                // Create the reader
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                // Read the records
+                // Execute the command
+                //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+                if (dr == null || !dr.Read())
+                {
+                    return null;
+                }
+
+                int CurrentnumberCar = Convert.ToInt32(dr["numberCar"]);
+                string manufacturer = (string)dr["manufacturer"];
+                string model = (string)dr["model"];
+                string year = (string)dr["year"];
+                string color = (string)dr["color"];
+                string size = (string)dr["size"];
+                string handicapped = (string)dr["handicapped"];
+                string carPicture = (string)dr["carPicture"];
+
+                Cars cars = new Cars(CurrentnumberCar, manufacturer, model, year, color, size, handicapped, carPicture);
+
+                if (dr.Read())
+                {
+                    return null;
+                }
+
+                return cars;
+            }
+
+
+            catch (Exception ex)
+            {
+                // write the error to log
+                throw new Exception("failed in Log In", ex);
+            }
+            finally
+            {
+                if (dr != null)
+                {
+                    dr.Close();
+                }
+
+                // Close the connection
+                if (con != null)
+                    con.Close();
+            }
+        }
 
         private SqlCommand creatSelectUserCommand(SqlConnection con, string email)
         {
             string commandStr = "SELECT * FROM CoParkingUsers_2022 WHERE email=@email";
             SqlCommand cmd = createCommand(con, commandStr);
             cmd.Parameters.AddWithValue("@email", email);
+
+            return cmd;
+        }
+
+        private SqlCommand creatSelectCarsCommand(SqlConnection con, int numberCar)
+        {
+            string commandStr = "SELECT * FROM CoParkingCars_2022 WHERE numberCar=@numberCar";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@numberCar", numberCar);
 
             return cmd;
         }
@@ -324,9 +397,9 @@ namespace ParkingProject.Models.DAL
                 SqlCommand usersCmd = this.createUserTable(con);
                 usersCmd.ExecuteNonQuery();
 
-                /*SqlCommand usersCmd = this.createUserTable(con);//לתקן לרכבים
-                usersCmd.ExecuteNonQuery();*/
-            } 
+                /*SqlCommand carsCmd = this.createCarsTable(con);//לתקן לרכבים
+                carsCmd.ExecuteNonQuery();*/
+            }
             finally
             {
                 if (con != null)
@@ -337,6 +410,24 @@ namespace ParkingProject.Models.DAL
         }
 
         SqlCommand createUserTable(SqlConnection con)
+        {
+            string commandStr = "IF OBJECT_ID (N'[CoParkingCars_2022]', N'U') IS NULL BEGIN " +
+                "CREATE TABLE [CoParkingCars_2022] (" +
+                "[numberCar] int NOT NULL," +
+                "[manufacturer] nvarchar (100) NOT NULL," +
+                "[model] nvarchar (100) NOT NULL," +
+                "[year] nvarchar (100) NOT NULL," +
+                "[color] nvarchar (100) NOT NULL," +
+                "[size] nvarchar (100) NOT NULL," +
+                "[handicapped] nvarchar (1) NOT NULL," +
+                "[carPicture] nvarchar (100) NOT NULL," +
+                "Primary key (numberCar));" +
+                " END;";
+            SqlCommand cmd = createCommand(con, commandStr);
+            return cmd;
+        }
+
+        SqlCommand createCarsTable(SqlConnection con)
         {
             string commandStr = "IF OBJECT_ID (N'[CoParkingUsers_2022]', N'U') IS NULL BEGIN " +
                 "CREATE TABLE [CoParkingUsers_2022] (" +
