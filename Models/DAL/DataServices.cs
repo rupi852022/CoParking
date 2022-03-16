@@ -3,12 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 using System.Web.Configuration;
 
 namespace ParkingProject.Models.DAL
 {
     public class DataServices
     {
+        public string ErrorMessage = "";
 
         SqlConnection Connect(string connectionStringName)
         {
@@ -16,7 +18,7 @@ namespace ParkingProject.Models.DAL
 
             SqlConnection con = new SqlConnection(connectionString);
 
-            con.Open();
+            con.Open(); 
 
             return con;
         }
@@ -40,6 +42,7 @@ namespace ParkingProject.Models.DAL
                 string lName = (string)dr["fName"];
                 string phoneNumber = (string)dr["phoneNumber"];
                 string gender = (string)dr["gender"];
+                
 
                 User user = new User(id, fName, lName, currentEmail, password, gender, phoneNumber);
                 users.Add(user);
@@ -54,12 +57,21 @@ namespace ParkingProject.Models.DAL
             try
             {
                 User user = this.ReadUser(U.Email);
-
+                
                 if (user != null)
                 {
+                    ErrorMessage = "Failed in Insert of User - The email or password alredy exist";
                     return -1;
                 }
-
+                else
+                {
+                    if (ValidatePassword(U.Password) is false)
+                    {
+                        Console.WriteLine(ErrorMessage);
+                        return -1;
+                    }
+                }
+                Console.WriteLine(ErrorMessage);
                 // C - Connect
                 con = Connect("webOsDB");
 
@@ -75,8 +87,9 @@ namespace ParkingProject.Models.DAL
             catch (Exception ex)
             {
                 // write to log file
-                throw new Exception("Failed in Insert of User", ex);
+                throw new Exception(ErrorMessage, ex);
             }
+           
 
             finally
             {
@@ -408,6 +421,55 @@ namespace ParkingProject.Models.DAL
                 }
             }
         }
+
+        private bool ValidatePassword(string password)
+        {
+            var input = password;
+            ErrorMessage = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                throw new Exception("Password should not be empty");
+            }
+
+            var hasNumber = new Regex(@"[0-9]+");
+            var hasUpperChar = new Regex(@"[A-Z]+");
+            var hasMiniMaxChars = new Regex(@".{8,15}");
+            var hasLowerChar = new Regex(@"[a-z]+");
+            var hasSymbols = new Regex(@"[!@#$%^&*()_+=\[{\]};:<>|./?,-]");
+
+            if (!hasLowerChar.IsMatch(input))
+            {
+                ErrorMessage = "Password should contain at least one lower case letter.";
+                return false;
+            }
+            else if (!hasUpperChar.IsMatch(input))
+            {
+                ErrorMessage = "Password should contain at least one upper case letter.";
+                return false;
+            }
+            else if (!hasMiniMaxChars.IsMatch(input))
+            {
+                ErrorMessage = "Password should not be lesser than 8 or greater than 15 characters.";
+                return false;
+            }
+            else if (!hasNumber.IsMatch(input))
+            {
+                ErrorMessage = "Password should contain at least one numeric value.";
+                return false;
+            }
+
+            else if (!hasSymbols.IsMatch(input))
+            {
+                ErrorMessage = "Password should contain at least one special case character.";
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
 
         SqlCommand createUserTable(SqlConnection con)
         {
