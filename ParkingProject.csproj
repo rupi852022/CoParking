@@ -164,7 +164,7 @@
     </Compile>
     <Compile Include="Models\Cars.cs" />
     <Compile Include="Models\DAL\DataServices.cs" />
-    <Compile Include="Models\Program.cs" />
+    <Compile Include="Models\Mail.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

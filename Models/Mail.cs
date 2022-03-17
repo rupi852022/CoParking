@@ -8,9 +8,9 @@ using System.Web;
 
 namespace ParkingProject.Models
 {
-    public class Program
+    public class Mail
     {
-        public static bool SendGmail(string recipients)
+        public static bool SendEmail(string recipients)
         {
             DataServices ds = new DataServices();
             string password = ds.ReadPaswword(recipients);

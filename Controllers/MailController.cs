@@ -25,7 +25,7 @@ namespace ParkingProject.Controllers
         // POST api/<controller>
         public void Post(string mail)
         {
-            Program.SendGmail(mail);
+            Mail.SendEmail(mail);
         }
 
         // PUT api/<controller>/5
