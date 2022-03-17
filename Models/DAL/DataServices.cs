@@ -65,13 +65,15 @@ namespace ParkingProject.Models.DAL
                 }
                 else
                 {
+                    if(ValidateEmail(U.Email) is false)
+                    {
+                        return -1;
+                    }
                     if (ValidatePassword(U.Password) is false)
                     {
-                        Console.WriteLine(ErrorMessage);
                         return -1;
                     }
                 }
-                Console.WriteLine(ErrorMessage);
                 // C - Connect
                 con = Connect("webOsDB");
 
@@ -89,8 +91,6 @@ namespace ParkingProject.Models.DAL
                 // write to log file
                 throw new Exception(ErrorMessage, ex);
             }
-           
-
             finally
             {
                 // Close Connection
@@ -98,6 +98,16 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+        private bool ValidateEmail(string email)
+        {
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(email);
+            if (match.Success)
+                return true;
+            else
+                ErrorMessage = "The Email with Uncorrect format";
+                 return false;
+        }
 
         public int InsertCars(Cars C)
         {
