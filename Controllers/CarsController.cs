@@ -25,7 +25,6 @@ namespace ParkingProject.Controllers
         // POST api/<controller>
         public int Post([FromBody] Cars C)
         {
-
             int id = Cars.UpdateCar(C);
             return id;
         }

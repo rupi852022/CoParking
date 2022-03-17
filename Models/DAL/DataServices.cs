@@ -480,6 +480,39 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+        public string ReadPaswword(string email)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // Create the select command
+                SqlCommand selectCommand = creatSelectUserCommand(con, email);
+
+                // Create the reader
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                // Read the records
+                // Execute the command
+                //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+                if (dr == null || !dr.Read())
+                {
+                    return null;
+                }
+                string password = (string)dr["password"];
+
+                if (dr.Read())
+                {
+                    return null;
+                }
+
+                return password;
+        }
+            
+
 
         SqlCommand createUserTable(SqlConnection con)
         {

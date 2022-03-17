@@ -8,7 +8,7 @@ using System.Web.Http;
 
 namespace ParkingProject.Controllers
 {
-    public class UsersController : ApiController
+    public class MailController : ApiController
     {
         // GET api/<controller>
         public IEnumerable<string> Get()
@@ -17,28 +17,25 @@ namespace ParkingProject.Controllers
         }
 
         // GET api/<controller>/5
-        public User Get(string email, string password)
+        public string Get(int id)
         {
-            return ParkingProject.Models.User.readUser(email, password);
+            return "value";
         }
 
         // POST api/<controller>
-        public int Post([FromBody] User U)
+        public void Post(string mail)
         {
-            int id = U.Insert();
-            return id;
+            Program.SendGmail(mail);
         }
 
         // PUT api/<controller>/5
-        public string Put()
+        public void Put(int id, [FromBody] string value)
         {
-            return "hello";
         }
 
         // DELETE api/<controller>/5
-        public User[] Delete()
+        public void Delete(int id)
         {
-            return ParkingProject.Models.User.GetAll();
         }
     }
 }
