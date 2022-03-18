@@ -41,10 +41,16 @@ namespace ParkingProject.Models.DAL
                 string fName = (string)dr["lName"];
                 string lName = (string)dr["fName"];
                 string phoneNumber = (string)dr["phoneNumber"];
-                string gender = (string)dr["gender"];
-                
+                char gender = (char)dr["gender"];
+                string image = (string)dr["image"];
+                int searchRadius= Convert.ToInt32(dr["searchRadius"]);
+                int timeDelta= Convert.ToInt32(dr["timeDelta"]);
+                string status = (string)dr["status"];
+                int tokens = Convert.ToInt32(dr["tokens"]);
 
-                User user = new User(id, fName, lName, currentEmail, password, gender, phoneNumber);
+
+
+                User user = new User(id, fName, lName, currentEmail, password, gender, phoneNumber, image, searchRadius, timeDelta, status, tokens);
                 users.Add(user);
             }
 
@@ -232,7 +238,7 @@ namespace ParkingProject.Models.DAL
         SqlCommand CreateInsertUser(User U, SqlConnection con)
         {
 
-            string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "')";
+            string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender], [image]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "', '"+U.Image+"')";
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -285,9 +291,14 @@ namespace ParkingProject.Models.DAL
                 string fName = (string)dr["lName"];
                 string lName = (string)dr["fName"];
                 string phoneNumber = (string)dr["phoneNumber"];
-                string gender = (string)dr["gender"];
+                char gender = char.Parse((string)dr["gender"]);
+                string image = (string)dr["image"];
+                int searchRadius = Convert.ToInt32(dr["searchRadius"]);
+                int timeDelta = Convert.ToInt32(dr["timeDelta"]);
+                string status = (string)dr["status"];
+                int tokens = Convert.ToInt32(dr["tokens"]);
 
-                User user = new User(id, fName, lName, currentEmail, password, gender, phoneNumber);
+                User user = new User(id, fName, lName, currentEmail, password, gender, phoneNumber, image, searchRadius, timeDelta, status, tokens);
 
                 if (dr.Read())
                 {
@@ -543,6 +554,11 @@ namespace ParkingProject.Models.DAL
                 "[lName] nvarchar(100) NOT NULL," +
                 "[phoneNumber] nvarchar(100) NOT NULL," +
                 "[gender] nvarchar(100) NOT NULL," +
+                "[image] nvarchar(100) NOT NULL," +
+                "[searchRadius] int DEFAULT (2000) NOT NULL," +
+                "[timeDelta] int DEFAULT (10) NOT NULL," +
+                "[status] nvarchar(100) DEFAULT 'Off' NOT NULL," +
+                "[tokens] int DEFAULT(30) NOT NULL," +
                 "Primary key(id));" +
                 " END;";
             SqlCommand cmd = createCommand(con, commandStr);
