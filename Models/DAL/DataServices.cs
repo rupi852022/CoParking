@@ -57,6 +57,29 @@ namespace ParkingProject.Models.DAL
             return users.ToArray();
         }
 
+        public Manufacture[] GetAllManufacturer()
+        {
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand("SELECT * FROM [CoParkingManufacture_2022]", con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            List<Manufacture> manufactures = new List<Manufacture>();
+            while (dr.Read())
+            {
+                int idCar = Convert.ToInt32(dr["idCar"]);
+                string manufacturer1 = (string)dr["manufacturer"];
+                Manufacture manufacturer = new Manufacture(idCar, manufacturer1);
+                manufactures.Add(manufacturer);
+            }
+            
+            return manufactures.ToArray();
+        }
+
+
+
         public int InsertUser(User U)
         {
             SqlConnection con = null;
