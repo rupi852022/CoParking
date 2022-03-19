@@ -26,7 +26,6 @@ namespace ParkingProject.Models
 
         public User() { }
 
-
         public User(string fName, string lName, string email, string password, char gender, string phoneNumber, string image)
         {
             this.fName = fName;
