@@ -12,15 +12,17 @@ namespace ParkingProject.Models
         private int numberCar;
         private int idCar;
         private int year;
+        private string model;
         private string color;
         private int size;
 
         public Cars() { }
-        public Cars(int numberCar, int idCar, int year, string color, int size)
+        public Cars(int numberCar, int idCar, int year,string model, string color, int size)
         {
             this.numberCar = numberCar;
             this.idCar = idCar;
             this.year = year;
+            this.model = model;
             this.color = color;
             this.size = size;
         }
@@ -28,6 +30,7 @@ namespace ParkingProject.Models
         public int NumberCar { get => numberCar; set => numberCar = value; }
         public int Idcar { get => idCar; set => idCar = value; }
         public int Year { get => year; set => year = value; }
+        public string Model { get => model; set => model = value; }
         public string Color { get => color; set => color = value; }
         public int Size { get => size; set => size = value; }
 

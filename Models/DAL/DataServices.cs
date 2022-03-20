@@ -157,6 +157,56 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+        public int InsertParking(Parking P)
+        {
+            SqlConnection con = null;
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // C - Create Command
+                SqlCommand command = CreateInsertParking(P, con);
+
+                // E - Execute
+                int affected = command.ExecuteNonQuery();
+
+                return affected;
+
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                throw new Exception(ErrorMessage, ex);
+            }
+            finally
+            {
+                // Close Connection
+                con.Close();
+            }
+        }
+
+        SqlCommand CreateInsertParking(Parking P, SqlConnection con)
+        {
+            string insertStr = "";
+            string currentexitDate = P.ExitDate.ToString("dd/MM/yyyy");
+            string currentexitHour = P.ExitTime.ToString("HH:mm:ss");
+            if (P.UserCodeIn == 0)
+            {
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [exitTime], [typeOfParking], [singType], [userCodeOut]) VALUES('" + P.Location + "', '" + currentexitDate + "', '" + currentexitHour + "', '" + P.TypeOfParking + "', '" + P.SingType + "', '" + P.UserCodeOut + "')";
+            }
+            else
+            {
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [exitTime], [typeOfParking], [singType], [userCodeOut], [userCodeIn]) VALUES('" + P.Location + "', '" + currentexitDate + "', '" + currentexitHour + "', '" + P.TypeOfParking + "', '" + P.SingType + "', '" + P.UserCodeOut + "', '" + P.UserCodeIn + "')";
+            }
+            SqlCommand command = new SqlCommand(insertStr, con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+
+        }
+
         SqlCommand CreateInsertUserCar(UsersCars U, SqlConnection con)
         {
             string insertStr = "";
@@ -257,7 +307,7 @@ namespace ParkingProject.Models.DAL
         {
             SqlCommand command = new SqlCommand(
                   "UPDATE [CoParkingCars_2022] " +
-                  "SET [idCar] = '" + C.Idcar + "', [year] = '" + C.Year + "', [color] = '" + C.Color + "', [size] = '" + C.Size  + "' WHERE [numberCar] = '" + C.NumberCar + "'",
+                  "SET [idCar] = '" + C.Idcar + "', [year] = '" + C.Year + "', [model] = '" + C.Model +  "', [color] = '" + C.Color + "', [size] = '" + C.Size  + "' WHERE [numberCar] = '" + C.NumberCar + "'",
                     con);
             //string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [manufacturer], [year], [color], [size],[handicapped],[carPicture]) VALUES('" + C.NumberCar + "', '" + C.Manufacturer + "', '" + C.Model + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "', '" + C.Handicapped + "', '" + C.CarPicture + "')";
 
@@ -328,7 +378,7 @@ namespace ParkingProject.Models.DAL
         {
 
 
-            string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [idCar], [year], [color], [size]) VALUES('" + Convert.ToString(C.NumberCar) + "', '" + C.Idcar + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "')";
+            string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [idCar], [year],[model], [color], [size]) VALUES('" + Convert.ToString(C.NumberCar) + "', '" + C.Idcar + "', '" + C.Year + "', '" + C.Model + "', '" + C.Color + "', '" + C.Size + "')";
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -432,10 +482,11 @@ namespace ParkingProject.Models.DAL
                 int CurrentnumberCar = Convert.ToInt32(dr["numberCar"]);
                 int idCar = Convert.ToInt32(dr["idCar"]);
                 int year = Convert.ToInt32(dr["year"]);
+                string model = (string)dr["model"];
                 string color = (string)dr["color"];
                 int size = Convert.ToInt32(dr["size"]);
 
-                Cars cars = new Cars(CurrentnumberCar, idCar, year, color, size);
+                Cars cars = new Cars(CurrentnumberCar, idCar, year,model, color, size);
 
                 if (dr.Read())
                 {
