@@ -606,6 +606,7 @@ namespace ParkingProject.Models.DAL
                 "[numberCar] int NOT NULL," +
                 "[idCar] int  NOT NULL," +
                 "[year] int NOT NULL," +
+                "[model] nvarchar (100) NOT NULL," +
                 "[color] nvarchar (100) NOT NULL," +
                 "[size] int NOT NULL," +
                 "Primary key (numberCar));" +
