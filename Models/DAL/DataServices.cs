@@ -709,17 +709,19 @@ namespace ParkingProject.Models.DAL
                 con = Connect("webOsDB");
 
                 // C - Create Command
-                int affected = CreateUpdatePassword(mail, currentPassword, password1, password2, con);
-
-                // E - Execute
-
-                return affected;
-
+                int status = CreateUpdatePassword(mail, currentPassword, password1, password2, con);
+                if (status == -1)
+                {
+                    Exception ex = new Exception(ErrorMessage);
+                    throw ex;
+                }
+                else return status;
+                
             }
             catch (Exception ex)
             {
                 // write to log file
-                throw new Exception("Failed in Insert of Password", ex);
+                throw new Exception(ErrorMessage, ex);
             }
             finally
             {
@@ -731,13 +733,15 @@ namespace ParkingProject.Models.DAL
 
         public int CreateUpdatePassword(string mail, string currentPassword, string password1, string password2, SqlConnection con)
         {
-            int affected = 0;
+            int affected = -1;
             if (!(ReadOnlyPaswword(mail).Equals(currentPassword)))
             {
+                ErrorMessage = "the password from mail not correct";
                 return affected;
             }
             if (!password1.Equals(password2))
             {
+                ErrorMessage = "the passwords are not equal";
                 return affected;
             }
             if (ValidatePassword(password1) is true)

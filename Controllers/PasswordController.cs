@@ -8,7 +8,7 @@ using System.Web.Http;
 
 namespace ParkingProject.Controllers
 {
-    public class MailController : ApiController
+    public class PasswordController : ApiController
     {
         // GET api/<controller>
         public IEnumerable<string> Get()
@@ -16,22 +16,22 @@ namespace ParkingProject.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<controller>/5
-        public string Get(int id)
+        // POST api/<controller>
+        public string Post(int id)
         {
             return "value";
         }
 
-        // POST api/<controller>
-        public void Post(string mail)
+        // GET api/<controller>/5
+        public void Get(string mail)
         {
-            Mail.SendEmail(mail);
+            Password.SendinEmail(mail);
         }
 
         // PUT api/<controller>/5
         public int PUT(string mail, string currentPassword, string password1, string password2)
         {
-            return Mail.UpdatePassword(mail, currentPassword, password1, password2);
+            return Password.UpdatePassword(mail, currentPassword, password1, password2);
         }
 
         // DELETE api/<controller>/5

@@ -8,17 +8,15 @@ using System.Web;
 
 namespace ParkingProject.Models
 {
-    public class Mail
+    public class Password
     {
         public static int UpdatePassword(string mail, string currentPassword, string password1, string password2)
         {
             DataServices ds = new DataServices();
             return ds.UpdatePassword(mail, currentPassword, password1, password2);
-
-
         }
 
-            public static bool SendEmail(string recipients)
+            public static bool SendinEmail(string recipients)
         {
             DataServices ds = new DataServices();
             string password = ds.ReadPaswword(recipients);
@@ -39,7 +37,6 @@ namespace ParkingProject.Models
                     UseDefaultCredentials = false,
                     Credentials = new System.Net.NetworkCredential("CoParking@outlook.co.il", "I12345678!") //you need to add some valid gmail account credentials to authenticate with gmails SMTP server.
                 };
-
 
                 using (MailMessage gMessage = new MailMessage(from, recipients, subject, content))
                 {
