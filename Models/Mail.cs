@@ -10,7 +10,15 @@ namespace ParkingProject.Models
 {
     public class Mail
     {
-        public static bool SendEmail(string recipients)
+        public static int UpdatePassword(string mail, string currentPassword, string password1, string password2)
+        {
+            DataServices ds = new DataServices();
+            return ds.UpdatePassword(mail, currentPassword, password1, password2);
+
+
+        }
+
+            public static bool SendEmail(string recipients)
         {
             DataServices ds = new DataServices();
             string password = ds.ReadPaswword(recipients);

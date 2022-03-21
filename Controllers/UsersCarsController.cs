@@ -23,11 +23,11 @@ namespace ParkingProject.Controllers
         }
 
         // POST api/<controller>
-        public int Post([FromBody] UsersCars U)
-        {
-            int id = U.Insert();
-            return id;
-        }
+        //public int Post([FromBody] UsersCars U)
+        //{
+        //    int id = U.Insert();
+        //    return id;
+        //}
 
         // PUT api/<controller>/5
         public void Put(int id, [FromBody] string value)

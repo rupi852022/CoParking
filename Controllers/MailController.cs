@@ -29,8 +29,9 @@ namespace ParkingProject.Controllers
         }
 
         // PUT api/<controller>/5
-        public void Put(int id, [FromBody] string value)
+        public int PUT(string mail, string currentPassword, string password1, string password2)
         {
+            return Mail.UpdatePassword(mail, currentPassword, password1, password2);
         }
 
         // DELETE api/<controller>/5

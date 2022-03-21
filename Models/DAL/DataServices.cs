@@ -128,34 +128,34 @@ namespace ParkingProject.Models.DAL
         }
 
 
-        public int InsertUserCar(UsersCars U)
-        {
-            SqlConnection con = null;
-            try
-            {
-                // C - Connect
-                con = Connect("webOsDB");
+        //public int InsertUserCar(UsersCars U)
+        //{
+        //    SqlConnection con = null;
+        //    try
+        //    {
+        //        // C - Connect
+        //        con = Connect("webOsDB");
 
-                // C - Create Command
-                SqlCommand command = CreateInsertUserCar(U, con);
+        //        // C - Create Command
+        //        //SqlCommand command = CreateInsertUserCar(U, con);
 
-                // E - Execute
-                int affected = command.ExecuteNonQuery();
+        //        //// E - Execute
+        //        //int affected = command.ExecuteNonQuery();
 
-                return affected;
+        //        //return affected;
 
-            }
-            catch (Exception ex)
-            {
-                // write to log file
-                throw new Exception(ErrorMessage, ex);
-            }
-            finally
-            {
-                // Close Connection
-                con.Close();
-            }
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // write to log file
+        //        throw new Exception(ErrorMessage, ex);
+        //    }
+        //    finally
+        //    {
+        //        // Close Connection
+        //        con.Close();
+        //    }
+        //}
 
         public int InsertParking(Parking P)
         {
@@ -207,7 +207,7 @@ namespace ParkingProject.Models.DAL
 
         }
 
-        SqlCommand CreateInsertUserCar(UsersCars U, SqlConnection con)
+        SqlCommand CreateInsertUserCar(Cars U, SqlConnection con)
         {
             string insertStr = "";
             string currentMain = "T";
@@ -250,13 +250,41 @@ namespace ParkingProject.Models.DAL
                 // C - Connect
                 con = Connect("webOsDB");
 
-                // C - Create Command
-                SqlCommand command = CreateInsertCar(C, con);
+                if(C.Id == 0)
+                {
+                    // C - Create Command
+                    SqlCommand command = CreateInsertCar(C, con);
 
-                // E - Execute
-                int affected = command.ExecuteNonQuery();
+                    // E - Execute
+                    int affected = command.ExecuteNonQuery();
 
-                return affected;
+                    return affected;
+                }
+                else
+                {
+                    if (C.Idcar != 0)
+                    {
+                        SqlCommand command2 = CreateInsertCar(C, con);
+                        int affected2 = (command2.ExecuteNonQuery());
+                        SqlCommand command1 = CreateInsertUserCar(C, con);
+                        int affected1 = (command1.ExecuteNonQuery());
+
+                        // E - Execute
+                        int affected = affected2 * affected1;
+
+                        return affected;
+                    }
+                    else
+                    {
+                        SqlCommand command = CreateInsertUserCar(C, con);
+
+                        // E - Execute
+                        int affected = command.ExecuteNonQuery();
+
+                        return affected;
+                    }
+                }
+
 
             }
             catch (Exception ex)
@@ -352,7 +380,7 @@ namespace ParkingProject.Models.DAL
         SqlCommand DeleteNumberOfCar(int NumberCar, SqlConnection con)
         {
             SqlCommand command = new SqlCommand(
-                   "DELETE FROM [CoParkingCars_2022] WHERE [numberCar]='" + NumberCar + "'",
+                   "DELETE FROM[CoParkingUsersCars_2022] WHERE[numberCar] = '" + NumberCar + "' DELETE FROM [CoParkingCars_2022] WHERE [numberCar]='" + NumberCar + "'",
                      con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
@@ -620,15 +648,22 @@ namespace ParkingProject.Models.DAL
         {
             SqlConnection con = null;
             SqlDataReader dr = null;
+            // C - Connect
+            con = Connect("webOsDB");
 
-                // C - Connect
-                con = Connect("webOsDB");
 
                 // Create the select command
                 SqlCommand selectCommand = creatSelectUserCommand(con, email);
+            Random rnd = new Random();
+            string tmpPassword = "CO" + rnd.Next(99) + "!" + rnd.Next(99) + rnd.Next(99);
 
-                // Create the reader
-                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+            SqlCommand command = createPassword(con, email, tmpPassword);
+
+            // E - Execute
+            int affected = command.ExecuteNonQuery();
+
+            // Create the reader
+            dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
 
                 // Read the records
                 // Execute the command
@@ -638,6 +673,9 @@ namespace ParkingProject.Models.DAL
                 {
                     return null;
                 }
+                
+
+
                 string password = (string)dr["password"];
 
                 if (dr.Read())
@@ -647,7 +685,107 @@ namespace ParkingProject.Models.DAL
 
                 return password;
         }
-            
+
+        SqlCommand createPassword(SqlConnection con, string email, string Password)
+        {
+            //Random rnd = new Random();
+            //string tmpPassword = "CO"+ rnd.Next(99)+"!"+ rnd.Next(99) + rnd.Next(99);
+            string insertStr = "UPDATE [CoParkingUsers_2022] " +
+      "SET [password] = '" + Password + "' WHERE [email] = '" + email + "'";
+            SqlCommand command = new SqlCommand(insertStr, con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+
+        }
+
+        public int UpdatePassword(string mail, string currentPassword, string password1, string password2)
+        {
+            SqlConnection con = null;
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // C - Create Command
+                int affected = CreateUpdatePassword(mail, currentPassword, password1, password2, con);
+
+                // E - Execute
+
+                return affected;
+
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                throw new Exception("Failed in Insert of Password", ex);
+            }
+            finally
+            {
+                // Close Connection
+                con.Close();
+            }
+        }
+
+
+        public int CreateUpdatePassword(string mail, string currentPassword, string password1, string password2, SqlConnection con)
+        {
+            int affected = 0;
+            if (!(ReadOnlyPaswword(mail).Equals(currentPassword)))
+            {
+                return affected;
+            }
+            if (!password1.Equals(password2))
+            {
+                return affected;
+            }
+            if (ValidatePassword(password1) is true)
+            {
+                SqlCommand command = createPassword(con, mail, password1);
+                command.CommandType = System.Data.CommandType.Text;
+                command.CommandTimeout = 30;
+                affected = command.ExecuteNonQuery();
+                return affected;
+            }
+            return affected;
+        }
+
+        public string ReadOnlyPaswword(string email)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+            // C - Connect
+            con = Connect("webOsDB");
+
+
+            // Create the select command
+            SqlCommand selectCommand = creatSelectUserCommand(con, email);
+            Random rnd = new Random();
+
+            // E - Execute
+            int affected = selectCommand.ExecuteNonQuery();
+
+            // Create the reader
+            dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+            // Read the records
+            // Execute the command
+            //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+            if (dr == null || !dr.Read())
+            {
+                return null;
+            }
+            string password = (string)dr["password"];
+
+            if (dr.Read())
+            {
+                return null;
+            }
+
+            return password;
+        }
 
 
         SqlCommand createUserTable(SqlConnection con)
