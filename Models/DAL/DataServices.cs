@@ -209,6 +209,11 @@ namespace ParkingProject.Models.DAL
 
         SqlCommand CreateInsertUserCar(Cars U, SqlConnection con)
         {
+            if (CheckUserAndNumberCar(U.Id,U.NumberCar) == 1)
+            {
+                Exception ex = new Exception("the User and the NumberCar are exist.");
+                throw ex;
+            }
             string insertStr = "";
             string currentMain = "T";
             string Handicapped = "T";
@@ -250,7 +255,13 @@ namespace ParkingProject.Models.DAL
                 // C - Connect
                 con = Connect("webOsDB");
 
-                if(C.Id == 0)
+                if (checkedNumberCar(C.NumberCar) == 1)
+                {
+                    Exception ex = new Exception("the NumberCar is exist.");
+                    throw ex;
+                }
+
+                if (C.Id == 0)
                 {
                     // C - Create Command
                     SqlCommand command = CreateInsertCar(C, con);
@@ -298,6 +309,38 @@ namespace ParkingProject.Models.DAL
                 // Close Connection
                 con.Close();
             }
+        }
+
+        public int checkedNumberCar(int numberCar)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+            // C - Connect
+            con = Connect("webOsDB");
+
+
+            // Create the select command
+            SqlCommand selectCommand = creatSelectUserCommand3(con, numberCar);
+
+            // E - Execute
+            int affected = selectCommand.ExecuteNonQuery();
+
+            // Create the reader
+            dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+            // Read the records
+            // Execute the command
+            //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+            if (dr == null || !dr.Read())
+            {
+                return -1;
+            }
+
+            int number = Convert.ToInt32(dr["numberCar"]);
+            if (number > 0) { return 1; }
+            return -1;
+
         }
 
 
@@ -552,6 +595,25 @@ namespace ParkingProject.Models.DAL
             return cmd;
         }
 
+        private SqlCommand creatSelectUserCommand2(SqlConnection con, int id, int numberCar)
+        {
+            string commandStr = "SELECT * FROM CoParkingUsersCars_2022 WHERE id=@id AND numberCar=@numberCar";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@numberCar", numberCar);
+
+            return cmd;
+        }
+
+        private SqlCommand creatSelectUserCommand3(SqlConnection con, int numberCar)
+        {
+            string commandStr = "SELECT * FROM CoParkingCars_2022 WHERE numberCar=@numberCar";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@numberCar", numberCar);
+
+            return cmd;
+        }
+
         private SqlCommand creatSelectCarsCommand(SqlConnection con, int numberCar)
         {
             string commandStr = "SELECT * FROM CoParkingCars_2022 WHERE numberCar=@numberCar";
@@ -789,6 +851,38 @@ namespace ParkingProject.Models.DAL
             }
 
             return password;
+        }
+
+        public int CheckUserAndNumberCar(int id, int numberCar)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+            // C - Connect
+            con = Connect("webOsDB");
+
+
+            // Create the select command
+            SqlCommand selectCommand = creatSelectUserCommand2(con, id, numberCar);
+
+            // E - Execute
+            int affected = selectCommand.ExecuteNonQuery();
+
+            // Create the reader
+            dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+            // Read the records
+            // Execute the command
+            //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+            if (dr == null || !dr.Read())
+            {
+                return -1;
+            }
+
+            int number = Convert.ToInt32(dr["numberCar"]);
+            if (number > 0) { return 1; }
+            return -1;
+
         }
 
 
