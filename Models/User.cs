@@ -86,6 +86,12 @@ namespace ParkingProject.Models
             DataServices ds = new DataServices();
             return ds.GetAllUsers();
         }
+        public static User readUserMail(string email)
+        {
+            DataServices ds = new DataServices();
+            User user = ds.ReadUser(email);
+            return user;
+        }
     }
 }
 

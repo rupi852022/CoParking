@@ -16,10 +16,21 @@ namespace ParkingProject.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<controller>/5
-        public User Get(string email, string password)
+        public Tuple<User, int> Get(string email)
         {
-            return ParkingProject.Models.User.readUser(email, password);
+            User user = Models.User.readUserMail(email);
+            Cars cars = Cars.ReadMainCar(user.Id);
+            var UserWithNumberCar = new Tuple<User, int>(user, cars.NumberCar);
+            return UserWithNumberCar;
+        }
+
+        // GET api/<controller>/5
+        public Tuple<User, int> Get(string email, string password)
+        {
+            User user = Models.User.readUser(email, password);
+            Cars cars = Cars.ReadMainCar(user.Id);
+            var UserWithNumberCar = new Tuple<User, int>(user, cars.NumberCar);
+            return UserWithNumberCar;
         }
 
         // POST api/<controller>

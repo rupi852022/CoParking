@@ -525,6 +525,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+
         public Cars ReadUser(int numberCar)
         {
             SqlConnection con = null;
@@ -584,6 +585,75 @@ namespace ParkingProject.Models.DAL
                 if (con != null)
                     con.Close();
             }
+        }
+
+        public Cars ReadMainCar(int id)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // Create the select command
+                SqlCommand selectCommand = creatSelectMainCarCommand(con, id);
+
+                // Create the reader
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                // Read the records
+                // Execute the command
+                //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+                if (dr == null || !dr.Read())
+                {
+                    return null;
+                }
+
+                int numberCar = Convert.ToInt32(dr["numberCar"]);
+                bool isMain = true;
+                string currenthandicapped = (string)dr["handicapped"];
+                bool handicapped = true;
+                if (currenthandicapped == "F") { handicapped = false; }
+                string carPic = (string)dr["carPic"];
+
+                Cars cars = new Cars(id, numberCar, isMain, handicapped,carPic);
+
+                if (dr.Read())
+                {
+                    return null;
+                }
+
+                return cars;
+            }
+
+
+            catch (Exception ex)
+            {
+                // write the error to log
+                throw new Exception("failed return Main Car", ex);
+            }
+            finally
+            {
+                if (dr != null)
+                {
+                    dr.Close();
+                }
+
+                // Close the connection
+                if (con != null)
+                    con.Close();
+            }
+        }
+
+        private SqlCommand creatSelectMainCarCommand(SqlConnection con, int id)
+        {
+            string commandStr = "SELECT * FROM CoParkingUsersCars_2022 WHERE id=@id AND isMain='T'";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@id", id);
+            return cmd;
         }
 
         private SqlCommand creatSelectUserCommand(SqlConnection con, string email)

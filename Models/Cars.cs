@@ -100,6 +100,15 @@ namespace ParkingProject.Models
             return cars;
         }
 
+        public static Cars ReadMainCar(int id)
+        {
+            DataServices ds = new DataServices();
+            Cars cars = ds.ReadMainCar(id);
+            return cars;
+        }
+
+
+
 
 
     }
