@@ -18,7 +18,7 @@ namespace ParkingProject.Models.DAL
 
             SqlConnection con = new SqlConnection(connectionString);
 
-            con.Open(); 
+            con.Open();
 
             return con;
         }
@@ -43,8 +43,8 @@ namespace ParkingProject.Models.DAL
                 string phoneNumber = (string)dr["phoneNumber"];
                 char gender = (char)dr["gender"];
                 string image = (string)dr["image"];
-                int searchRadius= Convert.ToInt32(dr["searchRadius"]);
-                int timeDelta= Convert.ToInt32(dr["timeDelta"]);
+                int searchRadius = Convert.ToInt32(dr["searchRadius"]);
+                int timeDelta = Convert.ToInt32(dr["timeDelta"]);
                 string status = (string)dr["status"];
                 int tokens = Convert.ToInt32(dr["tokens"]);
 
@@ -74,7 +74,7 @@ namespace ParkingProject.Models.DAL
                 Manufacture manufacturer = new Manufacture(idCar, manufacturer1);
                 manufactures.Add(manufacturer);
             }
-            
+
             return manufactures.ToArray();
         }
 
@@ -86,7 +86,7 @@ namespace ParkingProject.Models.DAL
             try
             {
                 User user = this.ReadUser(U.Email);
-                
+
                 if (user != null)
                 {
                     ErrorMessage = "Failed in Insert of User - The email or password alredy exist";
@@ -94,7 +94,7 @@ namespace ParkingProject.Models.DAL
                 }
                 else
                 {
-                    if(ValidateEmail(U.Email) is false)
+                    if (ValidateEmail(U.Email) is false)
                     {
                         return -1;
                     }
@@ -209,7 +209,7 @@ namespace ParkingProject.Models.DAL
 
         SqlCommand CreateInsertUserCar(Cars U, SqlConnection con)
         {
-            if (CheckUserAndNumberCar(U.Id,U.NumberCar) == 1)
+            if (CheckUserAndNumberCar(U.Id, U.NumberCar) == 1)
             {
                 Exception ex = new Exception("the User and the NumberCar are exist.");
                 throw ex;
@@ -219,11 +219,12 @@ namespace ParkingProject.Models.DAL
             string Handicapped = "T";
             if (U.IsMain is false) { currentMain = "F"; }
             if (U.Handicapped is false) { Handicapped = "F"; }
-            if (U.IsMain is true) {
+            if (U.IsMain is true)
+            {
                 currentMain = "T";
                 insertStr += " UPDATE [CoParkingUsersCars_2022] SET [isMain] = 'F'";
             }
-            insertStr += " UPDATE [CoParkingUsers_2022] SET [status] = 'on' where [id] = '"+U.Id+"'";
+            insertStr += " UPDATE [CoParkingUsers_2022] SET [status] = 'on' where [id] = '" + U.Id + "'";
 
             insertStr += " INSERT INTO [CoParkingUsersCars_2022] ([id], [numberCar], [isMain], [handicapped], [carPic]) VALUES('" + U.Id + "', '" + U.NumberCar + "', '" + currentMain + "', '" + Handicapped + "', '" + U.CarPic + "')";
             SqlCommand command = new SqlCommand(insertStr, con);
@@ -244,7 +245,7 @@ namespace ParkingProject.Models.DAL
                 return true;
             else
                 ErrorMessage = "The Email with Uncorrect format";
-                 return false;
+            return false;
         }
 
         public int InsertCars(Cars C)
@@ -378,7 +379,7 @@ namespace ParkingProject.Models.DAL
         {
             SqlCommand command = new SqlCommand(
                   "UPDATE [CoParkingCars_2022] " +
-                  "SET [idCar] = '" + C.Idcar + "', [year] = '" + C.Year + "', [model] = '" + C.Model +  "', [color] = '" + C.Color + "', [size] = '" + C.Size  + "' WHERE [numberCar] = '" + C.NumberCar + "'",
+                  "SET [idCar] = '" + C.Idcar + "', [year] = '" + C.Year + "', [model] = '" + C.Model + "', [color] = '" + C.Color + "', [size] = '" + C.Size + "' WHERE [numberCar] = '" + C.NumberCar + "'",
                     con);
             //string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [manufacturer], [year], [color], [size],[handicapped],[carPicture]) VALUES('" + C.NumberCar + "', '" + C.Manufacturer + "', '" + C.Model + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "', '" + C.Handicapped + "', '" + C.CarPicture + "')";
 
@@ -436,7 +437,7 @@ namespace ParkingProject.Models.DAL
         SqlCommand CreateInsertUser(User U, SqlConnection con)
         {
 
-            string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender], [image]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "', '"+U.Image+"')";
+            string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender], [image]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "', '" + U.Image + "')";
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -558,7 +559,7 @@ namespace ParkingProject.Models.DAL
                 string color = (string)dr["color"];
                 int size = Convert.ToInt32(dr["size"]);
 
-                Cars cars = new Cars(CurrentnumberCar, idCar, year,model, color, size);
+                Cars cars = new Cars(CurrentnumberCar, idCar, year, model, color, size);
 
                 if (dr.Read())
                 {
@@ -619,7 +620,7 @@ namespace ParkingProject.Models.DAL
                 if (currenthandicapped == "F") { handicapped = false; }
                 string carPic = (string)dr["carPic"];
 
-                Cars cars = new Cars(id, numberCar, isMain, handicapped,carPic);
+                Cars cars = new Cars(id, numberCar, isMain, handicapped, carPic);
 
                 if (dr.Read())
                 {
@@ -784,8 +785,8 @@ namespace ParkingProject.Models.DAL
             con = Connect("webOsDB");
 
 
-                // Create the select command
-                SqlCommand selectCommand = creatSelectUserCommand(con, email);
+            // Create the select command
+            SqlCommand selectCommand = creatSelectUserCommand(con, email);
             Random rnd = new Random();
             string tmpPassword = "CO" + rnd.Next(99) + "!" + rnd.Next(99) + rnd.Next(99);
 
@@ -797,25 +798,25 @@ namespace ParkingProject.Models.DAL
             // Create the reader
             dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
 
-                // Read the records
-                // Execute the command
-                //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+            // Read the records
+            // Execute the command
+            //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
 
-                if (dr == null || !dr.Read())
-                {
-                    return null;
-                }
-                
+            if (dr == null || !dr.Read())
+            {
+                return null;
+            }
 
 
-                string password = (string)dr["password"];
 
-                if (dr.Read())
-                {
-                    return null;
-                }
+            string password = (string)dr["password"];
 
-                return password;
+            if (dr.Read())
+            {
+                return null;
+            }
+
+            return password;
         }
 
         SqlCommand createPassword(SqlConnection con, string email, string Password)
@@ -848,7 +849,7 @@ namespace ParkingProject.Models.DAL
                     throw ex;
                 }
                 else return status;
-                
+
             }
             catch (Exception ex)
             {
@@ -871,7 +872,7 @@ namespace ParkingProject.Models.DAL
                 con = Connect("webOsDB");
 
                 // C - Create Command
-                int status = TryTakePariking(idUser,parkingCode, con);
+                int status = TryTakePariking(idUser, parkingCode, con);
                 return status;
 
             }
@@ -945,14 +946,14 @@ con);
 
         private SqlCommand addUserCodeIn(int idUser, int parkingCode, SqlConnection con)
         {
-            SqlCommand command = new SqlCommand("UPDATE[CoParkingParkings_2022] SET[userCodeIn] = '"+idUser+"' WHERE[parkingCode] = '"+parkingCode+"';",
+            SqlCommand command = new SqlCommand("UPDATE[CoParkingParkings_2022] SET[userCodeIn] = '" + idUser + "' WHERE[parkingCode] = '" + parkingCode + "';",
             con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             return command;
         }
 
-        
+
 
         public string ReadOnlyPaswword(string email)
         {

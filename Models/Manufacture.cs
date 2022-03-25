@@ -13,7 +13,7 @@ namespace ParkingProject.Models
 
         public Manufacture() { }
 
-        public Manufacture (string manufacturer)
+        public Manufacture(string manufacturer)
         {
             this.manufacturer = manufacturer;
         }

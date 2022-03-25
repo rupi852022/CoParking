@@ -21,7 +21,7 @@ namespace ParkingProject.Models
         private string carPic;
 
         public Cars() { }
-        public Cars(int numberCar, int idCar, int year,string model, string color, int size)
+        public Cars(int numberCar, int idCar, int year, string model, string color, int size)
         {
             this.numberCar = numberCar;
             this.idCar = idCar;
@@ -75,7 +75,7 @@ namespace ParkingProject.Models
         public int DeleteCar()
         {
             DataServices ds = new DataServices();
-            int status =  ds.deleteCar(this.numberCar);
+            int status = ds.deleteCar(this.numberCar);
             return status;
         }
 

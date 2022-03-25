@@ -16,7 +16,7 @@ namespace ParkingProject.Models
             return ds.UpdatePassword(mail, currentPassword, password1, password2);
         }
 
-            public static bool SendinEmail(string recipients)
+        public static bool SendinEmail(string recipients)
         {
             DataServices ds = new DataServices();
             string password = ds.ReadPaswword(recipients);
@@ -40,7 +40,7 @@ namespace ParkingProject.Models
 
                 using (MailMessage gMessage = new MailMessage(from, recipients, subject, content))
                 {
-                        gMessage.To.Add(recipients);
+                    gMessage.To.Add(recipients);
 
                     try
                     {
