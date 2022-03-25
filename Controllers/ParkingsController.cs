@@ -1,4 +1,5 @@
 ﻿using ParkingProject.Models;
+using ParkingProject.Models.DAL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace ParkingProject.Controllers
         }
 
         // GET api/<controller>/5
-        public string Get(int id)
+        public string Get(int idUser, int parkingCode)
         {
             return "value";
         }
@@ -30,8 +31,11 @@ namespace ParkingProject.Controllers
         }
 
         // PUT api/<controller>/5
-        public void Put(int id, [FromBody] string value)
+        public int Put(int idUser, int parkingCode)
         {
+            DataServices ds = new DataServices();
+            int status = ds.TakeParking(idUser, parkingCode);
+            return status;
         }
 
         // DELETE api/<controller>/5

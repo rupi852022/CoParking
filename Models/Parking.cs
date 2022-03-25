@@ -52,6 +52,12 @@ namespace ParkingProject.Models
         public int UserCodeOut { get => userCodeOut; set => userCodeOut = value; }
         public int UserCodeIn { get => userCodeIn; set => userCodeIn = value; }
 
+        public int InsertUserIn(int idUser, int parkingCode)
+        {
+            DataServices ds = new DataServices();
+            int status = ds.TakeParking(idUser, parkingCode);
+            return status;
+        }
         public int Insert()
         {
             DataServices ds = new DataServices();
@@ -60,5 +66,7 @@ namespace ParkingProject.Models
             int status = ds.InsertParking(parking);
             return status;
         }
+
+
     }
 }

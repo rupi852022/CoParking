@@ -862,6 +862,30 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+        public int TakeParking(int idUser, int parkingCode)
+        {
+            SqlConnection con = null;
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // C - Create Command
+                int status = TryTakePariking(idUser,parkingCode, con);
+                return status;
+
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                throw new Exception(ErrorMessage, ex);
+            }
+            finally
+            {
+                // Close Connection
+                con.Close();
+            }
+        }
 
         public int CreateUpdatePassword(string mail, string currentPassword, string password1, string password2, SqlConnection con)
         {
@@ -886,6 +910,49 @@ namespace ParkingProject.Models.DAL
             }
             return affected;
         }
+
+        public int TryTakePariking(int idUser, int parkingCode, SqlConnection con)
+        {
+            SqlDataReader dr = null;
+            SqlCommand selectCommand = checkParking(parkingCode, con);
+            dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+            selectCommand = null;
+            con = Connect("webOsDB");
+            if (dr.Read())
+            {
+                ErrorMessage = "The parking have alreday UserIn";
+                Exception ex = new Exception(ErrorMessage);
+                throw ex;
+            }
+
+            selectCommand = new SqlCommand("UPDATE[CoParkingParkings_2022] SET[userCodeIn] = '" + idUser + "' WHERE[parkingCode] = '" + parkingCode + "';",
+con);
+            int affected = selectCommand.ExecuteNonQuery();
+            selectCommand.CommandType = System.Data.CommandType.Text;
+            selectCommand.CommandTimeout = 30;
+            return affected;
+        }
+
+        private SqlCommand checkParking(int ParkingCode, SqlConnection con)
+        {
+            //AND userCodeIn IS NOT NULL
+            string commandStr = "SELECT * FROM CoParkingParkings_2022 WHERE parkingCode=@ParkingCode AND userCodeIn IS NOT NULL";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@ParkingCode", ParkingCode);
+            int rowsAffected = cmd.ExecuteNonQuery();
+            return cmd;
+        }
+
+        private SqlCommand addUserCodeIn(int idUser, int parkingCode, SqlConnection con)
+        {
+            SqlCommand command = new SqlCommand("UPDATE[CoParkingParkings_2022] SET[userCodeIn] = '"+idUser+"' WHERE[parkingCode] = '"+parkingCode+"';",
+            con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+        }
+
+        
 
         public string ReadOnlyPaswword(string email)
         {
