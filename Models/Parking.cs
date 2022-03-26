@@ -17,6 +17,8 @@ namespace ParkingProject.Models
         private int userCodeOut;
         private int userCodeIn;
 
+        private static DataServices ds = new DataServices();
+
         public Parking() { }
 
         public Parking(string location, DateTime exitDate, DateTime exitTime, string typeOfParking, string singType, int userCodeOut, int userCodeIn)
@@ -54,19 +56,25 @@ namespace ParkingProject.Models
 
         public int InsertUserIn(int idUser, int parkingCode)
         {
-            DataServices ds = new DataServices();
             int status = ds.TakeParking(idUser, parkingCode);
             return status;
         }
         public int Insert()
         {
-            DataServices ds = new DataServices();
             Parking parking = (this);
-
             int status = ds.InsertParking(parking);
             return status;
         }
 
+        public static Parking[] GetAll()
+        {
+            return ds.GetAllParkings();
+        }
 
+        public static int TakeParking(int idUser, int parkingCode)
+        {
+            int status = ds.TakeParking(idUser, parkingCode);
+            return status;
+        }
     }
 }

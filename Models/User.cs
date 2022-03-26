@@ -61,7 +61,7 @@ namespace ParkingProject.Models
 
         public int Insert()
         {
-            DataServices ds = new DataServices();
+            UserDataServices ds = new UserDataServices();
             User user = (this);
 
             int status = ds.InsertUser(user);
@@ -70,7 +70,7 @@ namespace ParkingProject.Models
 
         public static User readUser(string email, string password)
         {
-            DataServices ds = new DataServices();
+            UserDataServices ds = new UserDataServices();
             User user = ds.ReadUser(email);
 
             if (user == null || user.password != password)
@@ -83,12 +83,12 @@ namespace ParkingProject.Models
 
         public static User[] GetAll()
         {
-            DataServices ds = new DataServices();
+            UserDataServices ds = new UserDataServices();
             return ds.GetAllUsers();
         }
         public static User readUserMail(string email)
         {
-            DataServices ds = new DataServices();
+            UserDataServices ds = new UserDataServices();
             User user = ds.ReadUser(email);
             return user;
         }

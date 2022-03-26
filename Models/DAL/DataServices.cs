@@ -12,7 +12,7 @@ namespace ParkingProject.Models.DAL
     {
         public string ErrorMessage = "";
 
-        SqlConnection Connect(string connectionStringName)
+        protected SqlConnection Connect(string connectionStringName)
         {
             string connectionString = WebConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
 
@@ -23,38 +23,38 @@ namespace ParkingProject.Models.DAL
             return con;
         }
 
-        public User[] GetAllUsers()
+
+        public Parking[] GetAllParkings()
         {
+
             SqlConnection con = this.Connect("webOsDB");
-            SqlCommand command = new SqlCommand("SELECT * FROM [CoParkingUsers_2022]", con);
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            string currentTime = DateTime.Now.ToString("HH:mm:ss");
+            SqlCommand command = new SqlCommand(
+                "select [parkingCode],[location], [exitDate], [exitTime],[typeOfParking],[singType],[userCodeOut],[userCodeIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [exitTime] >= '" + currentTime + "';"
+                , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
 
             SqlDataReader dr = command.ExecuteReader();
-            List<User> users = new List<User>();
+            List<Parking> parkings = new List<Parking>();
             while (dr.Read())
             {
-                int id = Convert.ToInt32(dr["id"]);
-                string currentEmail = (string)dr["email"];
-                string password = (string)dr["password"];
-                string fName = (string)dr["lName"];
-                string lName = (string)dr["fName"];
-                string phoneNumber = (string)dr["phoneNumber"];
-                char gender = (char)dr["gender"];
-                string image = (string)dr["image"];
-                int searchRadius = Convert.ToInt32(dr["searchRadius"]);
-                int timeDelta = Convert.ToInt32(dr["timeDelta"]);
-                string status = (string)dr["status"];
-                int tokens = Convert.ToInt32(dr["tokens"]);
+                int parkingCode = Convert.ToInt32(dr["parkingCode"]);
+                string location = (string)dr["location"];
+                DateTime exitDate = DateTime.Parse((string)dr["exitDate"]);
+                DateTime exitTime = DateTime.Parse((string)dr["exitTime"]);
+                string typeOfParking = (string)dr["typeOfParking"];
+                string singType = (string)dr["singType"];
+                int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
+                int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
 
-
-
-                User user = new User(id, fName, lName, currentEmail, password, gender, phoneNumber, image, searchRadius, timeDelta, status, tokens);
-                users.Add(user);
+                Parking parking = new Parking(parkingCode, location, exitDate, exitTime, typeOfParking, singType, userCodeOut, userCodeIn);
+                parkings.Add(parking);
             }
 
-            return users.ToArray();
+            return parkings.ToArray();
         }
 
         public Manufacture[] GetAllManufacturer()
@@ -77,56 +77,6 @@ namespace ParkingProject.Models.DAL
 
             return manufactures.ToArray();
         }
-
-
-
-        public int InsertUser(User U)
-        {
-            SqlConnection con = null;
-            try
-            {
-                User user = this.ReadUser(U.Email);
-
-                if (user != null)
-                {
-                    ErrorMessage = "Failed in Insert of User - The email or password alredy exist";
-                    return -1;
-                }
-                else
-                {
-                    if (ValidateEmail(U.Email) is false)
-                    {
-                        return -1;
-                    }
-                    if (ValidatePassword(U.Password) is false)
-                    {
-                        return -1;
-                    }
-                }
-                // C - Connect
-                con = Connect("webOsDB");
-
-                // C - Create Command
-                SqlCommand command = CreateInsertUser(U, con);
-
-                // E - Execute
-                int affected = command.ExecuteNonQuery();
-
-                return affected;
-
-            }
-            catch (Exception ex)
-            {
-                // write to log file
-                throw new Exception(ErrorMessage, ex);
-            }
-            finally
-            {
-                // Close Connection
-                con.Close();
-            }
-        }
-
 
         //public int InsertUserCar(UsersCars U)
         //{
@@ -235,9 +185,7 @@ namespace ParkingProject.Models.DAL
 
         }
 
-
-
-        private bool ValidateEmail(string email)
+        protected bool ValidateEmail(string email)
         {
             Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
             Match match = regex.Match(email);
@@ -390,7 +338,6 @@ namespace ParkingProject.Models.DAL
 
         }
 
-
         public int deleteCar(int NumberCar)
         {
             SqlConnection con = null;
@@ -431,10 +378,7 @@ namespace ParkingProject.Models.DAL
             return command;
         }
 
-
-
-
-        SqlCommand CreateInsertUser(User U, SqlConnection con)
+        protected SqlCommand CreateInsertUser(User U, SqlConnection con)
         {
 
             string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender], [image]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "', '" + U.Image + "')";
@@ -729,7 +673,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        private bool ValidatePassword(string password)
+        protected bool ValidatePassword(string password)
         {
             var input = password;
             ErrorMessage = string.Empty;
