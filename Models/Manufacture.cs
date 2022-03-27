@@ -31,5 +31,6 @@ namespace ParkingProject.Models
             return ds.GetAllManufacturer();
         }
 
+        puReadManufacture(cars.Idcar);
     }
 }
