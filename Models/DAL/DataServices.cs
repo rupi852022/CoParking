@@ -31,7 +31,7 @@ namespace ParkingProject.Models.DAL
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
             string currentTime = DateTime.Now.ToString("HH:mm:ss");
             SqlCommand command = new SqlCommand(
-                "select [parkingCode],[location], [exitDate], [exitTime],[typeOfParking],[singType],[userCodeOut],[userCodeIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [exitTime] >= '" + currentTime + "';"
+                "select [parkingCode],[location], CONVERT(varchar(10), [exitDate], 20) as [exitDate], CONVERT(varchar(10), [exitTime], 20) as [exitTime],[typeOfParking],[singType],[userCodeOut],[userCodeIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "';"
                 , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -41,6 +41,7 @@ namespace ParkingProject.Models.DAL
             List<Parking> parkings = new List<Parking>();
             while (dr.Read())
             {
+                string test = (string)dr["exitDate"];
                 int parkingCode = Convert.ToInt32(dr["parkingCode"]);
                 string location = (string)dr["location"];
                 DateTime exitDate = DateTime.Parse((string)dr["exitDate"]);
