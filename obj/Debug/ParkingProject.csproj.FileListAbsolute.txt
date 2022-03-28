@@ -168,3 +168,6 @@ C:\Users\ASUS\Desktop\EX3\CoParking\bin\System.Web.WebPages.Razor.xml
 C:\Users\ASUS\Desktop\EX3\CoParking\bin\Antlr3.Runtime.pdb
 C:\Users\ASUS\Desktop\EX3\CoParking\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
 C:\Users\ASUS\Desktop\EX3\CoParking\obj\Debug\ParkingProject.csproj.CopyComplete
+C:\Users\ASUS\Desktop\EX3\CoParking\bin\System.Web.Cors.dll
+C:\Users\ASUS\Desktop\EX3\CoParking\bin\System.Web.Http.Cors.dll
+C:\Users\ASUS\Desktop\EX3\CoParking\bin\System.Web.Http.Cors.xml

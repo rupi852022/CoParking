@@ -11,6 +11,7 @@ namespace ParkingProject.Models.DAL
     public class DataServices
     {
         public string ErrorMessage = "";
+        private Exception ex;
 
         protected SqlConnection Connect(string connectionStringName)
         {
@@ -416,6 +417,12 @@ namespace ParkingProject.Models.DAL
 
                 // Create the select command
                 SqlCommand selectCommand = creatSelectUserCommand(con, email);
+                int affected = selectCommand.ExecuteNonQuery();
+
+                //if (affected != 1)
+                //{
+                //    throw new Exception("The email not exist", ex);
+                //}
 
                 // Create the reader
                 dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
@@ -426,7 +433,7 @@ namespace ParkingProject.Models.DAL
 
                 if (dr == null || !dr.Read())
                 {
-                    return null;
+                    throw new Exception("TThe email or the passwords not correct!", ex);
                 }
 
                 int id = Convert.ToInt32(dr["id"]);
@@ -456,7 +463,7 @@ namespace ParkingProject.Models.DAL
             catch (Exception ex)
             {
                 // write the error to log
-                throw new Exception("failed in Log In", ex);
+                throw new Exception("The email or the passwords not correct!", ex);
             }
             finally
             {
@@ -564,8 +571,14 @@ namespace ParkingProject.Models.DAL
                 bool handicapped = true;
                 if (currenthandicapped == "F") { handicapped = false; }
                 string carPic = (string)dr["carPic"];
+                int idCar = Convert.ToInt32(dr["idCar"]);
+                int year = Convert.ToInt32(dr["year"]);
+                string model = (string)dr["model"];
+                string color = (string)dr["color"];
+                int size = Convert.ToInt32(dr["size"]);
 
-                Cars cars = new Cars(id, numberCar, isMain, handicapped, carPic);
+                Cars cars = new Cars(id, numberCar, isMain, handicapped, carPic, idCar, year, model, color, size);
+
 
                 if (dr.Read())
                 {
@@ -594,11 +607,73 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+
+        public Manufacture ReadManufacture(int idCar)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // Create the select command
+                SqlCommand selectCommand = creatSelectManufactureCommand(con, idCar);
+
+                // Create the reader
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                // Read the records
+                // Execute the command
+                //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+                if (dr == null || !dr.Read())
+                {
+                    return null;
+                }
+
+                string currentManufacturer = (string)dr["manufacturer"];
+
+                Manufacture manufacturer = new Manufacture(idCar, currentManufacturer);
+
+
+                return manufacturer;
+            }
+
+
+            catch (Exception ex)
+            {
+                // write the error to log
+                throw new Exception("failed return manufacturer", ex);
+            }
+            finally
+            {
+                if (dr != null)
+                {
+                    dr.Close();
+                }
+
+                // Close the connection
+                if (con != null)
+                    con.Close();
+            }
+        }
+
         private SqlCommand creatSelectMainCarCommand(SqlConnection con, int id)
         {
-            string commandStr = "SELECT * FROM CoParkingUsersCars_2022 WHERE id=@id AND isMain='T'";
+            string commandStr =
+            "SELECT* FROM[CoParkingUsersCars_2022] LEFT JOIN[CoParkingCars_2022] ON CoParkingUsersCars_2022.numberCar = [CoParkingCars_2022].numberCar WHERE[CoParkingUsersCars_2022].id = @id AND[CoParkingUsersCars_2022].isMain = 'T'";
             SqlCommand cmd = createCommand(con, commandStr);
             cmd.Parameters.AddWithValue("@id", id);
+            return cmd;
+        }
+
+        private SqlCommand creatSelectManufactureCommand(SqlConnection con, int idCar)
+        {
+            string commandStr = "SELECT * FROM[CoParkingManufacture_2022] WHERE idCar = @idCar";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@idCar", idCar);
             return cmd;
         }
 

@@ -23,15 +23,15 @@ namespace ParkingProject.Controllers
         }
 
         // GET api/<controller>/5
-        public void Get(string mail)
+        public void Get(string email)
         {
-            Password.SendinEmail(mail);
+            Password.SendinEmail(email);
         }
 
         // PUT api/<controller>/5
-        public int PUT(string mail, string currentPassword, string password1, string password2)
+        public int PUT(string email, string currentPassword, string password1, string password2)
         {
-            return Password.UpdatePassword(mail, currentPassword, password1, password2);
+            return Password.UpdatePassword(email, currentPassword, password1, password2);
         }
 
         // DELETE api/<controller>/5

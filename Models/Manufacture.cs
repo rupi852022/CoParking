@@ -31,6 +31,11 @@ namespace ParkingProject.Models
             return ds.GetAllManufacturer();
         }
 
-        puReadManufacture(cars.Idcar);
+        public static Manufacture ReadManufacture(int idCar)
+        {
+            DataServices ds = new DataServices();
+            Manufacture manufacture = ds.ReadManufacture(idCar);
+            return manufacture;
+        }
     }
 }
