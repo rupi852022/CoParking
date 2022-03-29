@@ -26,7 +26,7 @@ namespace ParkingProject.Models.DAL
                 string fName = (string)dr["lName"];
                 string lName = (string)dr["fName"];
                 string phoneNumber = (string)dr["phoneNumber"];
-                char gender = (char)dr["gender"];
+                char gender = Convert.ToChar(dr["gender"]);
                 string image = (string)dr["image"];
                 int searchRadius = Convert.ToInt32(dr["searchRadius"]);
                 int timeDelta = Convert.ToInt32(dr["timeDelta"]);
@@ -47,7 +47,14 @@ namespace ParkingProject.Models.DAL
             SqlConnection con = null;
             try
             {
-                User user = this.ReadUser(U.Email);
+                User user = this.ReadUser(U.Email,1);
+
+                if (U.Gender == 0)
+                {
+                    ErrorMessage = "the Gender need to be with one char";
+                    Exception ex = new Exception(ErrorMessage);
+                    throw ex;
+                }
 
                 if (user != null)
                 {

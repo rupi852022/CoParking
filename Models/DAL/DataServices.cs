@@ -31,7 +31,7 @@ namespace ParkingProject.Models.DAL
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
             string currentTime = DateTime.Now.ToString("HH:mm:ss");
             SqlCommand command = new SqlCommand(
-                "select [parkingCode],[location], CONVERT(varchar(10), [exitDate], 20) as [exitDate], CONVERT(varchar(10), [exitTime], 20) as [exitTime],[typeOfParking],[singType],[userCodeOut],[userCodeIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "';"
+                "select [parkingCode],[location], CONVERT(varchar(10), [exitDate], 111) as [exitDate], CONVERT(varchar(10), [exitTime], 20) as [exitTime],[typeOfParking],[singType],[userCodeOut],[userCodeIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "';"
                 , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -44,12 +44,14 @@ namespace ParkingProject.Models.DAL
                 string test = (string)dr["exitDate"];
                 int parkingCode = Convert.ToInt32(dr["parkingCode"]);
                 string location = (string)dr["location"];
-                DateTime exitDate = DateTime.Parse((string)dr["exitDate"]);
+                DateTime exitDate = DateTime.Parse((string)dr["exitDate"]).Date;
+                var date = exitDate.Date;
                 DateTime exitTime = DateTime.Parse((string)dr["exitTime"]);
                 string typeOfParking = (string)dr["typeOfParking"];
                 string singType = (string)dr["singType"];
                 int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
                 int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
+
 
                 Parking parking = new Parking(parkingCode, location, exitDate, exitTime, typeOfParking, singType, userCodeOut, userCodeIn);
                 parkings.Add(parking);
@@ -404,7 +406,7 @@ namespace ParkingProject.Models.DAL
 
         }
 
-        public User ReadUser(string email)
+        public User ReadUser(string email, int TypeOf)
         {
             SqlConnection con = null;
             SqlDataReader dr = null;
@@ -429,7 +431,13 @@ namespace ParkingProject.Models.DAL
                 // Read the records
                 // Execute the command
                 //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
-
+                if (TypeOf == 1)
+                {
+                    if (dr == null || !dr.Read())
+                    {
+                        return null;
+                    }
+                }
                 if (dr == null || !dr.Read())
                 {
                     Exception ex = new Exception("The email or the passwords not correct!");
@@ -825,7 +833,8 @@ namespace ParkingProject.Models.DAL
 
                 if (dr == null || !dr.Read())
                 {
-                    return null;
+                    Exception ex = new Exception("the Email is not exist.");
+                    throw ex;
                 }
 
 
@@ -1001,7 +1010,9 @@ con);
 
             if (dr == null || !dr.Read())
             {
-                return null;
+                ErrorMessage = "The email is not exist";
+                Exception ex = new Exception("The email is not exist");
+                throw ex;
             }
             string password = (string)dr["password"];
 
@@ -1073,7 +1084,7 @@ con);
                 "[lName] nvarchar(100) NOT NULL," +
                 "[phoneNumber] nvarchar(100) NOT NULL," +
                 "[gender] nvarchar(100) NOT NULL," +
-                "[image] nvarchar(100) NOT NULL," +
+                "[image] nvarchar(100)," +
                 "[searchRadius] int DEFAULT (2000) NOT NULL," +
                 "[timeDelta] int DEFAULT (10) NOT NULL," +
                 "[status] nvarchar(100) DEFAULT 'Off' NOT NULL," +

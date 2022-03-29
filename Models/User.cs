@@ -36,6 +36,17 @@ namespace ParkingProject.Models
             this.phoneNumber = phoneNumber;
             this.image = image;
         }
+
+        public User(string fName, string lName, string email, string password, char gender, string phoneNumber)
+        {
+            this.fName = fName;
+            this.lName = lName;
+            this.email = email;
+            this.password = password;
+            this.gender = gender;
+            this.phoneNumber = phoneNumber;
+        }
+
         public User(int id, string fName, string lName, string email, string password, char gender, string phoneNumber, string image, int searchRadius, int timeDelta, string status, int tokens) : this(fName, lName, email, password, gender, phoneNumber, image)
         {
             this.id = id;
@@ -71,7 +82,7 @@ namespace ParkingProject.Models
         public static User readUser(string email, string password)
         {
             UserDataServices ds = new UserDataServices();
-            User user = ds.ReadUser(email);
+            User user = ds.ReadUser(email,2);
 
             if (user == null || user.password != password)
             {
@@ -89,7 +100,7 @@ namespace ParkingProject.Models
         public static User readUserMail(string email)
         {
             UserDataServices ds = new UserDataServices();
-            User user = ds.ReadUser(email);
+            User user = ds.ReadUser(email,2);
             return user;
         }
     }
