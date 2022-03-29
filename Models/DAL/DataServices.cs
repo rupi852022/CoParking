@@ -11,7 +11,6 @@ namespace ParkingProject.Models.DAL
     public class DataServices
     {
         public string ErrorMessage = "";
-        private Exception ex;
 
         protected SqlConnection Connect(string connectionStringName)
         {
@@ -433,7 +432,8 @@ namespace ParkingProject.Models.DAL
 
                 if (dr == null || !dr.Read())
                 {
-                    throw new Exception("TThe email or the passwords not correct!", ex);
+                    Exception ex = new Exception("The email or the passwords not correct!");
+                    throw ex;
                 }
 
                 int id = Convert.ToInt32(dr["id"]);
@@ -799,47 +799,49 @@ namespace ParkingProject.Models.DAL
 
         public string ReadPaswword(string email)
         {
-            SqlConnection con = null;
-            SqlDataReader dr = null;
-            // C - Connect
-            con = Connect("webOsDB");
-
-
-            // Create the select command
-            SqlCommand selectCommand = creatSelectUserCommand(con, email);
-            Random rnd = new Random();
-            string tmpPassword = "CO" + rnd.Next(99) + "!" + rnd.Next(99) + rnd.Next(99);
-
-            SqlCommand command = createPassword(con, email, tmpPassword);
-
-            // E - Execute
-            int affected = command.ExecuteNonQuery();
-
-            // Create the reader
-            dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
-
-            // Read the records
-            // Execute the command
-            //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
-
-            if (dr == null || !dr.Read())
             {
-                return null;
+                SqlConnection con = null;
+                SqlDataReader dr = null;
+                // C - Connect
+                con = Connect("webOsDB");
+
+
+                // Create the select command
+                SqlCommand selectCommand = creatSelectUserCommand(con, email);
+                Random rnd = new Random();
+                string tmpPassword = "CO" + rnd.Next(99) + "!" + rnd.Next(99) + rnd.Next(99);
+
+                SqlCommand command = createPassword(con, email, tmpPassword);
+
+                // E - Execute
+                int affected = command.ExecuteNonQuery();
+
+                // Create the reader
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                // Read the records
+                // Execute the command
+                //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+                if (dr == null || !dr.Read())
+                {
+                    return null;
+                }
+
+
+
+                string password = (string)dr["password"];
+
+                if (dr.Read())
+                {
+                    return null;
+                }
+
+                return password;
             }
-
-
-
-            string password = (string)dr["password"];
-
-            if (dr.Read())
-            {
-                return null;
-            }
-
-            return password;
         }
 
-        SqlCommand createPassword(SqlConnection con, string email, string Password)
+            SqlCommand createPassword(SqlConnection con, string email, string Password)
         {
             //Random rnd = new Random();
             //string tmpPassword = "CO"+ rnd.Next(99)+"!"+ rnd.Next(99) + rnd.Next(99);
