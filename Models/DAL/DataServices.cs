@@ -112,6 +112,7 @@ namespace ParkingProject.Models.DAL
 
         public int InsertParking(Parking P)
         {
+            //smartEllement(P);
             SqlConnection con = null;
             try
             {
@@ -139,7 +140,17 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        SqlCommand CreateInsertParking(Parking P, SqlConnection con)
+        //public int smartEllement(Parking P)
+        //{
+        //    string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+        //    string currentTime = DateTime.Now.ToString("HH:mm:ss");
+        //    if (currentDate.Equals(P.ExitDate))
+        //    {
+        //        if()
+        //    }
+        //}
+
+    SqlCommand CreateInsertParking(Parking P, SqlConnection con)
         {
             string insertStr = "";
             string currentexitDate = P.ExitDate.ToString("dd/MM/yyyy");
@@ -921,6 +932,7 @@ namespace ParkingProject.Models.DAL
 
         public int ReturnParking(int parkingCode)
         {
+
             SqlConnection con = null;
             SqlDataReader dr = null;
             try
