@@ -919,6 +919,66 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+        public int ReturnParking(int parkingCode)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // C - Create Command
+
+                SqlCommand selectCommand = CreateUpdateReturnCar(parkingCode, con);
+
+                // E - Execute
+                int affected = selectCommand.ExecuteNonQuery();
+
+                // Create the reader
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                // Read the records
+                // Execute the command
+                //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+                if (affected != 1)
+                {
+                    ErrorMessage = "The parking not exist";
+                    Exception ex = new Exception(ErrorMessage);
+                    throw ex;
+                }
+
+                return affected;
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                throw new Exception(ErrorMessage, ex);
+            }
+            finally
+            {
+                // Close Connection
+                con.Close();
+            }
+        }
+
+        SqlCommand CreateUpdateReturnCar(int parkingCode, SqlConnection con)
+        {
+            SqlCommand command = new SqlCommand(
+                  "UPDATE [CoParkingParkings_2022] " +
+                  "SET [userCodeIn] = null WHERE [parkingCode] = '" + parkingCode + "'",
+                    con);
+            //string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [manufacturer], [year], [color], [size],[handicapped],[carPicture]) VALUES('" + C.NumberCar + "', '" + C.Manufacturer + "', '" + C.Model + "', '" + C.Year + "', '" + C.Color + "', '" + C.Size + "', '" + C.Handicapped + "', '" + C.CarPicture + "')";
+
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+
+        }
+
+
         public int CreateUpdatePassword(string mail, string currentPassword, string password1, string password2, SqlConnection con)
         {
             int affected = -1;
@@ -974,6 +1034,7 @@ con);
             int rowsAffected = cmd.ExecuteNonQuery();
             return cmd;
         }
+
 
         private SqlCommand addUserCodeIn(int idUser, int parkingCode, SqlConnection con)
         {

@@ -38,8 +38,10 @@ namespace ParkingProject.Controllers
         }
 
         // DELETE api/<controller>/5
-        public void Delete(int id)
+        public int Delete(int parkingCode)
         {
+            int status = Parking.ReturnParking(parkingCode);
+            return status;
         }
     }
 }
