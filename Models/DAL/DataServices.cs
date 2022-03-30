@@ -23,6 +23,93 @@ namespace ParkingProject.Models.DAL
             return con;
         }
 
+        public User[] GetAllUsers()
+        {
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand("SELECT * FROM [CoParkingUsers_2022]", con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            List<User> users = new List<User>();
+            while (dr.Read())
+            {
+                int id = Convert.ToInt32(dr["id"]);
+                string currentEmail = (string)dr["email"];
+                string password = (string)dr["password"];
+                string fName = (string)dr["lName"];
+                string lName = (string)dr["fName"];
+                string phoneNumber = (string)dr["phoneNumber"];
+                char gender = Convert.ToChar(dr["gender"]);
+                string image = (string)dr["image"];
+                int searchRadius = Convert.ToInt32(dr["searchRadius"]);
+                int timeDelta = Convert.ToInt32(dr["timeDelta"]);
+                string status = (string)dr["status"];
+                int tokens = Convert.ToInt32(dr["tokens"]);
+
+
+
+                User user = new User(id, fName, lName, currentEmail, password, gender, phoneNumber, image, searchRadius, timeDelta, status, tokens);
+                users.Add(user);
+            }
+
+            return users.ToArray();
+        }
+
+        public int InsertUser(User U)
+        {
+            SqlConnection con = null;
+            try
+            {
+                User user = this.ReadUser(U.Email, 1);
+
+                if (U.Gender == 0)
+                {
+                    ErrorMessage = "the Gender need to be with one char";
+                    Exception ex = new Exception(ErrorMessage);
+                    throw ex;
+                }
+
+                if (user != null)
+                {
+                    ErrorMessage = "The email or password alredy exist";
+                    return -1;
+                }
+                else
+                {
+                    if (ValidateEmail(U.Email) is false)
+                    {
+                        return -1;
+                    }
+                    if (ValidatePassword(U.Password) is false)
+                    {
+                        return -1;
+                    }
+                }
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // C - Create Command
+                SqlCommand command = CreateInsertUser(U, con);
+
+                // E - Execute
+                int affected = command.ExecuteNonQuery();
+
+                return affected;
+
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                throw new Exception(ErrorMessage, ex);
+            }
+            finally
+            {
+                // Close Connection
+                con.Close();
+            }
+        }
 
         public Parking[] GetAllParkings()
         {
@@ -112,7 +199,7 @@ namespace ParkingProject.Models.DAL
 
         public int InsertParking(Parking P)
         {
-            //smartEllement(P);
+            checkMinutes(P);
             SqlConnection con = null;
             try
             {
@@ -140,17 +227,29 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        //public int smartEllement(Parking P)
-        //{
-        //    string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
-        //    string currentTime = DateTime.Now.ToString("HH:mm:ss");
-        //    if (currentDate.Equals(P.ExitDate))
-        //    {
-        //        if()
-        //    }
-        //}
+        public int checkMinutes(Parking P)
+        {
+            string ParkingDate = P.ExitDate.ToString("yyyy-MM-dd");
+            string ParkingTime = P.ExitTime.ToString("HH:mm:ss");
+            string time = ParkingDate + " " + ParkingTime + ",531";
+            DateTime myDate = DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss,fff",System.Globalization.CultureInfo.InvariantCulture);
 
-    SqlCommand CreateInsertParking(Parking P, SqlConnection con)
+            int totalMinute = (int)(myDate - (DateTime.Now)).TotalMinutes;
+            Console.WriteLine(totalMinute);
+
+            if(totalMinute<=30)
+            {
+                return 1;
+            }
+            if (totalMinute <= 330)
+            {
+                return 2;
+            }
+
+            else { return 3; }
+        }
+
+        SqlCommand CreateInsertParking(Parking P, SqlConnection con)
         {
             string insertStr = "";
             string currentexitDate = P.ExitDate.ToString("dd/MM/yyyy");
