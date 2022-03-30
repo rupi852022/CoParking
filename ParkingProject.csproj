@@ -172,7 +172,6 @@
     </Compile>
     <Compile Include="Models\Cars.cs" />
     <Compile Include="Models\DAL\DataServices.cs" />
-    <Compile Include="Models\DAL\UserDataServices.cs" />
     <Compile Include="Models\Password.cs" />
     <Compile Include="Models\Manufacture.cs" />
     <Compile Include="Models\Parking.cs" />
