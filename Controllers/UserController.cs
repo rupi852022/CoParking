@@ -35,7 +35,7 @@ namespace ParkingProject.Controllers
         // GET api/<controller>/5
         public Tuple<User, Cars, Manufacture> Get(string email, string password)
         {
-            
+
             User user = Models.User.readUser(email, password);
             if (user.Status == "off")
             {

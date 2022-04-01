@@ -82,7 +82,7 @@ namespace ParkingProject.Models
         public static User readUser(string email, string password)
         {
             DataServices ds = new DataServices();
-            User user = ds.ReadUser(email,2);
+            User user = ds.ReadUser(email, 2);
 
             if (user == null || user.password != password)
             {
@@ -101,7 +101,7 @@ namespace ParkingProject.Models
         public static User readUserMail(string email)
         {
             DataServices ds = new DataServices();
-            User user = ds.ReadUser(email,2);
+            User user = ds.ReadUser(email, 2);
             return user;
         }
     }

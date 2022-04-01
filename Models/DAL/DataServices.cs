@@ -230,12 +230,12 @@ namespace ParkingProject.Models.DAL
             string ParkingDate = P.ExitDate.ToString("yyyy-MM-dd");
             string ParkingTime = P.ExitTime.ToString("HH:mm:ss");
             string time = ParkingDate + " " + ParkingTime + ",531";
-            DateTime myDate = DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss,fff",System.Globalization.CultureInfo.InvariantCulture);
+            DateTime myDate = DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.InvariantCulture);
 
             int totalMinute = (int)(myDate - (DateTime.Now)).TotalMinutes;
             Console.WriteLine(totalMinute);
 
-            if(totalMinute<=30)
+            if (totalMinute <= 30)
             {
                 return 1;
             }
@@ -1083,7 +1083,6 @@ namespace ParkingProject.Models.DAL
             return command;
 
         }
-
 
         public int CreateUpdatePassword(string mail, string currentPassword, string password1, string password2, SqlConnection con)
         {
