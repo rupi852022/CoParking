@@ -106,8 +106,8 @@ namespace ParkingProject.Models.DAL
             }
             finally
             {
-                // Close Connection
-                con.Close();
+                if (con != null)
+                    con.Close();
             }
         }
 
@@ -222,8 +222,8 @@ namespace ParkingProject.Models.DAL
             }
             finally
             {
-                // Close Connection
-                con.Close();
+                if (con != null)
+                    con.Close();
             }
         }
 
@@ -368,8 +368,8 @@ namespace ParkingProject.Models.DAL
 
             finally
             {
-                // Close Connection
-                con.Close();
+                if (con != null)
+                    con.Close();
             }
         }
 
@@ -430,8 +430,8 @@ namespace ParkingProject.Models.DAL
 
             finally
             {
-                // Close Connection
-                con.Close();
+                if (con != null)
+                    con.Close();
             }
         }
 
@@ -475,8 +475,8 @@ namespace ParkingProject.Models.DAL
 
             finally
             {
-                // Close Connection
-                con.Close();
+                if (con != null)
+                    con.Close();
             }
         }
 
@@ -549,7 +549,8 @@ namespace ParkingProject.Models.DAL
                 }
                 if (dr == null || !dr.Read())
                 {
-                    Exception ex = new Exception("The email or the passwords not correct!");
+   
+                    Exception ex = new Exception("The use not on the DB");
                     throw ex;
                 }
 
@@ -576,12 +577,6 @@ namespace ParkingProject.Models.DAL
                 return user;
             }
 
-
-            catch (Exception ex)
-            {
-                // write the error to log
-                throw new Exception("The email or the passwords not correct!", ex);
-            }
             finally
             {
                 if (dr != null)
@@ -995,8 +990,8 @@ namespace ParkingProject.Models.DAL
             }
             finally
             {
-                // Close Connection
-                con.Close();
+                if (con != null)
+                    con.Close();
             }
         }
 
@@ -1020,8 +1015,8 @@ namespace ParkingProject.Models.DAL
             }
             finally
             {
-                // Close Connection
-                con.Close();
+                if (con != null)
+                    con.Close();
             }
         }
 
@@ -1065,8 +1060,8 @@ namespace ParkingProject.Models.DAL
             }
             finally
             {
-                // Close Connection
-                con.Close();
+                if (con != null)
+                    con.Close();
             }
         }
 
