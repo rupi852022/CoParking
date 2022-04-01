@@ -57,7 +57,7 @@ namespace ParkingProject.Models.DAL
             return users.ToArray();
         }
 
-        public int InsertUser(User U)
+        public User InsertUser(User U)
         {
             SqlConnection con = null;
             try
@@ -74,17 +74,20 @@ namespace ParkingProject.Models.DAL
                 if (user != null)
                 {
                     ErrorMessage = "The email or password alredy exist";
-                    return -1;
+                    Exception ex = new Exception(ErrorMessage);
+                    throw ex;
                 }
                 else
                 {
                     if (ValidateEmail(U.Email) is false)
                     {
-                        return -1;
+                        Exception ex = new Exception(ErrorMessage);
+                        throw ex;
                     }
                     if (ValidatePassword(U.Password) is false)
                     {
-                        return -1;
+                        Exception ex = new Exception(ErrorMessage);
+                        throw ex;
                     }
                 }
                 // C - Connect
@@ -95,8 +98,7 @@ namespace ParkingProject.Models.DAL
 
                 // E - Execute
                 int affected = command.ExecuteNonQuery();
-
-                return affected;
+                return U;
 
             }
 

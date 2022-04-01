@@ -70,12 +70,12 @@ namespace ParkingProject.Models
         public int Tokens { get => tokens; set => tokens = value; }
 
 
-        public int Insert()
+        public User Insert()
         {
             DataServices ds = new DataServices();
             User user = (this);
 
-            int status = ds.InsertUser(user);
+            User status = ds.InsertUser(user);
             return status;
         }
 
