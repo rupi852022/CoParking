@@ -86,7 +86,8 @@ namespace ParkingProject.Models
 
             if (user == null || user.password != password)
             {
-                return null; // user not exist or password is wrong
+                Exception ex = new Exception("The password or mail uncorrect.");
+                throw ex;
             }
 
             return user;
