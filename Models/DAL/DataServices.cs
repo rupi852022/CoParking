@@ -548,7 +548,7 @@ namespace ParkingProject.Models.DAL
                 }
                 if (dr == null || !dr.Read())
                 {
-                    ErrorMessage = "The use not on the DB";
+                    ErrorMessage = "the Email is not exist.";
                     Exception ex = new Exception(ErrorMessage);
                     throw ex;
                 }
