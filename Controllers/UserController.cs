@@ -44,16 +44,23 @@ namespace ParkingProject.Controllers
             else
             {
                 Cars cars = Cars.ReadMainCar(user.Id);
-                Manufacture manufacture = Manufacture.ReadManufacture(cars.Idcar);
-                return new Tuple<User, Cars, Manufacture>(user, cars, manufacture);
+                if (cars is null)
+                {
+                    return new Tuple<User, Cars, Manufacture>(user, null, null);
+                }
+                else
+                {
+                    Manufacture manufacture = Manufacture.ReadManufacture(cars.Idcar);
+                    return new Tuple<User, Cars, Manufacture>(user, cars, manufacture);
+                }
 
             }
         }
 
         // POST api/<controller>
-        public int Post([FromBody] User U)
+        public User Post([FromBody] User U)
         {
-            int id = U.Insert();
+            User id = U.Insert();
             return id;
         }
 

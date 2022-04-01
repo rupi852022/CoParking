@@ -554,8 +554,8 @@ namespace ParkingProject.Models.DAL
                 int id = Convert.ToInt32(dr["id"]);
                 string currentEmail = (string)dr["email"];
                 string password = (string)dr["password"];
-                string fName = (string)dr["lName"];
-                string lName = (string)dr["fName"];
+                string fName = (string)dr["fName"];
+                string lName = (string)dr["lName"];
                 string phoneNumber = (string)dr["phoneNumber"];
                 char gender = char.Parse((string)dr["gender"]);
                 string image = (string)dr["image"];

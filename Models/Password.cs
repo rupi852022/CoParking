@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
+using System.Text;
 
 namespace ParkingProject.Models
 {
@@ -22,9 +23,10 @@ namespace ParkingProject.Models
 
             DataServices ds = new DataServices();
             string password = ds.ReadPaswword(recipients);
-            Uri LinkReset = new Uri("https://www.google.co.il/");
+            //Uri LinkReset = new Uri("https://www.google.co.il/");
             string subject = "Your TempPassword";
-            string content = "Your TempPassword is " + password +" Go to "+ LinkReset + " to RESET your password";
+            string content = "";
+            //string content = "Your TempPassword is " + password +" Go to "+ LinkReset + " to RESET your password";
             string from = "CoParking@outlook.co.il";
 
             bool success = recipients != null;
@@ -42,6 +44,12 @@ namespace ParkingProject.Models
 
                 using (MailMessage gMessage = new MailMessage(from, recipients, subject, content))
                 {
+                    var body = new StringBuilder();
+                    body.AppendFormat("<html><head></head><body> Your TempPassword is <b>" + password + "</b><br />" + "<a href='{0}'>Click here to RESET</a></body></html>", "https://www.google.co.il/");
+                    gMessage.IsBodyHtml = true;
+                    gMessage.Body = body.ToString();
+
+
                     gMessage.To.Add(recipients);
 
                     try
