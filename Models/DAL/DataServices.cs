@@ -405,7 +405,6 @@ namespace ParkingProject.Models.DAL
 
         }
 
-
         public int UpdateCars(Cars C)
         {
             SqlConnection con = null;
@@ -596,7 +595,6 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-
         public Cars ReadUser(int numberCar)
         {
             SqlConnection con = null;
@@ -725,7 +723,6 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-
         public Manufacture ReadManufacture(int idCar)
         {
             SqlConnection con = null;
@@ -831,7 +828,6 @@ namespace ParkingProject.Models.DAL
 
             return cmd;
         }
-
 
         SqlCommand createCommand(SqlConnection con, string CommandSTR)
         {
@@ -960,7 +956,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-            SqlCommand createPassword(SqlConnection con, string email, string Password)
+        SqlCommand createPassword(SqlConnection con, string email, string Password)
         {
             //Random rnd = new Random();
             //string tmpPassword = "CO"+ rnd.Next(99)+"!"+ rnd.Next(99) + rnd.Next(99);

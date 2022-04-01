@@ -36,6 +36,11 @@ namespace ParkingProject.Controllers
             int status = Parking.TakeParking(idUser, parkingCode);
             return status;
         }
+        //public int Put(int parkingCode)
+        //{
+        //    int status = Parking.Park(parkingCode);
+        //    return status;
+        //}
 
         // DELETE api/<controller>/5
         public int Delete(int parkingCode)
