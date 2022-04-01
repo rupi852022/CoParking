@@ -1173,8 +1173,8 @@ con);
 
             if (dr == null || !dr.Read())
             {
-                ErrorMessage = "The email is not exist";
-                Exception ex = new Exception("The email is not exist");
+                ErrorMessage = "the Email is not exist.";
+                Exception ex = new Exception(ErrorMessage);
                 throw ex;
             }
             string password = (string)dr["password"];
