@@ -23,9 +23,9 @@ namespace ParkingProject.Controllers
         }
 
         // GET api/<controller>/5
-        public void Get(string email)
+        public bool Get(string email)
         {
-            Password.SendinEmail(email);
+           return Password.SendinEmail(email);
         }
 
         // PUT api/<controller>/5

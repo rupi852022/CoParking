@@ -1140,7 +1140,6 @@ con);
             return cmd;
         }
 
-
         private SqlCommand addUserCodeIn(int idUser, int parkingCode, SqlConnection con)
         {
             SqlCommand command = new SqlCommand("UPDATE[CoParkingParkings_2022] SET[userCodeIn] = '" + idUser + "' WHERE[parkingCode] = '" + parkingCode + "';",
@@ -1149,8 +1148,6 @@ con);
             command.CommandTimeout = 30;
             return command;
         }
-
-
 
         public string ReadOnlyPaswword(string email)
         {
@@ -1261,8 +1258,5 @@ con);
             return cmd;
         }
     }
-
-
-
 }
 
