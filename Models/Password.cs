@@ -5,6 +5,7 @@ using ParkingProject.Models.DAL;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.UI.WebControls;
 
 namespace ParkingProject.Models
 {
@@ -18,11 +19,15 @@ namespace ParkingProject.Models
 
         public static bool SendinEmail(string recipients)
         {
+            //HyperLink hl1 = new HyperLink();
+            //hl1.Text = "Click Here";
+            //hl1.NavigateUrl = "https://www.google.co.il/";
+
             DataServices ds = new DataServices();
             string password = ds.ReadPaswword(recipients);
-
-            string subject = "Your Password";
-            string content = "Your Password is " + password;
+            Uri LinkReset = new Uri("https://www.google.co.il/");
+            string subject = "Your TempPassword";
+            string content = "Your TempPassword is " + password +" Go to "+ LinkReset + " to RESET your password";
             string from = "CoParking@outlook.co.il";
 
             bool success = recipients != null;

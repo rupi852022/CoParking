@@ -118,7 +118,7 @@ namespace ParkingProject.Models.DAL
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
             string currentTime = DateTime.Now.ToString("HH:mm:ss");
             SqlCommand command = new SqlCommand(
-                "select [parkingCode],[location], CONVERT(varchar(10), [exitDate], 111) as [exitDate], CONVERT(varchar(10), [exitTime], 20) as [exitTime],[typeOfParking],[singType],[userCodeOut],[userCodeIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "';"
+                "select [parkingCode],[location], CONVERT(varchar(10), [exitDate], 111) as [exitDate], CONVERT(varchar(10), [exitTime], 20) as [exitTime],[typeOfParking],[signType],[userCodeOut],[userCodeIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "';"
                 , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -135,12 +135,12 @@ namespace ParkingProject.Models.DAL
                 var date = exitDate.Date;
                 DateTime exitTime = DateTime.Parse((string)dr["exitTime"]);
                 string typeOfParking = (string)dr["typeOfParking"];
-                string singType = (string)dr["singType"];
+                string signType = (string)dr["signType"];
                 int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
                 int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
 
 
-                Parking parking = new Parking(parkingCode, location, exitDate, exitTime, typeOfParking, singType, userCodeOut, userCodeIn);
+                Parking parking = new Parking(parkingCode, location, exitDate, exitTime, typeOfParking, signType, userCodeOut, userCodeIn);
                 parkings.Add(parking);
             }
 
@@ -256,11 +256,11 @@ namespace ParkingProject.Models.DAL
             string currentexitHour = P.ExitTime.ToString("HH:mm:ss");
             if (P.UserCodeIn == 0)
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [exitTime], [typeOfParking], [singType], [userCodeOut]) VALUES('" + P.Location + "', '" + currentexitDate + "', '" + currentexitHour + "', '" + P.TypeOfParking + "', '" + P.SingType + "', '" + P.UserCodeOut + "')";
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [exitTime], [typeOfParking], [signType], [userCodeOut]) VALUES('" + P.Location + "', '" + currentexitDate + "', '" + currentexitHour + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "')";
             }
             else
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [exitTime], [typeOfParking], [singType], [userCodeOut], [userCodeIn]) VALUES('" + P.Location + "', '" + currentexitDate + "', '" + currentexitHour + "', '" + P.TypeOfParking + "', '" + P.SingType + "', '" + P.UserCodeOut + "', '" + P.UserCodeIn + "')";
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [exitTime], [typeOfParking], [signType], [userCodeOut], [userCodeIn]) VALUES('" + P.Location + "', '" + currentexitDate + "', '" + currentexitHour + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.UserCodeIn + "')";
             }
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
@@ -360,11 +360,11 @@ namespace ParkingProject.Models.DAL
 
 
             }
-            catch (Exception ex)
-            {
-                // write to log file
-                throw new Exception("Failed in Insert of Car", ex);
-            }
+            //catch (Exception ex)
+            //{
+            //    // write to log file
+            //    throw new Exception("Failed in Insert of Car", ex);
+            //}
 
             finally
             {
