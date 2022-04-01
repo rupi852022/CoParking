@@ -99,11 +99,7 @@ namespace ParkingProject.Models.DAL
                 return affected;
 
             }
-            catch (Exception ex)
-            {
-                // write to log file
-                throw new Exception(ErrorMessage, ex);
-            }
+
             finally
             {
                 if (con != null)
@@ -306,7 +302,8 @@ namespace ParkingProject.Models.DAL
                 return true;
             else
                 ErrorMessage = "The Email with Uncorrect format";
-            return false;
+            Exception ex = new Exception(ErrorMessage);
+            throw ex;
         }
 
         public int InsertCars(Cars C)
@@ -549,8 +546,8 @@ namespace ParkingProject.Models.DAL
                 }
                 if (dr == null || !dr.Read())
                 {
-   
-                    Exception ex = new Exception("The use not on the DB");
+                    ErrorMessage = "The use not on the DB";
+                    Exception ex = new Exception(ErrorMessage);
                     throw ex;
                 }
 
@@ -877,28 +874,33 @@ namespace ParkingProject.Models.DAL
             if (!hasLowerChar.IsMatch(input))
             {
                 ErrorMessage = "Password should contain at least one lower case letter.";
-                return false;
+                Exception ex = new Exception(ErrorMessage);
+                throw ex;
             }
             else if (!hasUpperChar.IsMatch(input))
             {
                 ErrorMessage = "Password should contain at least one upper case letter.";
-                return false;
+                Exception ex = new Exception(ErrorMessage);
+                throw ex;
             }
             else if (!hasMiniMaxChars.IsMatch(input))
             {
                 ErrorMessage = "Password should not be lesser than 8 or greater than 15 characters.";
-                return false;
+                Exception ex = new Exception(ErrorMessage);
+                throw ex;
             }
             else if (!hasNumber.IsMatch(input))
             {
                 ErrorMessage = "Password should contain at least one numeric value.";
-                return false;
+                Exception ex = new Exception(ErrorMessage);
+                throw ex;
             }
 
             else if (!hasSymbols.IsMatch(input))
             {
                 ErrorMessage = "Password should contain at least one special case character.";
-                return false;
+                Exception ex = new Exception(ErrorMessage);
+                throw ex;
             }
             else
             {

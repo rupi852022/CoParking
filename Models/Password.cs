@@ -19,9 +19,6 @@ namespace ParkingProject.Models
 
         public static bool SendinEmail(string recipients)
         {
-            //HyperLink hl1 = new HyperLink();
-            //hl1.Text = "Click Here";
-            //hl1.NavigateUrl = "https://www.google.co.il/";
 
             DataServices ds = new DataServices();
             string password = ds.ReadPaswword(recipients);
