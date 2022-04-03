@@ -155,14 +155,14 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public Parking[] GetAllParkings()
+        public Parking[] GetAllParkings(int id)
         {
 
             SqlConnection con = this.Connect("webOsDB");
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
             string currentTime = DateTime.Now.ToString("HH:mm:ss");
             SqlCommand command = new SqlCommand(
-                "select [parkingCode],[location], CONVERT(varchar(10), [exitDate], 111) as [exitDate], CONVERT(varchar(10), [exitTime], 20) as [exitTime],[typeOfParking],[signType],[userCodeOut],[userCodeIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "';"
+                "select [parkingCode],[location], CONVERT(varchar(10), [exitDate], 111) as [exitDate], CONVERT(varchar(10), [exitTime], 20) as [exitTime],[typeOfParking],[signType],[userCodeOut],[userCodeIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [userCodeOut] != '"+id+"';"
                 , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -325,6 +325,7 @@ namespace ParkingProject.Models.DAL
             string insertStr = "";
             string Handicapped = "T";
 
+
             SqlCommand command = new SqlCommand("SELECT * FROM CoParkingUsersCars_2022 WHERE id=" + U.Id, con);
             command.Parameters.AddWithValue("@id", U.Id);
             command.CommandType = System.Data.CommandType.Text;
@@ -341,8 +342,16 @@ namespace ParkingProject.Models.DAL
             //}
             insertStr += " UPDATE [CoParkingUsers_2022] SET [status] = 'on' where [id] = '" + U.Id + "'";
 
-            insertStr += " INSERT INTO [CoParkingUsersCars_2022] ([id], [numberCar], [isMain], [handicapped], [carPic]) VALUES('" + U.Id + "', '" + U.NumberCar + "', '" + currentMain + "', '" + Handicapped + "', '" + U.CarPic + "')";
-            SqlCommand command2 = new SqlCommand(insertStr, con);
+
+            if (currentMain == "T")
+            {
+                insertStr += " INSERT INTO [CoParkingUsersCars_2022] ([id], [numberCar], [isMain], [handicapped], [carPic] , [canEditCar]) VALUES('" + U.Id + "', '" + U.NumberCar + "', '" + currentMain + "', '" + Handicapped + "', '" + U.CarPic + "','T')";
+            }
+            else
+            {
+                insertStr += " INSERT INTO [CoParkingUsersCars_2022] ([id], [numberCar], [isMain], [handicapped], [carPic] , [canEditCar]) VALUES('" + U.Id + "', '" + U.NumberCar + "', '" + currentMain + "', '" + Handicapped + "', '" + U.CarPic + "','F')";
+            }
+                SqlCommand command2 = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
             command2.CommandType = System.Data.CommandType.Text;
             command2.CommandTimeout = 30;
@@ -391,9 +400,9 @@ namespace ParkingProject.Models.DAL
                 {
                     if (C.Idcar != 0)
                     {
+                        bool currentEditCar = false;
                         SqlCommand command2 = CreateInsertCar(C, con);
                         int affected2 = (command2.ExecuteNonQuery());
-
                         string currentMain = "F";
                         SqlDataReader dr = null;
                         string commandStr = "SELECT * FROM CoParkingUsersCars_2022 WHERE id=" + C.Id;
@@ -403,6 +412,8 @@ namespace ParkingProject.Models.DAL
                         if (dr == null || !dr.Read())
                         {
                             currentMain = "T";
+                            currentEditCar = true;
+
                         }
                         if (con != null)
                             con.Close();
@@ -415,6 +426,7 @@ namespace ParkingProject.Models.DAL
                         // E - Execute
                         int affected = affected2 * affected1;
 
+                        C.CanEditCar = currentEditCar;
                         return C;
                     }
                     else
@@ -475,6 +487,37 @@ namespace ParkingProject.Models.DAL
 
         }
 
+        public int MakeMainCar(int numberCar, int id)
+        {
+            SqlConnection con = null;
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // C - Create Command
+                SqlCommand command = CreateUpdateMainCar(numberCar,id, con);
+
+                // E - Execute
+                int affected = command.ExecuteNonQuery();
+
+                return affected;
+
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                throw new Exception("Failed in Insert of Main Car", ex);
+            }
+
+            finally
+            {
+                if (con != null)
+                    con.Close();
+            }
+        }
+
+
         public int UpdateCars(Cars C)
         {
             SqlConnection con = null;
@@ -520,7 +563,19 @@ namespace ParkingProject.Models.DAL
 
         }
 
-        public int deleteCar(int NumberCar)
+        SqlCommand CreateUpdateMainCar(int numberCar, int id, SqlConnection con)
+        {
+            SqlCommand command = new SqlCommand(
+                  "UPDATE [CoParkingUsersCars_2022] SET isMain = 'F' WHERE id = '"+id+"' UPDATE [CoParkingUsersCars_2022] SET isMain = 'T' WHERE id = '"+id+"' AND numberCar = '"+numberCar+"'", con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+
+        }
+
+
+
+        public int deleteCar(int NumberCar, int id)
         {
             SqlConnection con = null;
             try
@@ -529,7 +584,7 @@ namespace ParkingProject.Models.DAL
                 con = Connect("webOsDB");
 
                 // C - Create Command
-                SqlCommand command = DeleteNumberOfCar(NumberCar, con);
+                SqlCommand command = DeleteNumberOfCar(NumberCar,id, con);
 
                 // E - Execute
                 int affected = command.ExecuteNonQuery();
@@ -550,10 +605,10 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        SqlCommand DeleteNumberOfCar(int NumberCar, SqlConnection con)
+        SqlCommand DeleteNumberOfCar(int NumberCar,int id, SqlConnection con)
         {
             SqlCommand command = new SqlCommand(
-                   "DELETE FROM[CoParkingUsersCars_2022] WHERE[numberCar] = '" + NumberCar + "' DELETE FROM [CoParkingCars_2022] WHERE [numberCar]='" + NumberCar + "'",
+                   "DELETE FROM[CoParkingUsersCars_2022] WHERE[numberCar] = '"+NumberCar+"' AND [id] = '"+id+"'",
                      con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;

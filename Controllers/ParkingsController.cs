@@ -18,9 +18,9 @@ namespace ParkingProject.Controllers
         //}
 
         // GET api/<controller>/5
-        public Parking[] Get()
+        public Parking[] Get(int id)
         {
-            return ParkingProject.Models.Parking.GetAll();
+            return ParkingProject.Models.Parking.GetAll(id);
         }
 
         // POST api/<controller>

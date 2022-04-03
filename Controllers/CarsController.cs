@@ -17,12 +17,12 @@ namespace ParkingProject.Controllers
         }
 
         // GET api/<controller>/5
-        public Cars Get(int numberCar)
+        public Cars Get(int numberCar, bool getCar)
         {
             return ParkingProject.Models.Cars.readCar(numberCar);
         }
 
-        public Cars[] Put(int id)
+        public Cars[] Get(int id)
         {
             return Cars.GetAllUserCars(id);
         }
@@ -40,12 +40,17 @@ namespace ParkingProject.Controllers
             int id = Cars.UpdateCar(C);
             return id;
         }
+        public int Put(int numberCar, int id)
+        {
+            return Cars.MakeMainCar(numberCar,id);
+        }
+
 
 
         // DELETE api/<controller>/5
-        public int Delete(Cars C)
+        public int Delete(Cars C,int id)
         {
-            int satatus = C.DeleteCar();
+            int satatus = C.DeleteCar(id);
             return satatus;
         }
     }

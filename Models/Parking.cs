@@ -66,9 +66,9 @@ namespace ParkingProject.Models
             return status;
         }
 
-        public static Parking[] GetAll()
+        public static Parking[] GetAll(int id)
         {
-            return ds.GetAllParkings();
+            return ds.GetAllParkings(id);
         }
 
         public static int TakeParking(int idUser, int parkingCode)
