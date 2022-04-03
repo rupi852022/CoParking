@@ -22,11 +22,16 @@ namespace ParkingProject.Controllers
             return ParkingProject.Models.Cars.readCar(numberCar);
         }
 
-        // POST api/<controller>/
-        public int Post([FromBody] Cars C)
+        public Cars[] Put(int id)
         {
-            int id = Cars.InsertCar(C);
-            return id;
+            return Cars.GetAllUserCars(id);
+        }
+
+
+        // POST api/<controller>/
+        public Cars Post([FromBody] Cars C)
+        {
+            return Cars.InsertCar(C);
         }
 
         // PUT api/<controller>

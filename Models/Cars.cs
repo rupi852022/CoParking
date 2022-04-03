@@ -19,6 +19,7 @@ namespace ParkingProject.Models
         private bool isMain;
         private bool handicapped;
         private string carPic;
+        private string manufacturer;
 
         public Cars() { }
         public Cars(int numberCar, int idCar, int year, string model, string color, int size)
@@ -54,6 +55,33 @@ namespace ParkingProject.Models
             this.size = size;
         }
 
+        public Cars(int id, int numberCar, bool isMain, int idCar, int year, string model, string color, int size, string manufacturer)
+        {
+            this.id = id;
+            this.numberCar = numberCar;
+            this.isMain = isMain;
+            this.idCar = idCar;
+            this.year = year;
+            this.model = model;
+            this.color = color;
+            this.size = size;
+            this.manufacturer = manufacturer;
+        }
+
+
+        public Cars(int id, int numberCar, bool handicapped, string carPic, int idCar, int year, string model, string color, int size)
+        {
+            this.id = id;
+            this.numberCar = numberCar;
+            this.handicapped = handicapped;
+            this.carPic = carPic;
+            this.idCar = idCar;
+            this.year = year;
+            this.model = model;
+            this.color = color;
+            this.size = size;
+        }
+
         public int NumberCar { get => numberCar; set => numberCar = value; }
         public int Idcar { get => idCar; set => idCar = value; }
         public int Year { get => year; set => year = value; }
@@ -64,12 +92,12 @@ namespace ParkingProject.Models
         public bool IsMain { get => isMain; set => isMain = value; }
         public bool Handicapped { get => handicapped; set => handicapped = value; }
         public string CarPic { get => carPic; set => carPic = value; }
+        public string Manufacturer { get => manufacturer; set => manufacturer = value; }
 
-        public static int InsertCar(Cars C)
+        public static Cars InsertCar(Cars C)
         {
             DataServices ds = new DataServices();
-            int status = ds.InsertCars(C);
-            return status;
+            return ds.InsertCars(C);
         }
 
         public int DeleteCar()
@@ -107,8 +135,11 @@ namespace ParkingProject.Models
             return cars;
         }
 
-
-
+        public static Cars[] GetAllUserCars(int id)
+        {
+            DataServices ds = new DataServices();
+            return ds.GetAllUserCars(id);
+        }
 
 
     }
