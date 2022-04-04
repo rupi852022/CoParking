@@ -81,7 +81,7 @@ namespace ParkingProject.Models.DAL
                 //int timeDelta = Convert.ToInt32(dr["timeDelta"]);
                 //string status = (string)dr["status"];
                 //int tokens = Convert.ToInt32(dr["tokens"]);
-                int numberCar = Convert.ToInt32(dr["numberCar"]);
+                string numberCar = (string)(dr["numberCar"]);
                 int idCar = Convert.ToInt32(dr["idCar"]);
                 int year = Convert.ToInt32(dr["year"]);
                 string model = (string)dr["model"];
@@ -178,7 +178,7 @@ namespace ParkingProject.Models.DAL
                 DateTime exitDate = DateTime.Parse((string)dr["exitDate"]).Date;
                 var date = exitDate.Date;
                 DateTime exitTime = DateTime.Parse((string)dr["exitTime"]);
-                string typeOfParking = (string)dr["typeOfParking"];
+                int typeOfParking = Convert.ToInt32(dr["typeOfParking"]);
                 string signType = (string)dr["signType"];
                 int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
                 int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
@@ -465,7 +465,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public int checkedNumberCar(int numberCar, int id)
+        public int checkedNumberCar(string numberCar, int id)
         {
             SqlConnection con = null;
             SqlDataReader dr = null;
@@ -491,13 +491,13 @@ namespace ParkingProject.Models.DAL
                 return -1;
             }
 
-            int number = Convert.ToInt32(dr["numberCar"]);
-            if (number > 0) { return 1; }
+            string number = (string)(dr["numberCar"]);
+            if (number == null) { return 1; }
             return -1;
 
         }
 
-        public int MakeMainCar(int numberCar, int id)
+        public int MakeMainCar(string numberCar, int id)
         {
             SqlConnection con = null;
             try
@@ -573,7 +573,7 @@ namespace ParkingProject.Models.DAL
 
         }
 
-        SqlCommand CreateUpdateMainCar(int numberCar, int id, SqlConnection con)
+        SqlCommand CreateUpdateMainCar(string numberCar, int id, SqlConnection con)
         {
             SqlCommand command = new SqlCommand(
                   "UPDATE [CoParkingUsersCars_2022] SET isMain = 'F' WHERE id = '"+id+"' UPDATE [CoParkingUsersCars_2022] SET isMain = 'T' WHERE id = '"+id+"' AND numberCar = '"+numberCar+"'", con);
@@ -585,7 +585,7 @@ namespace ParkingProject.Models.DAL
 
 
 
-        public int deleteCar(int numberCar, int id)
+        public int deleteCar(string numberCar, int id)
         {
             SqlConnection con = null;
             try
@@ -630,7 +630,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        SqlCommand DeleteNumberOfCar(int NumberCar,int id,string canEditCar, SqlConnection con)
+        SqlCommand DeleteNumberOfCar(string NumberCar,int id,string canEditCar, SqlConnection con)
         {
             string sub = "";
             if (canEditCar == "T")
@@ -756,7 +756,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public Cars ReadUser(int numberCar)
+        public Cars ReadUser(string numberCar)
         {
             SqlConnection con = null;
             SqlDataReader dr = null;
@@ -781,7 +781,7 @@ namespace ParkingProject.Models.DAL
                     return null;
                 }
 
-                int CurrentnumberCar = Convert.ToInt32(dr["numberCar"]);
+                string CurrentnumberCar = (string)(dr["numberCar"]);
                 int idCar = Convert.ToInt32(dr["idCar"]);
                 int year = Convert.ToInt32(dr["year"]);
                 string model = (string)dr["model"];
@@ -817,7 +817,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public Cars ReadUserAndCar(int numberCar, int id)
+        public Cars ReadUserAndCar(string numberCar, int id)
         {
             SqlConnection con = null;
             SqlDataReader dr = null;
@@ -842,7 +842,7 @@ namespace ParkingProject.Models.DAL
                     return null;
                 }
 
-                int CurrentnumberCar = Convert.ToInt32(dr["numberCar"]);
+                string CurrentnumberCar = (string)(dr["numberCar"]);
                 int idCar = Convert.ToInt32(dr["idCar"]);
                 int year = Convert.ToInt32(dr["year"]);
                 string model = (string)dr["model"];
@@ -913,7 +913,7 @@ namespace ParkingProject.Models.DAL
                     return null;
                 }
 
-                int numberCar = Convert.ToInt32(dr["numberCar"]);
+                string numberCar = (string)(dr["numberCar"]);
                 bool isMain = true;
                 string currenthandicapped = (string)dr["handicapped"];
                 bool handicapped = true;
@@ -1033,7 +1033,7 @@ namespace ParkingProject.Models.DAL
             return cmd;
         }
 
-        private SqlCommand creatSelectUserCommand2(SqlConnection con, int id, int numberCar)
+        private SqlCommand creatSelectUserCommand2(SqlConnection con, int id, string numberCar)
         {
             string commandStr = "SELECT * FROM CoParkingUsersCars_2022 WHERE id=@id AND numberCar=@numberCar";
             SqlCommand cmd = createCommand(con, commandStr);
@@ -1043,7 +1043,7 @@ namespace ParkingProject.Models.DAL
             return cmd;
         }
 
-        private SqlCommand creatSelectUserCommand3(SqlConnection con, int numberCar, int id)
+        private SqlCommand creatSelectUserCommand3(SqlConnection con, string numberCar, int id)
         {
             string commandStr = " SELECT * FROM CoParkingUsersCars_2022 WHERE numberCar='"+numberCar+"' AND id='"+id+"'";
             SqlCommand cmd = createCommand(con, commandStr);
@@ -1052,7 +1052,7 @@ namespace ParkingProject.Models.DAL
             return cmd;
         }
 
-        private SqlCommand creatSelectCarsCommand(SqlConnection con, int numberCar)
+        private SqlCommand creatSelectCarsCommand(SqlConnection con, string numberCar)
         {
             string commandStr = "SELECT * FROM CoParkingCars_2022 WHERE numberCar=@numberCar";
             SqlCommand cmd = createCommand(con, commandStr);
@@ -1061,7 +1061,7 @@ namespace ParkingProject.Models.DAL
             return cmd;
         }
 
-        private SqlCommand GetCarAndId(SqlConnection con, int numberCar, int id)
+        private SqlCommand GetCarAndId(SqlConnection con, string numberCar, int id)
         {
             string commandStr = "SELECT * FROM CoParkingUsersCars_2022 LEFT JOIN CoParkingCars_2022 ON CoParkingUsersCars_2022.numberCar = CoParkingCars_2022.numberCar LEFT JOIN CoParkingManufacture_2022 ON CoParkingCars_2022.idCar = CoParkingManufacture_2022.idCar where id = '"+id+"' AND CoParkingCars_2022.numberCar = '"+numberCar+"';";
             SqlCommand cmd = createCommand(con, commandStr);
@@ -1389,7 +1389,7 @@ con);
             int rowsAffected = cmd.ExecuteNonQuery();
             return cmd;
         }
-        private SqlCommand checkCanEditCar(int id,int numberCar, SqlConnection con)
+        private SqlCommand checkCanEditCar(int id,string numberCar, SqlConnection con)
         {
             //AND userCodeIn IS NOT NULL
             string commandStr = "select * from[CoParkingUsersCars_2022] where id = '"+id+"' AND numberCar = '"+numberCar+"'";
@@ -1450,7 +1450,7 @@ con);
             return password;
         }
 
-        public int CheckUserAndNumberCar(int id, int numberCar)
+        public int CheckUserAndNumberCar(int id, string numberCar)
         {
             SqlConnection con = null;
             SqlDataReader dr = null;
@@ -1476,8 +1476,8 @@ con);
                 return -1;
             }
 
-            int number = Convert.ToInt32(dr["numberCar"]);
-            if (number > 0) { return 1; }
+            string number = (string)(dr["numberCar"]);
+            if (number == null) { return 1; }
             return -1;
 
         }

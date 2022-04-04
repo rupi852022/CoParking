@@ -17,7 +17,7 @@ namespace ParkingProject.Controllers
         }
 
         // GET api/<controller>/5
-        public Cars Get(int numberCar, int id)
+        public Cars Get(string numberCar, int id)
         {
             return ParkingProject.Models.Cars.readCar(numberCar,id);
         }
@@ -40,7 +40,7 @@ namespace ParkingProject.Controllers
             int id = Cars.UpdateCar(C);
             return id;
         }
-        public Cars Put(int numberCar, int id)
+        public Cars Put(string numberCar, int id)
         {
             return Cars.MakeMainCar(numberCar,id);
         }
@@ -48,7 +48,7 @@ namespace ParkingProject.Controllers
 
 
         // DELETE api/<controller>/5
-        public int Delete(int numberCar,int id)
+        public int Delete(string numberCar,int id)
         {
             int satatus = Cars.DeleteCar(numberCar, id);
             return satatus;

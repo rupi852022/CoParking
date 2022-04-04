@@ -16,18 +16,18 @@ namespace ParkingProject.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        public Tuple<User, int> Get(string email)
+        public Tuple<User, string> Get(string email)
         {
             User user = Models.User.readUserMail(email);
             Cars cars = Cars.ReadMainCar(user.Id);
             if (cars is null)
             {
-                var UserWithNumberCar = new Tuple<User, int>(user, -1);
+                var UserWithNumberCar = new Tuple<User, string>(user, "x");
                 return UserWithNumberCar;
             }
             else
             {
-                var UserWithNumberCar = new Tuple<User, int>(user, cars.NumberCar);
+                var UserWithNumberCar = new Tuple<User, string>(user, cars.NumberCar);
                 return UserWithNumberCar;
             }
         }

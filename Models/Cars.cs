@@ -9,7 +9,7 @@ namespace ParkingProject.Models
     public class Cars
     {
 
-        private int numberCar;
+        private string numberCar;
         private int idCar;
         private int year;
         private string model;
@@ -23,7 +23,7 @@ namespace ParkingProject.Models
         private bool canEditCar;
 
         public Cars() { }
-        public Cars(int numberCar, int idCar, int year, string model, string color, int size)
+        public Cars(string numberCar, int idCar, int year, string model, string color, int size)
         {
             this.numberCar = numberCar;
             this.idCar = idCar;
@@ -33,7 +33,7 @@ namespace ParkingProject.Models
             this.size = size;
         }
 
-        public Cars(int id, int numberCar, bool isMain, bool handicapped, string carPic)
+        public Cars(int id, string numberCar, bool isMain, bool handicapped, string carPic)
         {
             this.id = id;
             this.numberCar = numberCar;
@@ -42,7 +42,7 @@ namespace ParkingProject.Models
             this.carPic = carPic;
         }
 
-        public Cars(int id, int numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size,string manufacturer)
+        public Cars(int id, string numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size,string manufacturer)
         {
             this.id = id;
             this.numberCar = numberCar;
@@ -57,7 +57,7 @@ namespace ParkingProject.Models
             this.manufacturer = manufacturer;
         }
 
-        public Cars(int id, int numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size)
+        public Cars(int id, string numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size)
         {
             this.id = id;
             this.numberCar = numberCar;
@@ -71,7 +71,7 @@ namespace ParkingProject.Models
             this.size = size;
         }
 
-        public Cars(int id, int numberCar, bool isMain, int idCar, int year, string model, string color, int size, string manufacturer)
+        public Cars(int id, string numberCar, bool isMain, int idCar, int year, string model, string color, int size, string manufacturer)
         {
             this.id = id;
             this.numberCar = numberCar;
@@ -84,7 +84,7 @@ namespace ParkingProject.Models
             this.manufacturer = manufacturer;
         }
 
-        public Cars(int id, int numberCar, bool isMain, int idCar, int year, string model, string color, int size, string manufacturer, bool canEditCar)
+        public Cars(int id, string numberCar, bool isMain, int idCar, int year, string model, string color, int size, string manufacturer, bool canEditCar)
         {
             this.id = id;
             this.numberCar = numberCar;
@@ -99,7 +99,7 @@ namespace ParkingProject.Models
         }
 
 
-        public Cars(int id, int numberCar, bool handicapped, string carPic, int idCar, int year, string model, string color, int size)
+        public Cars(int id, string numberCar, bool handicapped, string carPic, int idCar, int year, string model, string color, int size)
         {
             this.id = id;
             this.numberCar = numberCar;
@@ -113,7 +113,7 @@ namespace ParkingProject.Models
         }
 
 
-        public int NumberCar { get => numberCar; set => numberCar = value; }
+        public string NumberCar { get => numberCar; set => numberCar = value; }
         public int Idcar { get => idCar; set => idCar = value; }
         public int Year { get => year; set => year = value; }
         public string Model { get => model; set => model = value; }
@@ -133,7 +133,7 @@ namespace ParkingProject.Models
             return ds.InsertCars(C);
         }
 
-        public static int DeleteCar(int numberCar, int id)
+        public static int DeleteCar(string numberCar, int id)
         {
             DataServices ds = new DataServices();
             int status = ds.deleteCar(numberCar, id);
@@ -154,7 +154,7 @@ namespace ParkingProject.Models
 
         }
 
-        public static Cars readCar(int numberCar,int id)
+        public static Cars readCar(string numberCar,int id)
         {
             DataServices ds = new DataServices();
             Cars cars = ds.ReadUserAndCar(numberCar,id);
@@ -174,7 +174,7 @@ namespace ParkingProject.Models
             return ds.GetAllUserCars(id);
         }
 
-        public static Cars MakeMainCar(int numberCar, int id)
+        public static Cars MakeMainCar(string numberCar, int id)
         {
             DataServices ds = new DataServices();
             if (ds.MakeMainCar(numberCar, id) != -1)

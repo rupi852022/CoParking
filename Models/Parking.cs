@@ -12,7 +12,7 @@ namespace ParkingProject.Models
         private string location;
         private DateTime exitDate;
         private DateTime exitTime;
-        private string typeOfParking;
+        private int typeOfParking;
         private string signType;
         private int userCodeOut;
         private int userCodeIn;
@@ -21,7 +21,7 @@ namespace ParkingProject.Models
 
         public Parking() { }
 
-        public Parking(string location, DateTime exitDate, DateTime exitTime, string typeOfParking, string signType, int userCodeOut, int userCodeIn)
+        public Parking(string location, DateTime exitDate, DateTime exitTime, int typeOfParking, string signType, int userCodeOut, int userCodeIn)
         {
             this.location = location;
             this.exitDate = exitDate;
@@ -31,7 +31,7 @@ namespace ParkingProject.Models
             this.userCodeOut = userCodeOut;
             this.userCodeIn = userCodeIn;
         }
-        public Parking(string location, DateTime exitDate, DateTime exitTime, string typeOfParking, string signType, int userCodeOut)
+        public Parking(string location, DateTime exitDate, DateTime exitTime, int typeOfParking, string signType, int userCodeOut)
         {
             this.location = location;
             this.exitDate = exitDate;
@@ -40,7 +40,7 @@ namespace ParkingProject.Models
             this.signType = signType;
             this.userCodeOut = userCodeOut;
         }
-        public Parking(int parkingCode, string location, DateTime exitDate, DateTime exitTime, string typeOfParking, string signType, int userCodeOut, int userCodeIn) : this(location, exitDate, exitTime, typeOfParking, signType, userCodeOut, userCodeIn)
+        public Parking(int parkingCode, string location, DateTime exitDate, DateTime exitTime, int typeOfParking, string signType, int userCodeOut, int userCodeIn) : this(location, exitDate, exitTime, typeOfParking, signType, userCodeOut, userCodeIn)
         {
             this.parkingCode = parkingCode;
         }
@@ -49,7 +49,7 @@ namespace ParkingProject.Models
         public string Location { get => location; set => location = value; }
         public DateTime ExitDate { get => exitDate; set => exitDate = value; }
         public DateTime ExitTime { get => exitTime; set => exitTime = value; }
-        public string TypeOfParking { get => typeOfParking; set => typeOfParking = value; }
+        public int TypeOfParking { get => typeOfParking; set => typeOfParking = value; }
         public string SignType { get => signType; set => signType = value; }
         public int UserCodeOut { get => userCodeOut; set => userCodeOut = value; }
         public int UserCodeIn { get => userCodeIn; set => userCodeIn = value; }
