@@ -108,7 +108,7 @@ namespace ParkingProject.Models.DAL
             SqlConnection con = null;
             try
             {
-                User user = this.ReadUser(U.Email, 1);
+                User user = this.ReadUserEmail(U.Email, 1);
 
                 if (U.Gender == 0)
                 {
@@ -373,13 +373,19 @@ namespace ParkingProject.Models.DAL
 
         public Cars InsertCars(Cars C)
         {
-            SqlConnection con = null;
+            int CarExist = 1;
+            if (ReadUser(C.NumberCar).NumberCar == null)
+            {
+                CarExist = 2;
+            }
+
+                SqlConnection con = null;
             try
             {
                 // C - Connect
                 con = Connect("webOsDB");
 
-                if (checkedNumberCar(C.NumberCar) == 1)
+                if (checkedNumberCar(C.NumberCar,C.Id) == 1)
                 {
                     Exception ex = new Exception("the NumberCar is exist.");
                     throw ex;
@@ -388,7 +394,7 @@ namespace ParkingProject.Models.DAL
                 if (C.Id == 0)
                 {
                     // C - Create Command
-                    SqlCommand command = CreateInsertCar(C, con);
+                    SqlCommand command = CreateInsertCar(C,CarExist, con);
 
                     // E - Execute
                     int affected = command.ExecuteNonQuery();
@@ -401,7 +407,7 @@ namespace ParkingProject.Models.DAL
                     if (C.Idcar != 0)
                     {
                         bool currentEditCar = false;
-                        SqlCommand command2 = CreateInsertCar(C, con);
+                        SqlCommand command2 = CreateInsertCar(C, CarExist, con);
                         int affected2 = (command2.ExecuteNonQuery());
                         string currentMain = "F";
                         SqlDataReader dr = null;
@@ -409,6 +415,7 @@ namespace ParkingProject.Models.DAL
                         SqlCommand cmd = createCommand(con, commandStr);
                         cmd.Parameters.AddWithValue("@numberCar", C.Id);
                         dr = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+
                         if (dr == null || !dr.Read())
                         {
                             currentMain = "T";
@@ -420,6 +427,7 @@ namespace ParkingProject.Models.DAL
 
                         con = null;
                         con = Connect("webOsDB");
+
                         SqlCommand command1 = CreateInsertUserCar(C,currentMain, con);
                         int affected1 = (command1.ExecuteNonQuery());
 
@@ -455,7 +463,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public int checkedNumberCar(int numberCar)
+        public int checkedNumberCar(int numberCar, int id)
         {
             SqlConnection con = null;
             SqlDataReader dr = null;
@@ -464,7 +472,7 @@ namespace ParkingProject.Models.DAL
 
 
             // Create the select command
-            SqlCommand selectCommand = creatSelectUserCommand3(con, numberCar);
+            SqlCommand selectCommand = creatSelectUserCommand3(con, numberCar, id);
 
             // E - Execute
             int affected = selectCommand.ExecuteNonQuery();
@@ -627,11 +635,19 @@ namespace ParkingProject.Models.DAL
 
         }
 
-        SqlCommand CreateInsertCar(Cars C, SqlConnection con)
+        SqlCommand CreateInsertCar(Cars C,int carExist, SqlConnection con)
         {
+            string insertStr = "";
+            if (carExist == 1)
+            {
+                insertStr = "SELECT * FROM CoParkingCars_2022 WHERE numberCar='" + ReadUser(C.NumberCar).NumberCar + "'";
+            }
+            else
+            {
+                insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [idCar], [year],[model], [color], [size]) VALUES('" + Convert.ToString(C.NumberCar) + "', '" + C.Idcar + "', '" + C.Year + "', '" + C.Model + "', '" + C.Color + "', '" + C.Size + "')";
+            }
 
 
-            string insertStr = "INSERT INTO [CoParkingCars_2022] ([numberCar], [idCar], [year],[model], [color], [size]) VALUES('" + Convert.ToString(C.NumberCar) + "', '" + C.Idcar + "', '" + C.Year + "', '" + C.Model + "', '" + C.Color + "', '" + C.Size + "')";
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -640,7 +656,7 @@ namespace ParkingProject.Models.DAL
 
         }
 
-        public User ReadUser(string email, int TypeOf)
+        public User ReadUserEmail(string email, int TypeOf)
         {
             SqlConnection con = null;
             SqlDataReader dr = null;
@@ -775,6 +791,76 @@ namespace ParkingProject.Models.DAL
                     con.Close();
             }
         }
+
+        public Cars ReadUserAndCar(int numberCar, int id)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // Create the select command
+                SqlCommand selectCommand = GetCarAndId(con, numberCar, id);
+
+                // Create the reader
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                // Read the records
+                // Execute the command
+                //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+                if (dr == null || !dr.Read())
+                {
+                    return null;
+                }
+
+                int CurrentnumberCar = Convert.ToInt32(dr["numberCar"]);
+                int idCar = Convert.ToInt32(dr["idCar"]);
+                int year = Convert.ToInt32(dr["year"]);
+                string model = (string)dr["model"];
+                string color = (string)dr["color"];
+                int size = Convert.ToInt32(dr["size"]);
+                bool isMain = false;
+                if ((string)dr["isMain"] == "T")
+                { isMain = true; }
+                bool handicapped = false;
+                if ((string)dr["handicapped"] == "T")
+                { handicapped = true; }
+                string carPic = (string)dr["carPic"];
+
+                Cars cars = new Cars(id, CurrentnumberCar, isMain, handicapped, carPic, idCar, year, model, color, size);
+
+                if (dr.Read())
+                {
+                    return null;
+                }
+
+                return cars;
+            }
+
+
+            catch (Exception ex)
+            {
+                // write the error to log
+                throw new Exception("failed in Log In", ex);
+            }
+            finally
+            {
+                if (dr != null)
+                {
+                    dr.Close();
+                }
+
+                // Close the connection
+                if (con != null)
+                    con.Close();
+            }
+        }
+
+
 
         public Cars ReadMainCar(int id)
         {
@@ -931,12 +1017,12 @@ namespace ParkingProject.Models.DAL
             return cmd;
         }
 
-        private SqlCommand creatSelectUserCommand3(SqlConnection con, int numberCar)
+        private SqlCommand creatSelectUserCommand3(SqlConnection con, int numberCar, int id)
         {
-            string commandStr = "SELECT * FROM CoParkingCars_2022 WHERE numberCar=@numberCar";
+            string commandStr = " SELECT * FROM CoParkingUsersCars_2022 WHERE numberCar='"+numberCar+"' AND id='"+id+"'";
             SqlCommand cmd = createCommand(con, commandStr);
             cmd.Parameters.AddWithValue("@numberCar", numberCar);
-
+            cmd.Parameters.AddWithValue("@id", id);
             return cmd;
         }
 
@@ -949,6 +1035,18 @@ namespace ParkingProject.Models.DAL
             return cmd;
         }
 
+        private SqlCommand GetCarAndId(SqlConnection con, int numberCar, int id)
+        {
+            string commandStr = "SELECT * FROM CoParkingUsersCars_2022 LEFT JOIN CoParkingCars_2022 ON CoParkingUsersCars_2022.numberCar = CoParkingCars_2022.numberCar where id = '"+id+"' AND CoParkingCars_2022.numberCar = '"+numberCar+"'";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@numberCar", numberCar);
+            cmd.Parameters.AddWithValue("@id", id);
+
+
+            return cmd;
+        }
+
+        
         SqlCommand createCommand(SqlConnection con, string CommandSTR)
         {
 

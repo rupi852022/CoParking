@@ -17,9 +17,9 @@ namespace ParkingProject.Controllers
         }
 
         // GET api/<controller>/5
-        public Cars Get(int numberCar, bool getCar)
+        public Cars Get(int numberCar, int id)
         {
-            return ParkingProject.Models.Cars.readCar(numberCar);
+            return ParkingProject.Models.Cars.readCar(numberCar,id);
         }
 
         public Cars[] Get(int id)

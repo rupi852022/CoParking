@@ -139,10 +139,10 @@ namespace ParkingProject.Models
 
         }
 
-        public static Cars readCar(int numberCar)
+        public static Cars readCar(int numberCar,int id)
         {
             DataServices ds = new DataServices();
-            Cars cars = ds.ReadUser(numberCar);
+            Cars cars = ds.ReadUserAndCar(numberCar,id);
             return cars;
         }
 
