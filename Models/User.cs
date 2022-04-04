@@ -76,7 +76,8 @@ namespace ParkingProject.Models
             User user = (this);
 
             User status = ds.InsertUser(user);
-            return status;
+            User user1 = ds.ReadUserEmail(status.email, 2);
+            return user1;
         }
 
         public static User readUser(string email, string password)
