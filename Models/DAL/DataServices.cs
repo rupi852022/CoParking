@@ -314,7 +314,7 @@ namespace ParkingProject.Models.DAL
 
         }
 
-        SqlCommand CreateInsertUserCar(Cars U,string currentMain, SqlConnection con)
+        SqlCommand CreateInsertUserCar(Cars U,string currentMain,int carExist, SqlConnection con)
         {
 
             if (CheckUserAndNumberCar(U.Id, U.NumberCar) == 1)
@@ -342,9 +342,8 @@ namespace ParkingProject.Models.DAL
             //}
             insertStr += " UPDATE [CoParkingUsers_2022] SET [status] = 'on' where [id] = '" + U.Id + "'";
 
-
-            if (currentMain == "T")
-            {
+            if (carExist == 2)
+                {
                 insertStr += " INSERT INTO [CoParkingUsersCars_2022] ([id], [numberCar], [isMain], [handicapped], [carPic] , [canEditCar]) VALUES('" + U.Id + "', '" + U.NumberCar + "', '" + currentMain + "', '" + Handicapped + "', '" + U.CarPic + "','T')";
             }
             else
@@ -374,7 +373,7 @@ namespace ParkingProject.Models.DAL
         public Cars InsertCars(Cars C)
         {
             int CarExist = 1;
-            if (ReadUser(C.NumberCar).NumberCar == null)
+            if (ReadUser(C.NumberCar) is null)
             {
                 CarExist = 2;
             }
@@ -428,18 +427,21 @@ namespace ParkingProject.Models.DAL
                         con = null;
                         con = Connect("webOsDB");
 
-                        SqlCommand command1 = CreateInsertUserCar(C,currentMain, con);
+                        SqlCommand command1 = CreateInsertUserCar(C,currentMain,CarExist, con);
                         int affected1 = (command1.ExecuteNonQuery());
 
                         // E - Execute
                         int affected = affected2 * affected1;
 
-                        C.CanEditCar = currentEditCar;
+                        if (CarExist == 2)
+                        { C.CanEditCar = true; }
+                        else
+                        { C.CanEditCar = false; }
                         return C;
                     }
                     else
                     {
-                        SqlCommand command = CreateInsertUserCar(C,"F", con);
+                        SqlCommand command = CreateInsertUserCar(C,"F",CarExist, con);
 
                         // E - Execute
                         int affected = command.ExecuteNonQuery();
@@ -583,7 +585,7 @@ namespace ParkingProject.Models.DAL
 
 
 
-        public int deleteCar(int NumberCar, int id)
+        public int deleteCar(int numberCar, int id)
         {
             SqlConnection con = null;
             try
@@ -591,8 +593,23 @@ namespace ParkingProject.Models.DAL
                 // C - Connect
                 con = Connect("webOsDB");
 
-                // C - Create Command
-                SqlCommand command = DeleteNumberOfCar(NumberCar,id, con);
+                SqlDataReader dr = null;
+
+                SqlCommand selectCommand = checkCanEditCar(id,numberCar, con);
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+                selectCommand = null;
+                con = Connect("webOsDB");
+                string canEditCar = "";
+                if (dr.Read())
+                {
+                    canEditCar = (string)dr["canEditCar"];
+                }
+                if (con != null)
+                    con.Close();
+
+                con = null;
+                con = Connect("webOsDB");
+                SqlCommand command = DeleteNumberOfCar(numberCar,id, canEditCar, con);
 
                 // E - Execute
                 int affected = command.ExecuteNonQuery();
@@ -613,11 +630,19 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        SqlCommand DeleteNumberOfCar(int NumberCar,int id, SqlConnection con)
+        SqlCommand DeleteNumberOfCar(int NumberCar,int id,string canEditCar, SqlConnection con)
         {
-            SqlCommand command = new SqlCommand(
-                   "DELETE FROM[CoParkingUsersCars_2022] WHERE[numberCar] = '"+NumberCar+"' AND [id] = '"+id+"'",
-                     con);
+            string sub = "";
+            if (canEditCar == "T")
+            {
+                sub = "DELETE FROM[CoParkingUsersCars_2022] WHERE[numberCar] = '" + NumberCar + "' AND [id] = '" + id + "'";
+                sub += "delete from [CoParkingCars_2022] where [numberCar] = '" + NumberCar + "'";
+            }
+            else
+            {
+                sub = "DELETE FROM[CoParkingUsersCars_2022] WHERE[numberCar] = '" + NumberCar + "' AND [id] = '" + id + "'";
+            }
+            SqlCommand command = new SqlCommand(sub,con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             return command;
@@ -830,8 +855,9 @@ namespace ParkingProject.Models.DAL
                 if ((string)dr["handicapped"] == "T")
                 { handicapped = true; }
                 string carPic = (string)dr["carPic"];
+                string manufacturer = (string)dr["manufacturer"];
 
-                Cars cars = new Cars(id, CurrentnumberCar, isMain, handicapped, carPic, idCar, year, model, color, size);
+                Cars cars = new Cars(id, CurrentnumberCar, isMain, handicapped, carPic, idCar, year, model, color, size, manufacturer);
 
                 if (dr.Read())
                 {
@@ -1037,7 +1063,7 @@ namespace ParkingProject.Models.DAL
 
         private SqlCommand GetCarAndId(SqlConnection con, int numberCar, int id)
         {
-            string commandStr = "SELECT * FROM CoParkingUsersCars_2022 LEFT JOIN CoParkingCars_2022 ON CoParkingUsersCars_2022.numberCar = CoParkingCars_2022.numberCar where id = '"+id+"' AND CoParkingCars_2022.numberCar = '"+numberCar+"'";
+            string commandStr = "SELECT * FROM CoParkingUsersCars_2022 LEFT JOIN CoParkingCars_2022 ON CoParkingUsersCars_2022.numberCar = CoParkingCars_2022.numberCar LEFT JOIN CoParkingManufacture_2022 ON CoParkingCars_2022.idCar = CoParkingManufacture_2022.idCar where id = '"+id+"' AND CoParkingCars_2022.numberCar = '"+numberCar+"';";
             SqlCommand cmd = createCommand(con, commandStr);
             cmd.Parameters.AddWithValue("@numberCar", numberCar);
             cmd.Parameters.AddWithValue("@id", id);
@@ -1363,6 +1389,19 @@ con);
             int rowsAffected = cmd.ExecuteNonQuery();
             return cmd;
         }
+        private SqlCommand checkCanEditCar(int id,int numberCar, SqlConnection con)
+        {
+            //AND userCodeIn IS NOT NULL
+            string commandStr = "select * from[CoParkingUsersCars_2022] where id = '"+id+"' AND numberCar = '"+numberCar+"'";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@numberCar", numberCar);
+            cmd.Parameters.AddWithValue("@id", id);
+            int rowsAffected = cmd.ExecuteNonQuery();
+            return cmd;
+        }
+
+        
+
 
         private SqlCommand addUserCodeIn(int idUser, int parkingCode, SqlConnection con)
         {

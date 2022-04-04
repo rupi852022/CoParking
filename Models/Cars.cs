@@ -42,6 +42,21 @@ namespace ParkingProject.Models
             this.carPic = carPic;
         }
 
+        public Cars(int id, int numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size,string manufacturer)
+        {
+            this.id = id;
+            this.numberCar = numberCar;
+            this.isMain = isMain;
+            this.handicapped = handicapped;
+            this.carPic = carPic;
+            this.idCar = idCar;
+            this.year = year;
+            this.model = model;
+            this.color = color;
+            this.size = size;
+            this.manufacturer = manufacturer;
+        }
+
         public Cars(int id, int numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size)
         {
             this.id = id;
@@ -118,10 +133,10 @@ namespace ParkingProject.Models
             return ds.InsertCars(C);
         }
 
-        public int DeleteCar(int id)
+        public static int DeleteCar(int numberCar, int id)
         {
             DataServices ds = new DataServices();
-            int status = ds.deleteCar(this.numberCar, id);
+            int status = ds.deleteCar(numberCar, id);
             return status;
         }
 
@@ -159,10 +174,19 @@ namespace ParkingProject.Models
             return ds.GetAllUserCars(id);
         }
 
-        public static int MakeMainCar(int numberCar, int id)
+        public static Cars MakeMainCar(int numberCar, int id)
         {
             DataServices ds = new DataServices();
-            return ds.MakeMainCar(numberCar, id);
+            if (ds.MakeMainCar(numberCar, id) != -1)
+            {
+                return Cars.readCar(numberCar, id);
+            }
+            else
+            {
+                Exception ex = new Exception("Failed in Insert of Main Car");
+                throw ex;
+            }
+
         }
 
 

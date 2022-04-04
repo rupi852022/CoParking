@@ -40,7 +40,7 @@ namespace ParkingProject.Controllers
             int id = Cars.UpdateCar(C);
             return id;
         }
-        public int Put(int numberCar, int id)
+        public Cars Put(int numberCar, int id)
         {
             return Cars.MakeMainCar(numberCar,id);
         }
@@ -48,9 +48,9 @@ namespace ParkingProject.Controllers
 
 
         // DELETE api/<controller>/5
-        public int Delete(Cars C,int id)
+        public int Delete(int numberCar,int id)
         {
-            int satatus = C.DeleteCar(id);
+            int satatus = Cars.DeleteCar(numberCar, id);
             return satatus;
         }
     }
