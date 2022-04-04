@@ -373,6 +373,7 @@ namespace ParkingProject.Models.DAL
         public Cars InsertCars(Cars C)
         {
             int CarExist = 1;
+            
             if (ReadUser(C.NumberCar) is null)
             {
                 CarExist = 2;
@@ -405,7 +406,7 @@ namespace ParkingProject.Models.DAL
                 {
                     if (C.Idcar != 0)
                     {
-                        bool currentEditCar = false;
+                    
                         SqlCommand command2 = CreateInsertCar(C, CarExist, con);
                         int affected2 = (command2.ExecuteNonQuery());
                         string currentMain = "F";
@@ -418,7 +419,6 @@ namespace ParkingProject.Models.DAL
                         if (dr == null || !dr.Read())
                         {
                             currentMain = "T";
-                            currentEditCar = true;
 
                         }
                         if (con != null)
