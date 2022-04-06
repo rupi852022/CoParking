@@ -120,7 +120,7 @@ namespace ParkingProject.Models.DAL
 
                 if (user != null)
                 {
-                    ErrorMessage = "The email or password alredy exist";
+                    ErrorMessage = "The email is not exist";
                     Exception ex = new Exception(ErrorMessage);
                     throw ex;
                 }
@@ -161,10 +161,10 @@ namespace ParkingProject.Models.DAL
         {
 
             SqlConnection con = this.Connect("webOsDB");
-            string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             string currentTime = DateTime.Now.ToString("HH:mm:ss");
             SqlCommand command = new SqlCommand(
-                "select [parkingCode],[location], CONVERT(varchar(10), [exitDate], 111) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [userCodeOut] != '"+id+"';"
+                "select [parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [userCodeOut] != '"+id+"';"
                 , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -176,9 +176,11 @@ namespace ParkingProject.Models.DAL
             {
                 string test = (string)dr["exitDate"];
                 int parkingCode = Convert.ToInt32(dr["parkingCode"]);
-                string location = (string)dr["location"];
-                DateTime exitDate = DateTime.Parse((string)dr["exitDate"]).Date;
-                var date = exitDate.Date;
+                double locationLng = Convert.ToDouble((string)dr["LocationLng"]);
+                double locationLat = Convert.ToDouble((string)dr["LocationLat"]);
+                string locationName = (string)dr["LocationName"];
+                string date1 = dr["exitDate"].ToString();
+                DateTime exitDate = DateTime.Parse((string)dr["exitDate"]);
                 int typeOfParking = Convert.ToInt32(dr["typeOfParking"]);
                 string signType = (string)dr["signType"];
                 int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
@@ -187,7 +189,7 @@ namespace ParkingProject.Models.DAL
                 string numberCarIn = (string)dr["numberCarIn"];
 
 
-                Parking parking = new Parking(parkingCode, location, exitDate, typeOfParking, signType, userCodeOut,numberCarOut, userCodeIn,numberCarIn);
+                Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut,numberCarOut, userCodeIn,numberCarIn);
                 parkings.Add(parking);
             }
 
@@ -246,6 +248,7 @@ namespace ParkingProject.Models.DAL
 
         public int InsertParking(Parking P)
         {
+            Console.WriteLine(P.ExitDate);
             checkMinutes(P);
             SqlConnection con = null;
             try
@@ -276,7 +279,7 @@ namespace ParkingProject.Models.DAL
 
         public int checkMinutes(Parking P)
         {
-            string ParkingDate = P.ExitDate.ToString("yyyy-MM-dd");
+            string ParkingDate = P.ExitDate.ToString("yyyy-MM-dd HH:mm:ss");
             string time = ParkingDate + ",531";
             DateTime myDate = DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.InvariantCulture);
 
@@ -298,14 +301,15 @@ namespace ParkingProject.Models.DAL
         SqlCommand CreateInsertParking(Parking P, SqlConnection con)
         {
             string insertStr = "";
-            string currentexitDate = P.ExitDate.ToString("dd/MM/yyyy HH:mm:ss");
+            Console.WriteLine(P.ExitDate);
+            string currentexitDate = P.ExitDate.ToString("yyyy-MM-dd hh:mm:ss");
             if (P.UserCodeIn == 0)
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut]) VALUES('" + P.Location + "', '" + currentexitDate  + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '"+P.NumberCarOut+"')";
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut]) VALUES('" + P.LocationLng + "', '"+P.LocationLat+"', '"+P.LocationName+"', '" + currentexitDate  + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '"+P.NumberCarOut+"')";
             }
             else
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut], [userCodeIn], [numberCarIn]) VALUES('" + P.Location + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut+"', '" + P.UserCodeIn + "', '"+P.NumberCarIn+"')";
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut], [userCodeIn], [numberCarIn]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '" + P.LocationName + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut+"', '" + P.UserCodeIn + "', '"+P.NumberCarIn+"')";
             }
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
@@ -745,14 +749,19 @@ namespace ParkingProject.Models.DAL
                 {
                     if (dr == null || !dr.Read())
                     {
-                        return null;
+                        ErrorMessage = "the Email is not exist.";
+                        Exception ex = new Exception(ErrorMessage);
+                        throw ex;
                     }
                 }
-                if (dr == null || !dr.Read())
+                else
                 {
-                    ErrorMessage = "the Email is not exist.";
-                    Exception ex = new Exception(ErrorMessage);
-                    throw ex;
+                    if (dr == null || !dr.Read())
+                    {
+                        ErrorMessage = "the Email is not exist.";
+                        Exception ex = new Exception(ErrorMessage);
+                        throw ex;
+                    }
                 }
 
                 int id = Convert.ToInt32(dr["id"]);
@@ -898,6 +907,68 @@ namespace ParkingProject.Models.DAL
 
 
                 Cars cars = new Cars(id, CurrentnumberCar, isMain, handicapped, carPic, idCar, year, model, color, size, manufacturer, currentEditCar);
+
+                if (dr.Read())
+                {
+                    return null;
+                }
+
+                return cars;
+            }
+
+
+            catch (Exception ex)
+            {
+                // write the error to log
+                throw new Exception("failed in Log In", ex);
+            }
+            finally
+            {
+                if (dr != null)
+                {
+                    dr.Close();
+                }
+
+                // Close the connection
+                if (con != null)
+                    con.Close();
+            }
+        }
+
+        public Cars ReadCar(string numberCar)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+
+                // Create the select command
+                SqlCommand selectCommand = GetOneCar(con, numberCar);
+
+                // Create the reader
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                // Read the records
+                // Execute the command
+                //int id = Convert.ToInt32(insertCommand.ExecuteScalar());
+
+                if (dr == null || !dr.Read())
+                {
+                    return null;
+                }
+
+                string CurrentnumberCar = (string)(dr["numberCar"]);
+                int idCar = Convert.ToInt32(dr["idCar"]);
+                int year = Convert.ToInt32(dr["year"]);
+                string model = (string)dr["model"];
+                string color = (string)dr["color"];
+                int size = Convert.ToInt32(dr["size"]);
+                string manufacturer = (string)dr["manufacturer"];
+
+                Cars cars = new Cars(CurrentnumberCar, idCar, year, model, color, size, manufacturer);
 
                 if (dr.Read())
                 {
@@ -1112,7 +1183,16 @@ namespace ParkingProject.Models.DAL
             return cmd;
         }
 
+        private SqlCommand GetOneCar(SqlConnection con, string numberCar)
+        {
+            string commandStr = "  select * from CoParkingCars_2022 LEFT JOIN CoParkingManufacture_2022 ON CoParkingCars_2022.idCar = CoParkingManufacture_2022.idCar where CoParkingCars_2022.numberCar = '"+numberCar+"'";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@numberCar", numberCar);
+            return cmd;
+        }
+
         
+
         SqlCommand createCommand(SqlConnection con, string CommandSTR)
         {
 

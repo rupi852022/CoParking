@@ -9,7 +9,9 @@ namespace ParkingProject.Models
     public class Parking
     {
         private int parkingCode;
-        private string location;
+        private double locationLng;
+        private double locationLat;
+        private string locationName;
         private DateTime exitDate;
         private int typeOfParking;
         private string signType;
@@ -22,9 +24,11 @@ namespace ParkingProject.Models
 
         public Parking() { }
 
-        public Parking(string location, DateTime exitDate, int typeOfParking, string signType, int userCodeOut,string numberCarOut, int userCodeIn, string numberCarIn)
+        public Parking(double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut,string numberCarOut, int userCodeIn, string numberCarIn)
         {
-            this.location = location;
+            this.locationLat = locationLat;
+            this.locationLng = locationLng;
+            this.locationName = locationName;
             this.exitDate = exitDate;
             this.typeOfParking = typeOfParking;
             this.signType = signType;
@@ -33,22 +37,37 @@ namespace ParkingProject.Models
             this.numberCarIn = numberCarIn;
             this.numberCarOut = numberCarOut;
         }
-        public Parking(string location, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut)
+        public Parking(double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut)
         {
-            this.location = location;
+            this.locationLat = locationLat;
+            this.locationLng = locationLng;
+            this.locationName = locationName;
             this.exitDate = exitDate;
             this.typeOfParking = typeOfParking;
             this.signType = signType;
             this.userCodeOut = userCodeOut;
             this.numberCarOut = numberCarOut;
         }
-        public Parking(int parkingCode, string location, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut, int userCodeIn, string numberCarIn) : this(location, exitDate, typeOfParking, signType, userCodeOut,numberCarOut, userCodeIn,numberCarIn)
+        public Parking(int parkingCode, double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut, int userCodeIn, string numberCarIn)
         {
             this.parkingCode = parkingCode;
+            this.locationLat = locationLat;
+            this.locationLng = locationLng;
+            this.locationName = locationName;
+            this.exitDate = exitDate;
+            this.typeOfParking = typeOfParking;
+            this.signType = signType;
+            this.userCodeOut = userCodeOut;
+            this.numberCarOut = numberCarOut;
+            this.userCodeIn = userCodeIn;
+            this.numberCarIn = numberCarIn;
+
         }
 
         public int ParkingCode { get => parkingCode; set => parkingCode = value; }
-        public string Location { get => location; set => location = value; }
+        public double LocationLat { get => locationLat; set => locationLat = value; }
+        public double LocationLng { get => locationLng; set => locationLng = value; }
+        public string LocationName { get => locationName; set => locationName = value; }
         public DateTime ExitDate { get => exitDate; set => exitDate = value; }
         public int TypeOfParking { get => typeOfParking; set => typeOfParking = value; }
         public string SignType { get => signType; set => signType = value; }

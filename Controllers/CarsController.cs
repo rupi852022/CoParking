@@ -22,6 +22,11 @@ namespace ParkingProject.Controllers
             return ParkingProject.Models.Cars.readCar(numberCar,id);
         }
 
+        public Cars Get(string numberCar)
+        {
+            return ParkingProject.Models.Cars.readOneCar(numberCar);
+        }
+
         public Cars[] Get(int id)
         {
             return Cars.GetAllUserCars(id);

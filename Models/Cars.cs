@@ -33,6 +33,17 @@ namespace ParkingProject.Models
             this.size = size;
         }
 
+        public Cars(string numberCar, int idCar, int year, string model, string color, int size, string manufacturer)
+        {
+            this.numberCar = numberCar;
+            this.idCar = idCar;
+            this.year = year;
+            this.model = model;
+            this.color = color;
+            this.size = size;
+            this.manufacturer = manufacturer;
+        }
+
         public Cars(int id, string numberCar, bool isMain, bool handicapped, string carPic)
         {
             this.id = id;
@@ -159,6 +170,13 @@ namespace ParkingProject.Models
         {
             DataServices ds = new DataServices();
             Cars cars = ds.ReadUserAndCar(numberCar,id);
+            return cars;
+        }
+
+        public static Cars readOneCar(string numberCar)
+        {
+            DataServices ds = new DataServices();
+            Cars cars = ds.ReadCar(numberCar);
             return cars;
         }
 
