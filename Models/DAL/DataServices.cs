@@ -164,7 +164,7 @@ namespace ParkingProject.Models.DAL
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
             string currentTime = DateTime.Now.ToString("HH:mm:ss");
             SqlCommand command = new SqlCommand(
-                "select [parkingCode],[location], CONVERT(varchar(10), [exitDate], 111) as [exitDate], CONVERT(varchar(10), [exitTime], 20) as [exitTime],[typeOfParking],[signType],[userCodeOut],[userCodeIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [userCodeOut] != '"+id+"';"
+                "select [parkingCode],[location], CONVERT(varchar(10), [exitDate], 111) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [userCodeOut] != '"+id+"';"
                 , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -179,14 +179,15 @@ namespace ParkingProject.Models.DAL
                 string location = (string)dr["location"];
                 DateTime exitDate = DateTime.Parse((string)dr["exitDate"]).Date;
                 var date = exitDate.Date;
-                DateTime exitTime = DateTime.Parse((string)dr["exitTime"]);
                 int typeOfParking = Convert.ToInt32(dr["typeOfParking"]);
                 string signType = (string)dr["signType"];
                 int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
                 int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
+                string numberCarOut = (string)dr["numberCarOut"];
+                string numberCarIn = (string)dr["numberCarIn"];
 
 
-                Parking parking = new Parking(parkingCode, location, exitDate, exitTime, typeOfParking, signType, userCodeOut, userCodeIn);
+                Parking parking = new Parking(parkingCode, location, exitDate, typeOfParking, signType, userCodeOut,numberCarOut, userCodeIn,numberCarIn);
                 parkings.Add(parking);
             }
 
@@ -276,8 +277,7 @@ namespace ParkingProject.Models.DAL
         public int checkMinutes(Parking P)
         {
             string ParkingDate = P.ExitDate.ToString("yyyy-MM-dd");
-            string ParkingTime = P.ExitTime.ToString("HH:mm:ss");
-            string time = ParkingDate + " " + ParkingTime + ",531";
+            string time = ParkingDate + ",531";
             DateTime myDate = DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.InvariantCulture);
 
             int totalMinute = (int)(myDate - (DateTime.Now)).TotalMinutes;
@@ -298,15 +298,14 @@ namespace ParkingProject.Models.DAL
         SqlCommand CreateInsertParking(Parking P, SqlConnection con)
         {
             string insertStr = "";
-            string currentexitDate = P.ExitDate.ToString("dd/MM/yyyy");
-            string currentexitHour = P.ExitTime.ToString("HH:mm:ss");
+            string currentexitDate = P.ExitDate.ToString("dd/MM/yyyy HH:mm:ss");
             if (P.UserCodeIn == 0)
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [exitTime], [typeOfParking], [signType], [userCodeOut]) VALUES('" + P.Location + "', '" + currentexitDate + "', '" + currentexitHour + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "')";
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut]) VALUES('" + P.Location + "', '" + currentexitDate  + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '"+P.NumberCarOut+"')";
             }
             else
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [exitTime], [typeOfParking], [signType], [userCodeOut], [userCodeIn]) VALUES('" + P.Location + "', '" + currentexitDate + "', '" + currentexitHour + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.UserCodeIn + "')";
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([location], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut], [userCodeIn], [numberCarIn]) VALUES('" + P.Location + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut+"', '" + P.UserCodeIn + "', '"+P.NumberCarIn+"')";
             }
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
@@ -436,11 +435,8 @@ namespace ParkingProject.Models.DAL
                         // E - Execute
                         int affected = affected2 * affected1;
 
-                        if (CarExist == 2)
-                        { C.CanEditCar = true; }
-                        else
-                        { C.CanEditCar = false; }
-                        return C;
+
+                        return ReadUserAndCar(C.NumberCar, C.Id);
                     }
                     else
                     {
@@ -452,7 +448,8 @@ namespace ParkingProject.Models.DAL
                         else
                         { C.CanEditCar = false; }
                         
-                        return C;
+                        return ReadUserAndCar(C.NumberCar, C.Id);
+
                     }
                 }
 
@@ -894,8 +891,13 @@ namespace ParkingProject.Models.DAL
                 { handicapped = true; }
                 string carPic = (string)dr["carPic"];
                 string manufacturer = (string)dr["manufacturer"];
+                string canEditCar = (string)dr["canEditCar"];
+                bool currentEditCar = false;
+                if (canEditCar == "T")
+                { currentEditCar = true; }
 
-                Cars cars = new Cars(id, CurrentnumberCar, isMain, handicapped, carPic, idCar, year, model, color, size, manufacturer);
+
+                Cars cars = new Cars(id, CurrentnumberCar, isMain, handicapped, carPic, idCar, year, model, color, size, manufacturer, currentEditCar);
 
                 if (dr.Read())
                 {

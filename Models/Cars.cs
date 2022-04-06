@@ -42,7 +42,7 @@ namespace ParkingProject.Models
             this.carPic = carPic;
         }
 
-        public Cars(int id, string numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size,string manufacturer)
+        public Cars(int id, string numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size,string manufacturer,bool canEditCar)
         {
             this.id = id;
             this.numberCar = numberCar;
@@ -55,6 +55,7 @@ namespace ParkingProject.Models
             this.color = color;
             this.size = size;
             this.manufacturer = manufacturer;
+            this.canEditCar = canEditCar;
         }
 
         public Cars(int id, string numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size)
