@@ -37,6 +37,7 @@ namespace ParkingProject.Models
             this.numberCarIn = numberCarIn;
             this.numberCarOut = numberCarOut;
         }
+
         public Parking(double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut)
         {
             this.locationLat = locationLat;
@@ -61,6 +62,20 @@ namespace ParkingProject.Models
             this.numberCarOut = numberCarOut;
             this.userCodeIn = userCodeIn;
             this.numberCarIn = numberCarIn;
+
+        }
+
+        public Parking(int parkingCode, double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut)
+        {
+            this.parkingCode = parkingCode;
+            this.locationLat = locationLat;
+            this.locationLng = locationLng;
+            this.locationName = locationName;
+            this.exitDate = exitDate;
+            this.typeOfParking = typeOfParking;
+            this.signType = signType;
+            this.userCodeOut = userCodeOut;
+            this.numberCarOut = numberCarOut;
 
         }
 
@@ -91,6 +106,11 @@ namespace ParkingProject.Models
         public static Parking[] GetAll(int id)
         {
             return ds.GetAllParkings(id);
+        }
+
+        public static Parking GetParking(int parkingCode)
+        {
+            return ds.GetParking(parkingCode);
         }
 
 

@@ -23,6 +23,11 @@ namespace ParkingProject.Controllers
             return ParkingProject.Models.Parking.GetAll(id);
         }
 
+        public Parking Get(int parkingCode, string x = "x")
+        {
+            return ParkingProject.Models.Parking.GetParking(parkingCode);
+        }
+
         // POST api/<controller>
         public int Post([FromBody] Parking P)
         {

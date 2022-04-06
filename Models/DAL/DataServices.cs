@@ -185,16 +185,69 @@ namespace ParkingProject.Models.DAL
                 int typeOfParking = Convert.ToInt32(dr["typeOfParking"]);
                 string signType = (string)dr["signType"];
                 int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
-                int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
                 string numberCarOut = (string)dr["numberCarOut"];
-                string numberCarIn = (string)dr["numberCarIn"];
+                if (dr["userCodeIn"] != DBNull.Value)
+                {
+                    int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
+                    string numberCarIn = (string)dr["numberCarIn"];
+                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn);
+                    parkings.Add(parking);
+                }
+                else
+                {
+                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut);
+                    parkings.Add(parking);
+                }
 
 
-                Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut,numberCarOut, userCodeIn,numberCarIn);
-                parkings.Add(parking);
             }
 
             return parkings.ToArray();
+        }
+
+        public Parking GetParking(int parkingCode)
+        {
+
+            SqlConnection con = this.Connect("webOsDB");
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string currentTime = DateTime.Now.ToString("HH:mm:ss");
+            SqlCommand command = new SqlCommand(
+                "select [parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from [CoParkingParkings_2022] where [parkingCode] = '"+parkingCode+"';"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            List<Parking> parkings = new List<Parking>();
+            if (dr.Read())
+            {
+                double locationLng = Convert.ToDouble((string)dr["LocationLng"]);
+                double locationLat = Convert.ToDouble((string)dr["LocationLat"]);
+                string locationName = (string)dr["LocationName"];
+                string date1 = dr["exitDate"].ToString();
+                DateTime exitDate = DateTime.Parse((string)dr["exitDate"]);
+                int typeOfParking = Convert.ToInt32(dr["typeOfParking"]);
+                string signType = (string)dr["signType"];
+                int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
+                string numberCarOut = (string)dr["numberCarOut"];
+                if (dr["userCodeIn"] != DBNull.Value)
+                {
+                    int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
+                    string numberCarIn = (string)dr["numberCarIn"];
+                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn);
+                    return parking;
+                }
+                else
+                {
+                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut);
+                    return parking;
+                }
+
+            }
+
+            Exception ex = new Exception("the Parking noe exist");
+            throw ex;
         }
 
         public Manufacture[] GetAllManufacturer()
