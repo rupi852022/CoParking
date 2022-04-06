@@ -246,7 +246,7 @@ namespace ParkingProject.Models.DAL
 
             }
 
-            Exception ex = new Exception("the Parking noe exist");
+            Exception ex = new Exception("the Parking not exist");
             throw ex;
         }
 
