@@ -322,6 +322,7 @@ namespace ParkingProject.Models.DAL
             catch (Exception ex)
             {
                 // write to log file
+                ErrorMessage = "proble with insert parking";
                 throw new Exception(ErrorMessage, ex);
             }
             finally
