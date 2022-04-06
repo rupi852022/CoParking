@@ -93,6 +93,7 @@ namespace ParkingProject.Models
             return ds.GetAllParkings(id);
         }
 
+
         public static int TakeParking(int idUser, int parkingCode)
         {
             int status = ds.TakeParking(idUser, parkingCode);

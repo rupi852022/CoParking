@@ -104,6 +104,7 @@ namespace ParkingProject.Models.DAL
             return affected;
         }
 
+
         public User InsertUser(User U)
         {
             SqlConnection con = null;
