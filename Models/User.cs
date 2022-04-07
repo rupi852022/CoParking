@@ -75,7 +75,7 @@ namespace ParkingProject.Models
             DataServices ds = new DataServices();
             User user = (this);
 
-            User status = ds.InsertUser(user);
+            User status = ds.InsertUser(user,2);
             User user1 = ds.ReadUserEmail(status.email, 2);
             return user1;
         }
@@ -102,7 +102,7 @@ namespace ParkingProject.Models
         public static User readUserMail(string email)
         {
             DataServices ds = new DataServices();
-            User user = ds.ReadUserEmail(email, 2);
+            User user = ds.ReadUserEmail(email, 1);
             return user;
         }
     }

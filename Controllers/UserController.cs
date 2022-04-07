@@ -16,19 +16,27 @@ namespace ParkingProject.Controllers
             return new string[] { "value1", "value2" };
         }
 
-        public Tuple<User, string> Get(string email)
+        public Tuple<User, Cars, Manufacture> Get(string email)
         {
+
             User user = Models.User.readUserMail(email);
-            Cars cars = Cars.ReadMainCar(user.Id);
-            if (cars is null)
+            if (user.Status == "off")
             {
-                var UserWithNumberCar = new Tuple<User, string>(user, "x");
-                return UserWithNumberCar;
+                return new Tuple<User, Cars, Manufacture>(user, null, null);
             }
             else
             {
-                var UserWithNumberCar = new Tuple<User, string>(user, cars.NumberCar);
-                return UserWithNumberCar;
+                Cars cars = Cars.ReadMainCar(user.Id);
+                if (cars is null)
+                {
+                    return new Tuple<User, Cars, Manufacture>(user, null, null);
+                }
+                else
+                {
+                    Manufacture manufacture = Manufacture.ReadManufacture(cars.Idcar);
+                    return new Tuple<User, Cars, Manufacture>(user, cars, manufacture);
+                }
+
             }
         }
 

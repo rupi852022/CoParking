@@ -105,12 +105,12 @@ namespace ParkingProject.Models.DAL
         }
 
 
-        public User InsertUser(User U)
+        public User InsertUser(User U, int typeOf)
         {
             SqlConnection con = null;
             try
             {
-                User user = this.ReadUserEmail(U.Email, 1);
+                User user = this.ReadUserEmail(U.Email, 2);
 
                 if (U.Gender == 0)
                 {
@@ -809,13 +809,11 @@ namespace ParkingProject.Models.DAL
                         throw ex;
                     }
                 }
-                else
+                else if(TypeOf == 2)
                 {
                     if (dr == null || !dr.Read())
                     {
-                        ErrorMessage = "the Email is not exist.";
-                        Exception ex = new Exception(ErrorMessage);
-                        throw ex;
+                        return null;
                     }
                 }
 
