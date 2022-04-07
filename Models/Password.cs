@@ -45,7 +45,7 @@ namespace ParkingProject.Models
                 using (MailMessage gMessage = new MailMessage(from, recipients, subject, content))
                 {
                     var body = new StringBuilder();
-                    body.AppendFormat("<html><head></head><body> Your TempPassword is <b>" + password + "</b><br />" + "<a href='{0}'>Click here to RESET</a></body></html>", "https://www.google.co.il/");
+                    body.AppendFormat("<html><head></head><body> Your TempPassword is <b>" + password + "</b><br />" + "<a href='{0}'>Click here to RESET</a></body></html>", "http://localhost:3000/ResetPassword");
                     gMessage.IsBodyHtml = true;
                     gMessage.Body = body.ToString();
 
