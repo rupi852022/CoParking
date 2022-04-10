@@ -102,7 +102,6 @@ namespace ParkingProject.Models.DAL
             return affected;
         }
 
-
         public User InsertUser(User U, int typeOf)
         {
             SqlConnection con = null;
@@ -254,8 +253,6 @@ namespace ParkingProject.Models.DAL
 
             return manufactures.ToArray();
         }
-
-
 
         public int InsertParking(Parking P)
         {
@@ -513,7 +510,6 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-
         public int UpdateCars(Cars C)
         {
             SqlConnection con = null;
@@ -559,8 +555,6 @@ namespace ParkingProject.Models.DAL
             return command;
 
         }
-
-
 
         public int deleteCar(string numberCar, int id)
         {
@@ -897,8 +891,6 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-
-
         public Cars ReadMainCar(int id)
         {
             SqlConnection con = null;
@@ -1066,8 +1058,6 @@ namespace ParkingProject.Models.DAL
             cmd.Parameters.AddWithValue("@numberCar", numberCar);
             return cmd;
         }
-
-
 
         SqlCommand createCommand(SqlConnection con, string CommandSTR)
         {
@@ -1393,7 +1383,6 @@ con);
 
         }
 
-
         SqlCommand createUserTable(SqlConnection con)
         {
             string commandStr = "IF OBJECT_ID (N'[CoParkingCars_2022]', N'U') IS NULL BEGIN " +
@@ -1409,7 +1398,6 @@ con);
             SqlCommand cmd = createCommand(con, commandStr);
             return cmd;
         }
-
         SqlCommand createCarsTable(SqlConnection con)
         {
             string commandStr = "IF OBJECT_ID (N'[CoParkingUsers_2022]', N'U') IS NULL BEGIN " +
