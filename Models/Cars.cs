@@ -53,7 +53,7 @@ namespace ParkingProject.Models
             this.carPic = carPic;
         }
 
-        public Cars(int id, string numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size,string manufacturer,bool canEditCar)
+        public Cars(int id, string numberCar, bool isMain, bool handicapped, string carPic, int idCar, int year, string model, string color, int size, string manufacturer, bool canEditCar)
         {
             this.id = id;
             this.numberCar = numberCar;
@@ -166,10 +166,10 @@ namespace ParkingProject.Models
 
         }
 
-        public static Cars readCar(string numberCar,int id)
+        public static Cars readCar(string numberCar, int id)
         {
             DataServices ds = new DataServices();
-            Cars cars = ds.ReadUserAndCar(numberCar,id);
+            Cars cars = ds.ReadUserAndCar(numberCar, id);
             return cars;
         }
 

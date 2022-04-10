@@ -24,7 +24,7 @@ namespace ParkingProject.Models
 
         public Parking() { }
 
-        public Parking(double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut,string numberCarOut, int userCodeIn, string numberCarIn)
+        public Parking(double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut, int userCodeIn, string numberCarIn)
         {
             this.locationLat = locationLat;
             this.locationLng = locationLng;

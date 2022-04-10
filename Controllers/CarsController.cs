@@ -19,7 +19,7 @@ namespace ParkingProject.Controllers
         // GET api/<controller>/5
         public Cars Get(string numberCar, int id)
         {
-            return ParkingProject.Models.Cars.readCar(numberCar,id);
+            return ParkingProject.Models.Cars.readCar(numberCar, id);
         }
 
         public Cars Get(string numberCar)
@@ -31,7 +31,6 @@ namespace ParkingProject.Controllers
         {
             return Cars.GetAllUserCars(id);
         }
-
 
         // POST api/<controller>/
         public Cars Post([FromBody] Cars C)
@@ -47,13 +46,11 @@ namespace ParkingProject.Controllers
         }
         public Cars Put(string numberCar, int id)
         {
-            return Cars.MakeMainCar(numberCar,id);
+            return Cars.MakeMainCar(numberCar, id);
         }
 
-
-
         // DELETE api/<controller>/5
-        public int Delete(string numberCar,int id)
+        public int Delete(string numberCar, int id)
         {
             int satatus = Cars.DeleteCar(numberCar, id);
             return satatus;

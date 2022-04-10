@@ -75,7 +75,7 @@ namespace ParkingProject.Models
             DataServices ds = new DataServices();
             User user = (this);
 
-            User status = ds.InsertUser(user,2);
+            User status = ds.InsertUser(user, 2);
             User user1 = ds.ReadUserEmail(status.email, 2);
             return user1;
         }
