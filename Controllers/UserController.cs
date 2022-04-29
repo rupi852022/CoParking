@@ -65,6 +65,11 @@ namespace ParkingProject.Controllers
             }
         }
 
+        public User Get (int id)
+        {
+            return ParkingProject.Models.User.readUserId(id);
+        }
+
         // POST api/<controller>
         public User Post([FromBody] User U)
         {

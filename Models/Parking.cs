@@ -102,16 +102,30 @@ namespace ParkingProject.Models
             int status = ds.InsertParking(parking);
             return status;
         }
+        public int UpdateParking()
+        {
+            Parking parking = (this);
+            int status = ds.UpdateParking(parking);
+            return status;
+        }
 
         public static Parking[] GetAll(int id)
         {
             return ds.GetAllParkings(id);
+        }
+        
+
+        public static Parking[] GetAllParkingsUser(int id)
+        {
+            return ds.GetAllParkingsUser(id);
         }
 
         public static Parking GetParking(int parkingCode)
         {
             return ds.GetParking(parkingCode);
         }
+
+
 
 
         public static int TakeParking(int idUser, int parkingCode)
