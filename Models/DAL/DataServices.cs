@@ -11,6 +11,7 @@ namespace ParkingProject.Models.DAL
     public class DataServices
     {
         public string ErrorMessage = "";
+        int M = 0;
 
         protected SqlConnection Connect(string connectionStringName)
         {
@@ -193,6 +194,7 @@ namespace ParkingProject.Models.DAL
             return parkings.ToArray();
         }
 
+
         public Parking[] GetAllParkingsUser(int id)
         {
 
@@ -300,7 +302,10 @@ namespace ParkingProject.Models.DAL
         public int InsertParking(Parking P)
         {
             Console.WriteLine(P.ExitDate);
-            checkMinutes(P);
+            //if(checkMinutes(P)==2)
+            //{
+            //    algoritem2(P);
+            //}
             SqlConnection con = null;
             try
             {
@@ -358,6 +363,43 @@ namespace ParkingProject.Models.DAL
                 if (con != null)
                     con.Close();
             }
+        }
+
+        //public int algoritem2(Parking P) // קודם נבדוק אם החניה מיועדת לתו נכה
+        //{
+        //    M = numberOfM();
+
+        //    if (P.TypeOfParking == 2)
+        //    {
+        //        // צריך להוסיף לסלקט שיבחר רק את המשתמשים שיש להם לפחות רכב אחד עם תו נכה
+        //        SqlConnection con = this.Connect("webOsDB");
+        //        SqlCommand command = new SqlCommand(
+        //            "INSERT INTO [CoParkingUserVIP_2022] SELECT TOP "+M+" '"+P.ParkingCode+"',[id] FROM[CoParkingUsers_2022] ORDER BY priorityLevel"
+        //            , con);
+        //        command.CommandType = System.Data.CommandType.Text;
+        //        command.CommandTimeout = 30;
+        //        SqlDataReader dr = command.ExecuteReader();
+        //    }
+        //    else
+        //    {
+
+        //    }
+        //}
+
+        public int numberOfM()
+        {
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand(
+                "select count(id) as 'M'  from [CoParkingUsers_2022] where status='on' ", con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            SqlDataReader dr = command.ExecuteReader();
+            while (dr.Read())
+            {
+                M = Convert.ToInt32(dr["M"]);
+            }
+            if (M <= 1) { return 0; }
+            else return M;
         }
 
         public int checkMinutes(Parking P)
