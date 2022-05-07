@@ -6,13 +6,15 @@ using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using System.Web.Configuration;
 
-
 namespace ParkingProject.Models.DAL
 {
     public class DataServices
     {
+
         public string ErrorMessage = "";
         int M = 0;
+        var normal = Normal.WithMeanPrecision(0.0, 0.5);
+
 
         protected SqlConnection Connect(string connectionStringName)
         {
