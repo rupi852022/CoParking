@@ -302,10 +302,12 @@ namespace ParkingProject.Models.DAL
         public int InsertParking(Parking P)
         {
             Console.WriteLine(P.ExitDate);
-            //if(checkMinutes(P)==2)
-            //{
-            //    algoritem2(P);
-            //}
+            if (checkMinutes(P) == 2)
+            {
+                algoritem2(P);
+            }
+            updatePriorityUsers();
+
             SqlConnection con = null;
             try
             {
@@ -365,26 +367,34 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        //public int algoritem2(Parking P) // קודם נבדוק אם החניה מיועדת לתו נכה
-        //{
-        //    M = numberOfM();
+        public int algoritem2(Parking P)
+        {
+            M = numberOfM();
+            string str = "";
+            SqlConnection con = this.Connect("webOsDB");
+            if (P.TypeOfParking == 2)
+            {
+                str = "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP "+M+" '"+P.ParkingCode+ "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
 
-        //    if (P.TypeOfParking == 2)
-        //    {
-        //        // צריך להוסיף לסלקט שיבחר רק את המשתמשים שיש להם לפחות רכב אחד עם תו נכה
-        //        SqlConnection con = this.Connect("webOsDB");
-        //        SqlCommand command = new SqlCommand(
-        //            "INSERT INTO [CoParkingUserVIP_2022] SELECT TOP "+M+" '"+P.ParkingCode+"',[id] FROM[CoParkingUsers_2022] ORDER BY priorityLevel"
-        //            , con);
-        //        command.CommandType = System.Data.CommandType.Text;
-        //        command.CommandTimeout = 30;
-        //        SqlDataReader dr = command.ExecuteReader();
-        //    }
-        //    else
-        //    {
+            }
+            else
+            {
+                str = "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
+            }
 
-        //    }
-        //}
+            SqlCommand command = new SqlCommand(str, con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            SqlDataReader dr = command.ExecuteReader();
+
+            return 1;
+        }
+
+        public int updatePriorityUsers()
+        {
+            //צריך ליצור טבלה של משתמשים עם כל הנתונים שלהם ולעבור אחד אחד ולהגדיר לכל אחד את הפריוריטי המעודכן שלו
+            // אולי לבדוק כמה משתמשים יש במערכת ולעבור ממשתמש מספר 1 עד לסופי וכל פעם לעדכן משתמש מסויים
+        }
 
         public int numberOfM()
         {
@@ -397,9 +407,11 @@ namespace ParkingProject.Models.DAL
             while (dr.Read())
             {
                 M = Convert.ToInt32(dr["M"]);
+                M = M / 10;
             }
-            if (M <= 1) { return 0; }
-            else return M;
+            if (M <= 1) { M = 0; }
+            if (M >= 10) { M = 10; }
+            return M;
         }
 
         public int checkMinutes(Parking P)
