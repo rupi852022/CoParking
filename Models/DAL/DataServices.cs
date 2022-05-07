@@ -13,7 +13,6 @@ namespace ParkingProject.Models.DAL
 
         public string ErrorMessage = "";
         int M = 0;
-        var normal = Normal.WithMeanPrecision(0.0, 0.5);
 
 
         protected SqlConnection Connect(string connectionStringName)
@@ -29,6 +28,7 @@ namespace ParkingProject.Models.DAL
 
         public User[] GetAllUsers()
         {
+            updatePriorityUsers();
             SqlConnection con = this.Connect("webOsDB");
             SqlCommand command = new SqlCommand("SELECT * FROM [CoParkingUsers_2022]", con);
             // TBC - Type and Timeout
@@ -398,7 +398,7 @@ namespace ParkingProject.Models.DAL
             string str = "";
             //צריך ליצור טבלה של משתמשים עם כל הנתונים שלהם ולעבור אחד אחד ולהגדיר לכל אחד את הפריוריטי המעודכן שלו
             // אולי לבדוק כמה משתמשים יש במערכת ולעבור ממשתמש מספר 1 עד לסופי וכל פעם לעדכן משתמש מסויים
-            SqlConnection con = this.Connect("webOsDB");
+            SqlConnection con = Connect("webOsDB");
             SqlCommand command = new SqlCommand("select * from [CoParkingUsers_2022]", con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
@@ -407,9 +407,19 @@ namespace ParkingProject.Models.DAL
             {
                 int tokens = Convert.ToInt32(dr["tokens"]);
                 int id = Convert.ToInt32(dr["id"]);
-                str += "UPDATE[CoParkingUsers_2022] SET priorityLevel = 29 WHERE id = 2";
-
+                double newPriority = Phi((tokens-30)/(10));
+                str += " UPDATE[CoParkingUsers_2022] SET priorityLevel = "+ newPriority + " WHERE id = "+id+" ";
             }
+            dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+            command = null;
+            dr = null;
+            con = Connect("webOsDB");
+            command = new SqlCommand(str, con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            dr = command.ExecuteReader();
+
+            return 1;
         }
 
 
@@ -1645,6 +1655,26 @@ namespace ParkingProject.Models.DAL
                 " END;";
             SqlCommand cmd = createCommand(con, commandStr);
             return cmd;
+        }
+
+        static double Phi(double x)
+        {
+            double a1 = 0.254829592;
+            double a2 = -0.284496736;
+            double a3 = 1.421413741;
+            double a4 = -1.453152027;
+            double a5 = 1.061405429;
+            double p = 0.3275911;
+
+            int sign = 1;
+            if (x < 0)
+                sign = -1;
+            x = Math.Abs(x) / Math.Sqrt(2.0);
+
+            double t = 1.0 / (1.0 + p * x);
+            double y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.Exp(-x * x);
+
+            return 0.5 * (1.0 + sign * y);
         }
     }
 }
