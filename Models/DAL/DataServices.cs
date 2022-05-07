@@ -202,7 +202,7 @@ namespace ParkingProject.Models.DAL
             SqlConnection con = this.Connect("webOsDB");
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             SqlCommand command = new SqlCommand(
-"select[parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from[CoParkingParkings_2022] where[exitDate] >= '" + currentDate + "' AND isHistory = 'N' and(userCodeOut = "+id+" or userCodeIn = "+id+");"
+"select[parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from[CoParkingParkings_2022] where[exitDate] >= '" + currentDate + "' AND isHistory = 'N' and(userCodeOut = " + id + " or userCodeIn = " + id + ");"
                 , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -375,7 +375,7 @@ namespace ParkingProject.Models.DAL
             SqlConnection con = this.Connect("webOsDB");
             if (P.TypeOfParking == 2)
             {
-                str = "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP "+M+" '"+P.ParkingCode+ "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
+                str = "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
 
             }
             else
@@ -396,13 +396,13 @@ namespace ParkingProject.Models.DAL
             string str = "";
             //צריך ליצור טבלה של משתמשים עם כל הנתונים שלהם ולעבור אחד אחד ולהגדיר לכל אחד את הפריוריטי המעודכן שלו
             // אולי לבדוק כמה משתמשים יש במערכת ולעבור ממשתמש מספר 1 עד לסופי וכל פעם לעדכן משתמש מסויים
-                SqlConnection con = this.Connect("webOsDB");
-                SqlCommand command = new SqlCommand("select * from [CoParkingUsers_2022]", con);
-                command.CommandType = System.Data.CommandType.Text;
-                command.CommandTimeout = 30;
-                SqlDataReader dr = command.ExecuteReader();
-                while (dr.Read())
-                {
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand("select * from [CoParkingUsers_2022]", con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            SqlDataReader dr = command.ExecuteReader();
+            while (dr.Read())
+            {
                 int tokens = Convert.ToInt32(dr["tokens"]);
                 int id = Convert.ToInt32(dr["id"]);
                 str += "UPDATE[CoParkingUsers_2022] SET priorityLevel = 29 WHERE id = 2";
@@ -471,12 +471,12 @@ namespace ParkingProject.Models.DAL
 
         }
 
-            SqlCommand CreateUpdateParking(Parking P, SqlConnection con)
+        SqlCommand CreateUpdateParking(Parking P, SqlConnection con)
         {
             string insertStr = "";
             Console.WriteLine(P.ExitDate);
             string currentexitDate = P.ExitDate.ToString("yyyy-MM-dd hh:mm:ss");
-            insertStr += " DELETE FROM[CoParkingParkings_2022] where parkingCode = "+P.ParkingCode+";";
+            insertStr += " DELETE FROM[CoParkingParkings_2022] where parkingCode = " + P.ParkingCode + ";";
             if (P.UserCodeIn == 0)
             {
                 insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '" + P.LocationName + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "')";
@@ -907,12 +907,12 @@ namespace ParkingProject.Models.DAL
                 SqlCommand selectCommand = creatSelectUserCommandId(con, id);
                 int affected = selectCommand.ExecuteNonQuery();
                 dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
-                    if (dr == null || !dr.Read())
-                    {
-                        ErrorMessage = "the Id is not exist.";
-                        Exception ex = new Exception(ErrorMessage);
-                        throw ex;
-                    }
+                if (dr == null || !dr.Read())
+                {
+                    ErrorMessage = "the Id is not exist.";
+                    Exception ex = new Exception(ErrorMessage);
+                    throw ex;
+                }
 
                 string currentEmail = (string)dr["email"];
                 string password = (string)dr["password"];
