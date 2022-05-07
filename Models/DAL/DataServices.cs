@@ -396,8 +396,6 @@ namespace ParkingProject.Models.DAL
         public int updatePriorityUsers()
         {
             string str = "";
-            //צריך ליצור טבלה של משתמשים עם כל הנתונים שלהם ולעבור אחד אחד ולהגדיר לכל אחד את הפריוריטי המעודכן שלו
-            // אולי לבדוק כמה משתמשים יש במערכת ולעבור ממשתמש מספר 1 עד לסופי וכל פעם לעדכן משתמש מסויים
             SqlConnection con = Connect("webOsDB");
             SqlCommand command = new SqlCommand("select * from [CoParkingUsers_2022]", con);
             command.CommandType = System.Data.CommandType.Text;
@@ -410,7 +408,12 @@ namespace ParkingProject.Models.DAL
                 double newPriority = Phi((tokens-30)/(10));
                 str += " UPDATE[CoParkingUsers_2022] SET priorityLevel = "+ newPriority + " WHERE id = "+id+" ";
             }
-            dr = command.ExecuteReader(CommandBehavior.CloseConnection);
+            if (con != null)
+                con.Close();
+            if (dr != null)
+            {
+                dr.Close();
+            }
             command = null;
             dr = null;
             con = Connect("webOsDB");
