@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using System.Web.Configuration;
 
+
 namespace ParkingProject.Models.DAL
 {
     public class DataServices
@@ -392,9 +393,23 @@ namespace ParkingProject.Models.DAL
 
         public int updatePriorityUsers()
         {
+            string str = "";
             //צריך ליצור טבלה של משתמשים עם כל הנתונים שלהם ולעבור אחד אחד ולהגדיר לכל אחד את הפריוריטי המעודכן שלו
             // אולי לבדוק כמה משתמשים יש במערכת ולעבור ממשתמש מספר 1 עד לסופי וכל פעם לעדכן משתמש מסויים
+                SqlConnection con = this.Connect("webOsDB");
+                SqlCommand command = new SqlCommand("select * from [CoParkingUsers_2022]", con);
+                command.CommandType = System.Data.CommandType.Text;
+                command.CommandTimeout = 30;
+                SqlDataReader dr = command.ExecuteReader();
+                while (dr.Read())
+                {
+                int tokens = Convert.ToInt32(dr["tokens"]);
+                int id = Convert.ToInt32(dr["id"]);
+                str += "UPDATE[CoParkingUsers_2022] SET priorityLevel = 29 WHERE id = 2";
+
+            }
         }
+
 
         public int numberOfM()
         {
