@@ -1678,7 +1678,13 @@ namespace ParkingProject.Models.DAL
             double y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.Exp(-x * x);
 
             return 0.5 * (1.0 + sign * y);
+
+
         }
+
+
     }
+
+
 }
 
