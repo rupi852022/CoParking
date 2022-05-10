@@ -178,7 +178,6 @@
     <Compile Include="Models\Password.cs" />
     <Compile Include="Models\Manufacture.cs" />
     <Compile Include="Models\Parking.cs" />
-    <Compile Include="Models\TaskScheduler.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
