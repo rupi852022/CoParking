@@ -28,7 +28,6 @@ namespace ParkingProject.Models.DAL
 
         public User[] GetAllUsers()
         {
-            updatePriorityUsers();
             SqlConnection con = this.Connect("webOsDB");
             SqlCommand command = new SqlCommand("SELECT * FROM [CoParkingUsers_2022]", con);
             // TBC - Type and Timeout
