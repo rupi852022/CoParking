@@ -392,19 +392,51 @@ namespace ParkingProject.Models.DAL
             return 1;
         }
 
-        public int updatePriorityUsers()
+        public void updatePriorityUsers()
         {
             string str = "";
             SqlConnection con = Connect("webOsDB");
-            SqlCommand command = new SqlCommand("select * from [CoParkingUsers_2022]", con);
+            SqlCommand command = new SqlCommand("select DISTINCT [CoParkingUsers_2022].id, [CoParkingUsersCars_2022].carPic from [CoParkingUsers_2022] LEFT JOIN CoParkingUsersCars_2022 ON[CoParkingUsers_2022].id = CoParkingUsersCars_2022.id; ", con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             SqlDataReader dr = command.ExecuteReader();
             while (dr.Read())
             {
-                int tokens = Convert.ToInt32(dr["tokens"]);
+                int tmpPriority = 1;
                 int id = Convert.ToInt32(dr["id"]);
-                double newPriority = Phi((tokens-30)/(10));
+                string pic = "";
+                if (dr["carPic"] != DBNull.Value)
+                {
+                 pic = (string)dr["carPic"];
+                }
+                
+                if (String.IsNullOrEmpty(pic))
+                { tmpPriority = 0; }
+                str += " UPDATE[CoParkingUsers_2022] SET priorityLevel = " + tmpPriority + " WHERE id = " + id + " ";
+            }
+            if (con != null)
+                con.Close();
+            if (dr != null)
+            {
+                dr.Close();
+            }
+            command = null;
+            dr = null;
+            con = Connect("webOsDB");
+            command = new SqlCommand("select * from [CoParkingUsers_2022]", con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            dr = command.ExecuteReader();
+            while (dr.Read())
+            {
+                int Priority = Convert.ToInt32(dr["priorityLevel"]);
+                int id = Convert.ToInt32(dr["id"]);
+                int tokens = Convert.ToInt32(dr["tokens"]);
+                string image = (string)dr["image"];
+                int scoreUserPicture = 1;
+                if (String.IsNullOrEmpty(image))
+                { scoreUserPicture = 0; }
+                double newPriority = 0.25 * (Phi((tokens - 30) / (10))) + 0.015 * scoreUserPicture + 0.035*Priority;
                 str += " UPDATE[CoParkingUsers_2022] SET priorityLevel = "+ newPriority + " WHERE id = "+id+" ";
             }
             if (con != null)
@@ -420,10 +452,7 @@ namespace ParkingProject.Models.DAL
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             dr = command.ExecuteReader();
-
-            return 1;
         }
-
 
         public int numberOfM()
         {

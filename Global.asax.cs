@@ -33,7 +33,8 @@ namespace ParkingProject
             while (1!=0)
             {
                 ds.updatePriorityUsers();
-                Thread.Sleep(43200000);//הפעלה כל 12 שעות
+                //Password.SendinEmail("idano44441@gmail.com");
+                Thread.Sleep(300000);//הפעלה כל 5 דק
             }
         }
     }
