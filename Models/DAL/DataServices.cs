@@ -178,18 +178,35 @@ namespace ParkingProject.Models.DAL
                 string signType = (string)dr["signType"];
                 int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
                 string numberCarOut = (string)dr["numberCarOut"];
+                //if (dr["userCodeIn"] != DBNull.Value)
+                //{
+                //    int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
+                //    string numberCarIn = (string)dr["numberCarIn"];
+                //    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn);
+                //    parkings.Add(parking);
+                //}
+                //else
+                //{
+                //    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut);
+                //    parkings.Add(parking);
+
+                //}
                 if (dr["userCodeIn"] != DBNull.Value)
                 {
                     int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
                     string numberCarIn = (string)dr["numberCarIn"];
                     Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn);
-                    parkings.Add(parking);
+                    updateWithAlgoritems(parking);
+                    if (checkIfParkingForUser(parking.ParkingCode, id) is true)
+                    { parkings.Add(parking); }
+
                 }
                 else
                 {
                     Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut);
-                    parkings.Add(parking);
-
+                    updateWithAlgoritems(parking);
+                    if (checkIfParkingForUser(parking.ParkingCode, id) is true)
+                    { parkings.Add(parking); }
                 }
 
             }
@@ -223,23 +240,23 @@ namespace ParkingProject.Models.DAL
                 string signType = (string)dr["signType"];
                 int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
                 string numberCarOut = (string)dr["numberCarOut"];
-                if (dr["userCodeIn"] != DBNull.Value)
-                {
-                    int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
-                    string numberCarIn = (string)dr["numberCarIn"];
-                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn);
-                    updateWithAlgoritems(parking);
-                    if(checkIfParkingForUser(parking.ParkingCode, id) is true)
-                    { parkings.Add(parking); }
+                //if (dr["userCodeIn"] != DBNull.Value)
+                //{
+                //    int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
+                //    string numberCarIn = (string)dr["numberCarIn"];
+                //    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn);
+                //    updateWithAlgoritems(parking);
+                //    if(checkIfParkingForUser(parking.ParkingCode, id) is true)
+                //    { parkings.Add(parking); }
                     
-                }
-                else
-                {
+                //}
+                //else
+                //{
                     Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut);
                     updateWithAlgoritems(parking);
                     if (checkIfParkingForUser(parking.ParkingCode, id) is true)
                     { parkings.Add(parking); }
-                }
+                //}
 
             }
 
@@ -255,7 +272,19 @@ namespace ParkingProject.Models.DAL
             SqlDataReader dr = command.ExecuteReader();
             while (dr.Read())
             {
+                if (con != null)
+                    con.Close();
+                if (dr != null)
+                {
+                    dr.Close();
+                }
                 return true;
+            }
+            if (con != null)
+                con.Close();
+            if (dr != null)
+            {
+                dr.Close();
             }
             return false;
         }
@@ -403,20 +432,27 @@ namespace ParkingProject.Models.DAL
             M = numberOfM();
             string str = "";
             SqlConnection con = this.Connect("webOsDB");
+            str += "DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode = '"+ P.ParkingCode + "';";
             if (P.TypeOfParking == 2)
             {
-                str = "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
 
             }
             else
             {
-                str = "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
             }
 
             SqlCommand command = new SqlCommand(str, con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             SqlDataReader dr = command.ExecuteReader();
+            if (con != null)
+                con.Close();
+            if (dr != null)
+            {
+                dr.Close();
+            }
 
             return 1;
         }
@@ -426,14 +462,15 @@ namespace ParkingProject.Models.DAL
             M = numberOfUsers();
             string str = "";
             SqlConnection con = this.Connect("webOsDB");
+            str += "DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode = '" + P.ParkingCode + "';";
             if (P.TypeOfParking == 2)
             {
-                str = "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 ORDER BY priorityLevel DESC";
 
             }
             else
             {
-                str = "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where not priorityLevel=0 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where not priorityLevel=0 ORDER BY priorityLevel DESC";
             }
 
             SqlCommand command = new SqlCommand(str, con);
