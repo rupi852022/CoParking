@@ -30,8 +30,9 @@ namespace ParkingProject
         public static void ThreadProc()
         {
             DataServices ds = new DataServices();
-            while (1!=0)
+            while (true)
             {
+                Console.WriteLine("trying to run");
                 ds.updatePriorityUsers();
                 //Password.SendinEmail("idano44441@gmail.com");
                 Thread.Sleep(300000);//הפעלה כל 5 דק
