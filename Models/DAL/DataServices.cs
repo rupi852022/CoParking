@@ -389,11 +389,12 @@ namespace ParkingProject.Models.DAL
             {
                 algoritem1(P);
             }
-            //if (checkMinutes(P) == 2)
-            //{
-            //}
+            if (checkMinutes(P) == 2)
+            {
+                algoritem2(P);
+            }
             else
-            algoritem2(P);
+            algoritem1(P);
         }
 
         public int UpdateParking(Parking P)
@@ -465,18 +466,24 @@ namespace ParkingProject.Models.DAL
             str += "DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode = '" + P.ParkingCode + "';";
             if (P.TypeOfParking == 2)
             {
-                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 ORDER BY priorityLevel DESC";
 
             }
             else
             {
-                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where not priorityLevel=0 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where not priorityLevel=0 ORDER BY priorityLevel DESC";
             }
 
             SqlCommand command = new SqlCommand(str, con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             SqlDataReader dr = command.ExecuteReader();
+            if (con != null)
+                con.Close();
+            if (dr != null)
+            {
+                dr.Close();
+            }
 
             return 1;
         }
