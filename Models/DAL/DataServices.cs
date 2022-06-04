@@ -353,7 +353,6 @@ namespace ParkingProject.Models.DAL
         public int InsertParking(Parking P)
         {
             Console.WriteLine(P.ExitDate);
-            updateWithAlgoritems(P);
             SqlConnection con = null;
             try
             {
