@@ -11,10 +11,12 @@ namespace ParkingProject.Controllers
 {
     public class ParkingsController : ApiController
     {
-        public Parking[] Get(int id)
+        public Tuple<Parking, Cars>[] Get(int id)
         {
             return ParkingProject.Models.Parking.GetAll(id);
         }
+
+
         public Parking[] Get(int id, int temp1, int temp2)
         {
             return ParkingProject.Models.Parking.GetAllParkingsUser(id);

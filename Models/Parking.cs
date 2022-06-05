@@ -109,7 +109,7 @@ namespace ParkingProject.Models
             return status;
         }
 
-        public static Parking[] GetAll(int id)
+        public static Tuple<Parking, Cars>[] GetAll(int id)
         {
             return ds.GetAllParkings(id);
         }

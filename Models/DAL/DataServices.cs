@@ -153,7 +153,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public Parking[] GetAllParkings(int id)
+        public Tuple<Parking,Cars>[] GetAllParkings(int id)
         {
 
             SqlConnection con = this.Connect("webOsDB");
@@ -166,7 +166,9 @@ namespace ParkingProject.Models.DAL
             command.CommandTimeout = 30;
 
             SqlDataReader dr = command.ExecuteReader();
-            List<Parking> parkings = new List<Parking>();
+            //List<Parking> parkings = new List<Parking>();
+            var tupleList = new List<Tuple<Parking,Cars>>();
+
             while (dr.Read())
             {
                 int parkingCode = Convert.ToInt32(dr["parkingCode"]);
@@ -196,22 +198,28 @@ namespace ParkingProject.Models.DAL
                     int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
                     string numberCarIn = (string)dr["numberCarIn"];
                     Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn);
+                    Cars c = ParkingProject.Models.Cars.readCar(parking.NumberCarOut, parking.UserCodeOut);
                     updateWithAlgoritems(parking);
                     if (checkIfParkingForUser(parking.ParkingCode, id) is true)
-                    { parkings.Add(parking); }
+                    {
+                        tupleList.Add(new Tuple<Parking,Cars>(parking,c));
+                       /* parkings.Add(parking);*/ }
 
                 }
                 else
                 {
                     Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut);
+                    Cars c = ParkingProject.Models.Cars.readCar(parking.NumberCarOut, parking.UserCodeOut);
                     updateWithAlgoritems(parking);
                     if (checkIfParkingForUser(parking.ParkingCode, id) is true)
-                    { parkings.Add(parking); }
+                    {
+                        tupleList.Add(new Tuple<Parking, Cars>(parking, c));
+                        /*parkings.Add(parking); */}
                 }
 
             }
-
-            return parkings.ToArray();
+            return tupleList.ToArray();
+            //return parkings.ToArray();
         }
 
 
