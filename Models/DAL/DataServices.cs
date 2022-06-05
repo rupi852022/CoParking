@@ -153,7 +153,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public Tuple<Parking,Cars>[] GetAllParkings(int id)
+        public Tuple<Parking,Cars,User>[] GetAllParkings(int id)
         {
 
             SqlConnection con = this.Connect("webOsDB");
@@ -167,7 +167,7 @@ namespace ParkingProject.Models.DAL
 
             SqlDataReader dr = command.ExecuteReader();
             //List<Parking> parkings = new List<Parking>();
-            var tupleList = new List<Tuple<Parking,Cars>>();
+            var tupleList = new List<Tuple<Parking,Cars,User>>();
 
             while (dr.Read())
             {
@@ -199,10 +199,11 @@ namespace ParkingProject.Models.DAL
                     string numberCarIn = (string)dr["numberCarIn"];
                     Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn);
                     Cars c = ParkingProject.Models.Cars.readCar(parking.NumberCarOut, parking.UserCodeOut);
+                    User u = ParkingProject.Models.User.readUserId(parking.UserCodeOut);
                     updateWithAlgoritems(parking);
                     if (checkIfParkingForUser(parking.ParkingCode, id) is true)
                     {
-                        tupleList.Add(new Tuple<Parking,Cars>(parking,c));
+                        tupleList.Add(new Tuple<Parking,Cars,User>(parking,c,u));
                        /* parkings.Add(parking);*/ }
 
                 }
@@ -210,10 +211,11 @@ namespace ParkingProject.Models.DAL
                 {
                     Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut);
                     Cars c = ParkingProject.Models.Cars.readCar(parking.NumberCarOut, parking.UserCodeOut);
+                    User u = ParkingProject.Models.User.readUserId(parking.UserCodeOut);
                     updateWithAlgoritems(parking);
                     if (checkIfParkingForUser(parking.ParkingCode, id) is true)
                     {
-                        tupleList.Add(new Tuple<Parking, Cars>(parking, c));
+                        tupleList.Add(new Tuple<Parking, Cars,User>(parking, c,u));
                         /*parkings.Add(parking); */}
                 }
 
