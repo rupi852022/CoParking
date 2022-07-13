@@ -117,7 +117,11 @@ namespace ParkingProject.Models
 
         public static Parking[] GetAllParkingsUser(int id)
         {
-            return ds.GetAllParkingsUser(id);
+            Parking[] P = ds.GetAllParkingsUser(id);
+
+            Array.Sort(P, (x, y) => y.exitDate.CompareTo(x.exitDate));
+            return P;
+
         }
 
         public static Parking GetParking(int parkingCode)

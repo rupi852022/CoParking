@@ -159,7 +159,7 @@ namespace ParkingProject.Models.DAL
             SqlConnection con = this.Connect("webOsDB");
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             SqlCommand command = new SqlCommand(
-                "select [parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [userCodeOut] != '" + id + "';"
+                "select [parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [userCodeIn] IS NULL AND [userCodeOut] != '" + id + "';"
                 , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
