@@ -23,20 +23,20 @@ namespace ParkingProject
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            Thread thr = new Thread(ThreadProc);
-            thr.Start();
+            //Thread thr = new Thread(ThreadProc);
+            //thr.Start();
         }
 
-        public static void ThreadProc()
-        {
-            DataServices ds = new DataServices();
-            while (true)
-            {
-                Console.WriteLine("trying to run");
-                ds.updatePriorityUsers();
-                //Password.SendinEmail("idano44441@gmail.com");
-                Thread.Sleep(300000);//הפעלה כל 5 דק
-            }
-        }
+        //public static void ThreadProc()
+        //{
+        //    DataServices ds = new DataServices();
+        //    while (true)
+        //    {
+        //        Console.WriteLine("trying to run");
+        //        ds.updatePriorityUsers();
+        //        //Password.SendinEmail("idano44441@gmail.com");
+        //        Thread.Sleep(300000);//הפעלה כל 5 דק
+        //    }
+        //}
     }
 }

@@ -500,48 +500,58 @@ namespace ParkingProject.Models.DAL
         public void updatePriorityUsers()
         {
             string str = "";
+            //SqlConnection con = Connect("webOsDB");
+            //SqlCommand command = new SqlCommand("select DISTINCT [CoParkingUsers_2022].id, [CoParkingUsersCars_2022].carPic from [CoParkingUsers_2022] LEFT JOIN CoParkingUsersCars_2022 ON[CoParkingUsers_2022].id = CoParkingUsersCars_2022.id; ", con);
+            //command.CommandType = System.Data.CommandType.Text;
+            //command.CommandTimeout = 30;
+            //SqlDataReader dr = command.ExecuteReader();
+            //while (dr.Read())
+            //{
+            //    int tmpPriority = 1;
+            //    int id = Convert.ToInt32(dr["id"]);
+            //    string pic = "";
+            //    if (dr["carPic"] != DBNull.Value)
+            //    {
+            //     pic = (string)dr["carPic"];
+            //    }
+
+            //    if (String.IsNullOrEmpty(pic))
+            //    { tmpPriority = 0; }
+            //    str += " UPDATE[CoParkingUsers_2022] SET priorityLevel = " + tmpPriority + " WHERE id = " + id + " ";
+            //}
+            //if (con != null)
+            //    con.Close();
+            //if (dr != null)
+            //{
+            //    dr.Close();
+            //}
+            //command = null;
+            //dr = null;
             SqlConnection con = Connect("webOsDB");
-            SqlCommand command = new SqlCommand("select DISTINCT [CoParkingUsers_2022].id, [CoParkingUsersCars_2022].carPic from [CoParkingUsers_2022] LEFT JOIN CoParkingUsersCars_2022 ON[CoParkingUsers_2022].id = CoParkingUsersCars_2022.id; ", con);
+            SqlCommand command = new SqlCommand("  select DISTINCT [CoParkingUsers_2022].[id],[CoParkingUsers_2022].[email],[CoParkingUsers_2022].[password],[CoParkingUsers_2022].[fName],[CoParkingUsers_2022].[lName],[CoParkingUsers_2022].[phoneNumber],[CoParkingUsers_2022].[gender],[CoParkingUsers_2022].[image],[CoParkingUsers_2022].[searchRadius],[CoParkingUsers_2022].[timeDelta],[CoParkingUsers_2022].[status],[CoParkingUsers_2022].[tokens],[CoParkingUsers_2022].[priorityLevel],[CoParkingUsersCars_2022].carPic from [CoParkingUsers_2022] LEFT JOIN CoParkingUsersCars_2022 ON[CoParkingUsers_2022].id = CoParkingUsersCars_2022.id;", con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             SqlDataReader dr = command.ExecuteReader();
+            int tmpPriority = 1;
             while (dr.Read())
             {
-                int tmpPriority = 1;
+                tmpPriority = 1;
                 int id = Convert.ToInt32(dr["id"]);
                 string pic = "";
                 if (dr["carPic"] != DBNull.Value)
                 {
-                 pic = (string)dr["carPic"];
+                    pic = (string)dr["carPic"];
                 }
-                
+
                 if (String.IsNullOrEmpty(pic))
                 { tmpPriority = 0; }
-                str += " UPDATE[CoParkingUsers_2022] SET priorityLevel = " + tmpPriority + " WHERE id = " + id + " ";
-            }
-            if (con != null)
-                con.Close();
-            if (dr != null)
-            {
-                dr.Close();
-            }
-            command = null;
-            dr = null;
-            con = Connect("webOsDB");
-            command = new SqlCommand("select * from [CoParkingUsers_2022]", con);
-            command.CommandType = System.Data.CommandType.Text;
-            command.CommandTimeout = 30;
-            dr = command.ExecuteReader();
-            while (dr.Read())
-            {
-                int Priority = Convert.ToInt32(dr["priorityLevel"]);
-                int id = Convert.ToInt32(dr["id"]);
+
                 int tokens = Convert.ToInt32(dr["tokens"]);
                 string image = (string)dr["image"];
                 int scoreUserPicture = 1;
                 if (String.IsNullOrEmpty(image))
                 { scoreUserPicture = 0; }
-                double newPriority = 0.25 * (Phi((tokens - 30) / (10))) + 0.015 * scoreUserPicture + 0.035*Priority;
+                double newPriority = 0.25 * (Phi((tokens - 30) / (10))) + 0.015 * scoreUserPicture + 0.035* tmpPriority;
                 str += " UPDATE[CoParkingUsers_2022] SET priorityLevel = "+ newPriority + " WHERE id = "+id+" ";
             }
             if (con != null)
