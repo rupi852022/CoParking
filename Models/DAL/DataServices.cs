@@ -225,13 +225,13 @@ namespace ParkingProject.Models.DAL
         }
 
 
-        public Parking[] GetAllParkingsUser(int id)
+        public Tuple<Parking, Cars, Cars, User>[] GetAllParkingsUser(int id)
         {
-
+            var tupleList = new List<Tuple<Parking, Cars, Cars, User>>();
             SqlConnection con = this.Connect("webOsDB");
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             SqlCommand command = new SqlCommand(
-"select[parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from[CoParkingParkings_2022] where[exitDate] >= '" + currentDate + "' AND isHistory = 'N' and(userCodeOut = " + id + " or userCodeIn = " + id + ");"
+"select[parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from[CoParkingParkings_2022] where[exitDate] >= '" + currentDate + "' AND isHistory = 'N' and(userCodeOut = " + id + " or userCodeIn = " + id + ") ORDER BY exitDate;"
                 , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -268,12 +268,30 @@ namespace ParkingProject.Models.DAL
                     { parkings.Add(parking); }
                 //}
 
+                Cars c = ParkingProject.Models.Cars.readCar(parking.NumberCarOut, parking.UserCodeOut);
+                Cars d = null;
+                User u = null;
+                if (parking.NumberCarIn != null)
+                {
+                    d = ParkingProject.Models.Cars.readCar(parking.NumberCarIn, parking.UserCodeIn);
+                    u = ParkingProject.Models.User.readUserId(parking.UserCodeIn);
+                }
+
+                tupleList.Add(new Tuple<Parking, Cars, Cars, User>(parking, c, d,u));
             }
 
-            return parkings.ToArray();
+
+            //return parkings.ToArray();
+            return tupleList.ToArray();
         }
 
-        public bool checkIfParkingForUser(int ParkingCode, int id)
+
+
+
+
+
+
+public bool checkIfParkingForUser(int ParkingCode, int id)
         {
             SqlConnection con = Connect("webOsDB");
             SqlCommand command = new SqlCommand("select parkingCode from [CoParkingUserVIP_2022] where parkingCode='"+ParkingCode+"' and userCode='"+id+"';", con);

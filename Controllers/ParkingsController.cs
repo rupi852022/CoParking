@@ -17,7 +17,11 @@ namespace ParkingProject.Controllers
         }
 
 
-        public Parking[] Get(int id, int temp1, int temp2)
+        //public Parking[] Get(int id, int temp1, int temp2)
+        //{
+        //    return ParkingProject.Models.Parking.GetAllParkingsUser(id);
+        //}
+        public Tuple<Parking, Cars,Cars, User>[] Get(int id, int temp1, int temp2)
         {
             return ParkingProject.Models.Parking.GetAllParkingsUser(id);
         }

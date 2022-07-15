@@ -115,11 +115,12 @@ namespace ParkingProject.Models
         }
         
 
-        public static Parking[] GetAllParkingsUser(int id)
+        public static Tuple<Parking, Cars, Cars, User>[] GetAllParkingsUser(int id)
         {
-            Parking[] P = ds.GetAllParkingsUser(id);
 
-            Array.Sort(P, (x, y) => y.exitDate.CompareTo(x.exitDate));
+            Tuple<Parking, Cars, Cars, User>[] P = ds.GetAllParkingsUser(id);
+
+            Array.Sort(P, (x, y) => x.Item1.exitDate.CompareTo(y.Item1.exitDate));
             return P;
 
         }
