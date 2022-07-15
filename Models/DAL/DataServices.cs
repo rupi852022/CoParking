@@ -224,6 +224,67 @@ namespace ParkingProject.Models.DAL
             //return parkings.ToArray();
         }
 
+        
+        public Tuple<Parking, Cars, Cars, User>[] GetAllParkingsUserFuture(int id)
+        {
+            var tupleList = new List<Tuple<Parking, Cars, Cars, User>>();
+            SqlConnection con = this.Connect("webOsDB");
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            SqlCommand command = new SqlCommand(
+"select[parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from[CoParkingParkings_2022] where[exitDate] < '" + currentDate + "' AND isHistory = 'N' and(userCodeOut = " + id + " or userCodeIn = " + id + ") ORDER BY exitDate;"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            List<Parking> parkings = new List<Parking>();
+            while (dr.Read())
+            {
+                int parkingCode = Convert.ToInt32(dr["parkingCode"]);
+                double locationLng = Convert.ToDouble((string)dr["LocationLng"]);
+                double locationLat = Convert.ToDouble((string)dr["LocationLat"]);
+                string locationName = (string)dr["LocationName"];
+                DateTime exitDate = DateTime.Parse((string)dr["exitDate"]);
+                int typeOfParking = Convert.ToInt32(dr["typeOfParking"]);
+                string signType = (string)dr["signType"];
+                int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
+                string numberCarOut = (string)dr["numberCarOut"];
+                //if (dr["userCodeIn"] != DBNull.Value)
+                //{
+                //    int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
+                //    string numberCarIn = (string)dr["numberCarIn"];
+                //    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn);
+                //    updateWithAlgoritems(parking);
+                //    if(checkIfParkingForUser(parking.ParkingCode, id) is true)
+                //    { parkings.Add(parking); }
+
+                //}
+                //else
+                //{
+                Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut);
+                updateWithAlgoritems(parking);
+                if (checkIfParkingForUser(parking.ParkingCode, id) is true)
+                { parkings.Add(parking); }
+                //}
+
+                Cars c = ParkingProject.Models.Cars.readCar(parking.NumberCarOut, parking.UserCodeOut);
+                Cars d = null;
+                User u = null;
+                if (parking.NumberCarIn != null)
+                {
+                    d = ParkingProject.Models.Cars.readCar(parking.NumberCarIn, parking.UserCodeIn);
+                    u = ParkingProject.Models.User.readUserId(parking.UserCodeIn);
+                }
+
+                tupleList.Add(new Tuple<Parking, Cars, Cars, User>(parking, c, d, u));
+            }
+
+
+            //return parkings.ToArray();
+            return tupleList.ToArray();
+        }
+
 
         public Tuple<Parking, Cars, Cars, User>[] GetAllParkingsUser(int id)
         {
@@ -408,6 +469,41 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
                     con.Close();
             }
         }
+
+        public int updateTokens(int UserId, int tokens)
+        {
+            SqlConnection con = null;
+            try
+            {
+                // C - Connect
+                con = Connect("webOsDB");
+                User U = ReadUserId(UserId);
+                int oldTokens = U.Tokens;
+                int newTokens = oldTokens + tokens;
+                if (newTokens<=0) { newTokens = 0; };
+
+                // C - Create Command
+                SqlCommand command = CreateupdateTokens(UserId, newTokens, con);
+
+                // E - Execute
+                int affected = command.ExecuteNonQuery();
+
+                return affected;
+
+            }
+            catch (Exception ex)
+            {
+                // write to log file
+                ErrorMessage = "proble with insert parking";
+                throw new Exception(ErrorMessage, ex);
+            }
+            finally
+            {
+                if (con != null)
+                    con.Close();
+            }
+        }
+
 
         public void updateWithAlgoritems(Parking P)
         {
@@ -656,6 +752,20 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
                 insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut], [userCodeIn], [numberCarIn]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '" + P.LocationName + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "', '" + P.UserCodeIn + "', '" + P.NumberCarIn + "')";
             }
             SqlCommand command = new SqlCommand(insertStr, con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+
+        }
+
+        SqlCommand CreateupdateTokens(int UserId,int tokens, SqlConnection con)
+        {
+            string str;
+            str = "UPDATE [CoParkingUsers_2022] SET tokens = "+tokens+" WHERE id = "+UserId+";";
+
+
+            SqlCommand command = new SqlCommand(str, con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
@@ -1087,6 +1197,7 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
                     con.Close();
             }
         }
+
 
         public User ReadUserId(int id)
         {
@@ -1643,6 +1754,104 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
                     con.Close();
             }
         }
+        
+
+        public bool ApproveParking(int idUser, int parkingCode)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = Connect("webOsDB");
+
+                bool userIn;
+                Parking P = GetParking(parkingCode);
+                if (idUser == P.UserCodeIn)
+                { userIn = true; }
+                else
+                {
+                    if (idUser == P.UserCodeOut)
+                    { userIn = false; }
+                    else
+                    {
+                        ErrorMessage = "The userId not exist";
+                        Exception ex = new Exception(ErrorMessage);
+                        throw ex;
+                    }
+                }
+
+                if (checkApprove(parkingCode, userIn)==true)
+                {
+                    ErrorMessage = "The userId alredy approved";
+                    Exception ex = new Exception(ErrorMessage);
+                    throw ex;
+                }   
+                int status = UpdateApprove(parkingCode, userIn, con);
+                if(userIn == true) { userIn = false; } else { userIn = true; };
+                if(checkApprove(parkingCode, userIn)==true)
+                {
+                    updateTokens(P.UserCodeOut, 10);
+                    updateTokens(P.UserCodeIn, -10);
+                }
+                return checkApprove(parkingCode, userIn);
+
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorMessage, ex);
+            }
+            finally
+            {
+                if (con != null)
+                    con.Close();
+            }
+        }
+
+        public bool checkApprove(int parkingCode, bool userIn)
+        {
+
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand(
+                "select [userCodeOutApprove],[userCodeInApprove] from [CoParkingParkings_2022] where [parkingCode] = '" + parkingCode + "';"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            bool userCodeOutApprove = false;
+            bool userCodeInApprove = false;
+            if (dr.Read())
+            {
+                string userCodeOut = (string)dr["userCodeOutApprove"];
+                string userCodeIn = (string)dr["userCodeInApprove"];
+
+                if (userCodeOut == "Y")
+                { userCodeOutApprove = true; }
+                if (userCodeIn == "Y")
+                { userCodeInApprove = true; }
+            }
+            if (userIn == true)
+            {
+                if(userCodeInApprove ==true)
+                {
+                    return true;
+                }
+            }
+            if (userIn == false)
+            {
+                if (userCodeOutApprove == true)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+
+        }
+
+
 
         public int ReturnParking(int parkingCode)
         {
@@ -1734,6 +1943,30 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             selectCommand.CommandTimeout = 30;
             return affected;
         }
+
+        public int UpdateApprove(int parkingCode, bool userIn, SqlConnection con)
+        {
+            SqlDataReader dr = null;
+            SqlCommand selectCommand = checkParking(parkingCode, con);
+            dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+            selectCommand = null;
+            con = Connect("webOsDB");
+            string str = "";
+            if (userIn==true)
+            {
+                str = "UPDATE[CoParkingParkings_2022] SET [userCodeInApprove] = 'Y' WHERE[parkingCode] = '" + parkingCode + "'; ";
+            }
+            else
+            {
+                str = "UPDATE[CoParkingParkings_2022] SET [userCodeOutApprove] = 'Y' WHERE[parkingCode] = '" + parkingCode + "'; ";
+            }
+            selectCommand = new SqlCommand(str, con);
+            int affected = selectCommand.ExecuteNonQuery();
+            selectCommand.CommandType = System.Data.CommandType.Text;
+            selectCommand.CommandTimeout = 30;
+            return affected;
+        }
+
 
         private SqlCommand checkParking(int ParkingCode, SqlConnection con)
         {

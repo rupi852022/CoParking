@@ -124,6 +124,16 @@ namespace ParkingProject.Models
             return P;
 
         }
+        
+        public static Tuple<Parking, Cars, Cars, User>[] GetAllParkingsUserFuture(int id)
+        {
+
+            Tuple<Parking, Cars, Cars, User>[] P = ds.GetAllParkingsUserFuture(id);
+
+            Array.Sort(P, (x, y) => x.Item1.exitDate.CompareTo(y.Item1.exitDate));
+            return P;
+
+        }
 
         public static Parking GetParking(int parkingCode)
         {
@@ -138,6 +148,13 @@ namespace ParkingProject.Models
             int status = ds.TakeParking(idUser, parkingCode);
             return status;
         }
+
+        public static bool ApproveParking(int idUser, int parkingCode)
+        {
+            return ds.ApproveParking(idUser, parkingCode);
+        }
+
+
         public static int ReturnParking(int parkingCode)
         {
             int status = ds.ReturnParking(parkingCode);

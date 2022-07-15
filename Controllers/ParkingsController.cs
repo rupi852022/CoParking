@@ -25,6 +25,10 @@ namespace ParkingProject.Controllers
         {
             return ParkingProject.Models.Parking.GetAllParkingsUser(id);
         }
+        public Tuple<Parking, Cars, Cars, User>[] Get(int id, int temp1, int temp2,int temp3)
+        {
+            return ParkingProject.Models.Parking.GetAllParkingsUserFuture(id);
+        }
 
         public Parking Get(int parkingCode, string x = "x")
         {
@@ -54,6 +58,13 @@ namespace ParkingProject.Controllers
             int status = Parking.TakeParking(idUser, parkingCode);
             return status;
         }
+
+        public bool Put(int userId, int parkingCode, int tmp)
+        {
+            return Parking.ApproveParking(userId, parkingCode);
+        }
+
+
         public int Put([FromBody] Parking P)
         {
             int id = P.Insert();
