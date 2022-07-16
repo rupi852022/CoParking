@@ -59,7 +59,7 @@ namespace ParkingProject.Models.DAL
 
             return users.ToArray();
         }
-        public Tuple<int, DateTime>[] GetAllUsersVip(int parking)
+        public Tuple<int,int, DateTime>[] GetAllUsersVip(int parking)
         {
             SqlConnection con = this.Connect("webOsDB");
             SqlCommand command = new SqlCommand("SELECT distinct userCode,releaseDate FROM [CoParkingUserVip_2022] where parkingCode='"+parking+"' and userCode is not null", con);
@@ -68,12 +68,12 @@ namespace ParkingProject.Models.DAL
             command.CommandTimeout = 30;
 
             SqlDataReader dr = command.ExecuteReader();
-            List<Tuple<int, DateTime>> list = new List<Tuple<int, DateTime>>();
+            List<Tuple<int, int, DateTime>> list = new List<Tuple<int, int, DateTime>>();
             while (dr.Read())
             {
                 int userCode = Convert.ToInt32(dr["userCode"]);
                 DateTime releaseDate = DateTime.Parse((string)dr["releaseDate"]);
-                list.Add(new Tuple<int, DateTime>(userCode, releaseDate));
+                list.Add(new Tuple<int,int, DateTime>(parking,userCode, releaseDate));
 
             }
 
@@ -174,21 +174,25 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public Tuple<Parking,Cars,User>[] GetAllParkings(int id)
+        public Tuple<Parking,bool, DateTime, Cars,User>[] GetAllParkings(int id)
         {
 
             SqlConnection con = this.Connect("webOsDB");
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            //SqlCommand command = new SqlCommand(
+            //    "select [parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [userCodeIn] IS NULL AND [userCodeOut] != '" + id + "';"
+            //    , con);
             SqlCommand command = new SqlCommand(
-                "select [parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from [CoParkingParkings_2022] where [exitDate] >= '" + currentDate + "' AND [userCodeIn] IS NULL AND [userCodeOut] != '" + id + "';"
-                , con);
-            // TBC - Type and Timeout
+    "select distinct [CoParkingParkings_2022].[parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn], CoParkingUserVIP_2022.parkingCode as 'parkingCodeVip',CONVERT(varchar(30), [CoParkingUserVIP_2022].releaseDate , 0) as [releaseDate]  from [CoParkingParkings_2022] LEFT JOIN [CoParkingUserVIP_2022] ON [CoParkingParkings_2022].parkingCode = [CoParkingUserVIP_2022].parkingCode where [exitDate] >= '" + currentDate + "' AND [userCodeIn] IS NULL AND [userCodeOut] != '" + id + "';"
+    , con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
 
             SqlDataReader dr = command.ExecuteReader();
             //List<Parking> parkings = new List<Parking>();
-            var tupleList = new List<Tuple<Parking,Cars,User>>();
+            var tupleList = new List<Tuple<Parking, bool, DateTime, Cars, User>>();
+            bool parkingforuser = false;
+
 
             while (dr.Read())
             {
@@ -201,6 +205,21 @@ namespace ParkingProject.Models.DAL
                 string signType = (string)dr["signType"];
                 int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
                 string numberCarOut = (string)dr["numberCarOut"];
+                DateTime releaseDate;
+                if (dr["releaseDate"] != DBNull.Value)
+                {
+                    releaseDate = DateTime.Parse((string)dr["releaseDate"]);
+                }
+                else
+                {
+                    releaseDate = DateTime.MinValue;
+                }
+               
+                if (dr["parkingCodeVip"] != DBNull.Value)
+                {
+                    parkingforuser = true;
+                }
+
                 //if (dr["userCodeIn"] != DBNull.Value)
                 //{
                 //    int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
@@ -224,8 +243,9 @@ namespace ParkingProject.Models.DAL
                     updateWithAlgoritems(parking);
                     if (checkIfParkingForUser(parking.ParkingCode, id) is true)
                     {
-                        tupleList.Add(new Tuple<Parking,Cars,User>(parking,c,u));
-                       /* parkings.Add(parking);*/ }
+                        tupleList.Add(new Tuple<Parking, bool, DateTime, Cars, User>(parking, parkingforuser, releaseDate, c, u));
+                        /* parkings.Add(parking);*/
+                    }
 
                 }
                 else
@@ -236,8 +256,14 @@ namespace ParkingProject.Models.DAL
                     updateWithAlgoritems(parking);
                     if (checkIfParkingForUser(parking.ParkingCode, id) is true)
                     {
-                        tupleList.Add(new Tuple<Parking, Cars,User>(parking, c,u));
-                        /*parkings.Add(parking); */}
+                        tupleList.Add(new Tuple<Parking, bool, DateTime, Cars, User>(parking, true, releaseDate, c, u));
+                        /*parkings.Add(parking); */
+                    }
+                    else
+                    {
+                        tupleList.Add(new Tuple<Parking, bool, DateTime, Cars, User>(parking, false, releaseDate, c, u));
+                    }
+
                 }
 
             }
@@ -305,7 +331,58 @@ namespace ParkingProject.Models.DAL
             //return parkings.ToArray();
             return tupleList.ToArray();
         }
+        
+        public Parking[] GetAllOnlyParkingsUser(int id)
+        {
+            var List = new List<Parking>();
+            SqlConnection con = this.Connect("webOsDB");
+            string currentDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            SqlCommand command = new SqlCommand(
+"select[parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from[CoParkingParkings_2022] where[exitDate] >= '" + currentDate + "' AND isHistory = 'N' and(userCodeOut = " + id + " or userCodeIn = " + id + ") ORDER BY exitDate;"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
 
+            SqlDataReader dr = command.ExecuteReader();
+            List<Parking> parkings = new List<Parking>();
+            while (dr.Read())
+            {
+                int parkingCode = Convert.ToInt32(dr["parkingCode"]);
+                double locationLng = Convert.ToDouble((string)dr["LocationLng"]);
+                double locationLat = Convert.ToDouble((string)dr["LocationLat"]);
+                string locationName = (string)dr["LocationName"];
+                DateTime exitDate = DateTime.Parse((string)dr["exitDate"]);
+                int typeOfParking = Convert.ToInt32(dr["typeOfParking"]);
+                string signType = (string)dr["signType"];
+                int userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
+                string numberCarOut = (string)dr["numberCarOut"];
+                //if (dr["userCodeIn"] != DBNull.Value)
+                //{
+                //    int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
+                //    string numberCarIn = (string)dr["numberCarIn"];
+                //    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn);
+                //    updateWithAlgoritems(parking);
+                //    if(checkIfParkingForUser(parking.ParkingCode, id) is true)
+                //    { parkings.Add(parking); }
+
+                //}
+                //else
+                //{
+                Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut);
+                updateWithAlgoritems(parking);
+                if (checkIfParkingForUser(parking.ParkingCode, id) is true)
+                { parkings.Add(parking); }
+                //}
+
+
+                List.Add(parking);
+            }
+
+
+            //return parkings.ToArray();
+            return List.ToArray();
+        }
 
         public Tuple<Parking, Cars, Cars, User>[] GetAllParkingsUser(int id)
         {
@@ -504,7 +581,7 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             return manufactures.ToArray();
         }
 
-        public bool InsertParking(Parking P)
+        public Tuple<int, int, DateTime>[] InsertParking(Parking P)
         {
             Console.WriteLine(P.ExitDate);
             SqlConnection con = null;
@@ -519,8 +596,8 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
                 // E - Execute
                 int affected = command.ExecuteNonQuery();
 
-                if (howMuchUsers() == howMuchUsersVip(P.ParkingCode)) { return true; }
-                else { return false};
+                if (howMuchUsers() == howMuchUsersVip(P.ParkingCode)) { return null; }
+                else { return GetAllUsersVip(P.ParkingCode); };
 
             }
             catch (Exception ex)

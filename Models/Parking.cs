@@ -96,11 +96,10 @@ namespace ParkingProject.Models
             int status = ds.TakeParking(idUser, parkingCode);
             return status;
         }
-        public int Insert()
+        public Tuple<int,int, DateTime>[] Insert()
         {
             Parking parking = (this);
-            int status = ds.InsertParking(parking);
-            return status;
+            return ds.InsertParking(parking);
         }
         public int UpdateParking()
         {
@@ -109,7 +108,7 @@ namespace ParkingProject.Models
             return status;
         }
 
-        public static Tuple<Parking, Cars,User>[] GetAll(int id)
+        public static Tuple<Parking, bool, DateTime, Cars, User>[] GetAll(int id)
         {
             return ds.GetAllParkings(id);
         }
@@ -124,7 +123,17 @@ namespace ParkingProject.Models
             return P;
 
         }
-        
+
+        public static Parking[] GetAllOnlyParkingsUser(int id)
+        {
+
+            Parking[] P = ds.GetAllOnlyParkingsUser(id);
+
+            Array.Sort(P, (x, y) => x.exitDate.CompareTo(y.exitDate));
+            return P;
+
+        }
+
         public static Tuple<Parking, Cars, Cars, User>[] GetAllParkingsUserFuture(int id)
         {
 
