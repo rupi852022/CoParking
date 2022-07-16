@@ -59,6 +59,27 @@ namespace ParkingProject.Models.DAL
 
             return users.ToArray();
         }
+        public Tuple<int, DateTime>[] GetAllUsersVip(int parking)
+        {
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand("SELECT distinct userCode,releaseDate FROM [CoParkingUserVip_2022] where parkingCode='"+parking+"' and userCode is not null", con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            List<Tuple<int, DateTime>> list = new List<Tuple<int, DateTime>>();
+            while (dr.Read())
+            {
+                int userCode = Convert.ToInt32(dr["userCode"]);
+                DateTime releaseDate = DateTime.Parse((string)dr["releaseDate"]);
+                list.Add(new Tuple<int, DateTime>(userCode, releaseDate));
+
+            }
+
+            return list.ToArray();
+        }
+
 
         public Cars[] GetAllUserCars(int id)
         {
@@ -419,6 +440,50 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             throw ex;
         }
 
+        public int howMuchUsers()
+        {
+
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand(
+                "select count(distinct id) as 'countUser' from CoParkingUsers_2022 where id is not null"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            if (dr.Read())
+            {
+                return Convert.ToInt32(dr["countUser"]);
+
+            }
+            Exception ex = new Exception("problem");
+            throw ex;
+        }
+
+        public int howMuchUsersVip(int parking)
+        {
+
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand(
+                "select count(distinct userCode) as 'countUser' from CoParkingUserVIP_2022 where userCode is not null and parkingCode = '"+parking+"'"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            if (dr.Read())
+            {
+                return Convert.ToInt32(dr["countUser"]);
+
+            }
+            Exception ex = new Exception("problem");
+            throw ex;
+        }
+
+
+
         public Manufacture[] GetAllManufacturer()
         {
             SqlConnection con = this.Connect("webOsDB");
@@ -439,7 +504,7 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             return manufactures.ToArray();
         }
 
-        public int InsertParking(Parking P)
+        public bool InsertParking(Parking P)
         {
             Console.WriteLine(P.ExitDate);
             SqlConnection con = null;
@@ -454,7 +519,8 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
                 // E - Execute
                 int affected = command.ExecuteNonQuery();
 
-                return affected;
+                if (howMuchUsers() == howMuchUsersVip(P.ParkingCode)) { return true; }
+                else { return false};
 
             }
             catch (Exception ex)
@@ -559,12 +625,12 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             str += "DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode = '"+ P.ParkingCode + "';";
             if (P.TypeOfParking == 2)
             {
-                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id   LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where handicapped = 'T' and not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
 
             }
             else
             {
-                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id   LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
             }
 
             SqlCommand command = new SqlCommand(str, con);
@@ -589,12 +655,12 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             str += "DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode = '" + P.ParkingCode + "';";
             if (P.TypeOfParking == 2)
             {
-                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where handicapped = 'T' and not priorityLevel=0 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where handicapped = 'T' and not priorityLevel=0 ORDER BY priorityLevel DESC";
 
             }
             else
             {
-                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id where not priorityLevel=0 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where not priorityLevel=0 ORDER BY priorityLevel DESC";
             }
 
             SqlCommand command = new SqlCommand(str, con);
