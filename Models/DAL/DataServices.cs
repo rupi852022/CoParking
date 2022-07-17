@@ -899,7 +899,7 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             {
                 return 1;
             }
-            if (totalMinute <= 330)
+            if (totalMinute <= 690)
             {
                 return 2;
             }
@@ -1279,7 +1279,7 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
         protected SqlCommand CreateInsertUser(User U, SqlConnection con)
         {
 
-            string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender], [image]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "', '" + U.Image + "')";
+            string insertStr = "INSERT INTO [CoParkingUsers_2022] ([email], [password], [fName], [lName], [phoneNumber], [gender], [image],[searchRadius]) VALUES('" + U.Email + "', '" + U.Password + "', '" + U.FName + "', '" + U.LName + "', '" + U.PhoneNumber + "', '" + U.Gender + "', '" + U.Image + "','1000')";
             SqlCommand command = new SqlCommand(insertStr, con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
