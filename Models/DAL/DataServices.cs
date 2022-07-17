@@ -62,7 +62,7 @@ namespace ParkingProject.Models.DAL
         public Tuple<int,int, DateTime>[] GetAllUsersVip(int parking)
         {
             SqlConnection con = this.Connect("webOsDB");
-            SqlCommand command = new SqlCommand("SELECT distinct userCode,releaseDate FROM [CoParkingUserVip_2022] where parkingCode='"+parking+"' and userCode is not null", con);
+            SqlCommand command = new SqlCommand("SELECT distinct userCode,CONVERT(varchar(30), [releaseDate], 0) as [releaseDate] FROM [CoParkingUserVip_2022] where parkingCode='" + parking+"' and userCode is not null", con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
@@ -517,6 +517,29 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             throw ex;
         }
 
+        public int GetParkingId()
+        {
+
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand(
+                "  select max(parkingCode) as 'parkingCode' from [CoParkingParkings_2022];"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            if (dr.Read())
+            {
+                int parkingCode = Convert.ToInt32(dr["parkingCode"]);
+                return parkingCode;
+            }
+
+            Exception ex = new Exception("the Parking Id not exist");
+            throw ex;
+        }
+
+
         public int howMuchUsers()
         {
 
@@ -585,6 +608,7 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
         {
             Console.WriteLine(P.ExitDate);
             SqlConnection con = null;
+            int idParkingCode;
             try
             {
                 // C - Connect
@@ -595,9 +619,11 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
 
                 // E - Execute
                 int affected = command.ExecuteNonQuery();
-
-                if (howMuchUsers() == howMuchUsersVip(P.ParkingCode)) { return null; }
-                else { return GetAllUsersVip(P.ParkingCode); };
+                idParkingCode = GetParkingId();
+                Parking parking = new Parking(idParkingCode, P.LocationLng, P.LocationLat, P.LocationName, P.ExitDate, P.TypeOfParking, P.SignType, P.UserCodeOut, P.NumberCarOut, P.UserCodeIn, P.NumberCarIn);
+                updateWithAlgoritems(parking);
+                if (howMuchUsers() == howMuchUsersVip(idParkingCode)) { return null; }
+                else { return GetAllUsersVip(idParkingCode); };
 
             }
             catch (Exception ex)
