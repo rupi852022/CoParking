@@ -83,6 +83,30 @@ namespace ParkingProject.Models.DAL
             return new Tuple<List<int>, int, DateTime>(list, parking, dt) ;
             //return list.ToArray();
         }
+        public DateTime GetDate(int parking)
+        {
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand("SELECT distinct userCode,CONVERT(varchar(30), [releaseDate], 0) as [releaseDate],[CoParkingUsers_2022].email FROM [CoParkingUserVip_2022] left join [CoParkingUsers_2022] on [CoParkingUserVip_2022].userCode=[CoParkingUsers_2022].id  where parkingCode='" + parking + "' and userCode is not null", con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            List<int> list = new List<int>();
+            //List<Tuple<int, int, DateTime>> list = new List<Tuple<int, int, DateTime>>();
+            DateTime dt = new DateTime();
+            while (dr.Read())
+            {
+                dt = DateTime.Parse((string)dr["releaseDate"]);
+                int userCode = Convert.ToInt32(dr["userCode"]);
+                string email = (string)(dr["email"]);
+                User user = Models.User.readUserMail(email);
+                list.Add(userCode);
+
+            }
+            return dt;
+            //return list.ToArray();
+        }
 
 
         public Cars[] GetAllUserCars(int id)
@@ -626,7 +650,10 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
                 idParkingCode = GetParkingId();
                 Parking parking = new Parking(idParkingCode, P.LocationLng, P.LocationLat, P.LocationName, P.ExitDate, P.TypeOfParking, P.SignType, P.UserCodeOut, P.NumberCarOut, P.UserCodeIn, P.NumberCarIn);
                 updateWithAlgoritems(parking);
-                if (howMuchUsers() == howMuchUsersVip(idParkingCode)) { return null; }
+                if (howMuchUsers() == howMuchUsersVip(idParkingCode))
+                {
+                    return new Tuple<List<int>, int, DateTime>(null, idParkingCode, GetDate(idParkingCode));
+                }
                 else { return GetAllUsersVip(idParkingCode); };
 
             }
