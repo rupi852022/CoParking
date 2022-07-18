@@ -47,7 +47,7 @@ namespace ParkingProject.Controllers
 
         // POST api/<controller>
 
-        public Tuple<int,User, DateTime>[] Post([FromBody] Parking P)
+        public Tuple<List<int>, int, DateTime> Post([FromBody] Parking P)
         {
             return P.Insert();
         }
