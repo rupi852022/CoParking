@@ -59,21 +59,23 @@ namespace ParkingProject.Models.DAL
 
             return users.ToArray();
         }
-        public Tuple<int,int, DateTime>[] GetAllUsersVip(int parking)
+        public Tuple<int,User, DateTime>[] GetAllUsersVip(int parking)
         {
             SqlConnection con = this.Connect("webOsDB");
-            SqlCommand command = new SqlCommand("SELECT distinct userCode,CONVERT(varchar(30), [releaseDate], 0) as [releaseDate] FROM [CoParkingUserVip_2022] where parkingCode='" + parking+"' and userCode is not null", con);
+            SqlCommand command = new SqlCommand("SELECT distinct userCode,CONVERT(varchar(30), [releaseDate], 0) as [releaseDate],[CoParkingUsers_2022].email FROM [CoParkingUserVip_2022] left join [CoParkingUsers_2022] on [CoParkingUserVip_2022].userCode=[CoParkingUsers_2022].id  where parkingCode='" + parking + "' and userCode is not null", con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
 
             SqlDataReader dr = command.ExecuteReader();
-            List<Tuple<int, int, DateTime>> list = new List<Tuple<int, int, DateTime>>();
+            List<Tuple<int, User, DateTime>> list = new List<Tuple<int, User, DateTime>>();
             while (dr.Read())
             {
                 int userCode = Convert.ToInt32(dr["userCode"]);
+                string email = (string)(dr["email"]);
                 DateTime releaseDate = DateTime.Parse((string)dr["releaseDate"]);
-                list.Add(new Tuple<int,int, DateTime>(parking,userCode, releaseDate));
+                User user = Models.User.readUserMail(email);
+                list.Add(new Tuple<int,User, DateTime>(parking,user, releaseDate));
 
             }
 
@@ -604,7 +606,7 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             return manufactures.ToArray();
         }
 
-        public Tuple<int, int, DateTime>[] InsertParking(Parking P)
+        public Tuple<int, User, DateTime>[] InsertParking(Parking P)
         {
             Console.WriteLine(P.ExitDate);
             SqlConnection con = null;

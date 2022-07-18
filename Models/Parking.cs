@@ -96,7 +96,7 @@ namespace ParkingProject.Models
             int status = ds.TakeParking(idUser, parkingCode);
             return status;
         }
-        public Tuple<int,int, DateTime>[] Insert()
+        public Tuple<int,User, DateTime>[] Insert()
         {
             Parking parking = (this);
             return ds.InsertParking(parking);
