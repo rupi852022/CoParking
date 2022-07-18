@@ -40,7 +40,7 @@ namespace ParkingProject.Controllers
 
             Parking p = ParkingProject.Models.Parking.GetParking(parkingCode);
             Cars c = ParkingProject.Models.Cars.readCar(p.NumberCarOut, p.UserCodeOut);
-            User u = ParkingProject.Models.User.readUserId(p.UserCodeIn);
+            User u = ParkingProject.Models.User.readUserId(p.UserCodeOut);
 
             return new Tuple<Parking, Cars, User>(p,c,u);
         }

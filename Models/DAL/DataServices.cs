@@ -732,12 +732,12 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             str += "DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode = '"+ P.ParkingCode + "';";
             if (P.TypeOfParking == 2)
             {
-                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id   LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where handicapped = 'T' and not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsers_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id   LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where handicapped = 'T' and not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
 
             }
             else
             {
-                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id   LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct TOP " + M + " '" + P.ParkingCode + "' as 'parking',[CoParkingUsers_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id   LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where not priorityLevel=0 and not tokens<11 ORDER BY priorityLevel DESC";
             }
 
             SqlCommand command = new SqlCommand(str, con);
@@ -762,12 +762,12 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
             str += "DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode = '" + P.ParkingCode + "';";
             if (P.TypeOfParking == 2)
             {
-                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where handicapped = 'T' and not priorityLevel=0 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct '" + P.ParkingCode + "' as 'parking',[CoParkingUsers_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where handicapped = 'T' and not priorityLevel=0 ORDER BY priorityLevel DESC";
 
             }
             else
             {
-                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct '" + P.ParkingCode + "' as 'parking',[CoParkingUsersCars_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where not priorityLevel=0 ORDER BY priorityLevel DESC";
+                str += "INSERT INTO [CoParkingUserVIP_2022] SELECT distinct '" + P.ParkingCode + "' as 'parking',[CoParkingUsers_2022].id, priorityLevel,DATEADD(minute, -30, [CoParkingParkings_2022].exitDate) as 'releaseDate' FROM[CoParkingUsers_2022] LEFT JOIN[CoParkingUsersCars_2022] ON[CoParkingUsers_2022].id = [CoParkingUsersCars_2022].id LEFT JOIN [CoParkingParkings_2022] ON [CoParkingParkings_2022].parkingCode ='" + P.ParkingCode + "' where not priorityLevel=0 ORDER BY priorityLevel DESC";
             }
 
             SqlCommand command = new SqlCommand(str, con);
