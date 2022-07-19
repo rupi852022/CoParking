@@ -472,13 +472,56 @@ namespace ParkingProject.Models.DAL
             return tupleList.ToArray();
         }
 
+        
+        public Tuple<Parking, Cars, Cars, User> GetParkingUser(int idUser, int idParking)
+        {
+            SqlConnection con = this.Connect("webOsDB");
+            int currentId;
+            int userCodeIn=0;
+            int userCodeOut=0;
+            string numberCarOut="";
+            string numberCarIn="";
+            SqlCommand command = new SqlCommand(
+"SELECT [userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn] FROM [igroup85_test2].[dbo].[CoParkingParkings_2022] where [CoParkingParkings_2022].parkingCode='"+idParking+"'"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            List<Parking> parkings = new List<Parking>();
+            while (dr.Read())
+            {
+                 userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
+                 userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
+                 numberCarOut = (string)dr["numberCarOut"];
+                 numberCarIn = (string)dr["numberCarIn"];
+            }
+            
+            if(userCodeIn==idUser)
+            {
+                currentId = userCodeOut;
+            }
+            else
+            {
+                currentId = userCodeIn;
+            }
+
+            Parking p = GetParking(idParking);
+            Cars cOut = ReadCar(numberCarOut);
+            Cars cIn = ReadCar(numberCarIn);
+            User u = ReadUserId(currentId);
+
+            return new Tuple<Parking, Cars, Cars, User>(p, cIn, cOut, u);
+        }
 
 
 
 
 
 
-public bool checkIfParkingForUser(int ParkingCode, int id)
+
+        public bool checkIfParkingForUser(int ParkingCode, int id)
         {
             SqlConnection con = Connect("webOsDB");
             SqlCommand command = new SqlCommand("select parkingCode from [CoParkingUserVIP_2022] where parkingCode='"+ParkingCode+"' and userCode='"+id+"';", con);
@@ -652,7 +695,7 @@ public bool checkIfParkingForUser(int ParkingCode, int id)
                 updateWithAlgoritems(parking);
                 if (howMuchUsers() == howMuchUsersVip(idParkingCode))
                 {
-                    return new Tuple<List<int>, int, DateTime>(null, idParkingCode, GetDate(idParkingCode));
+                    return new Tuple<List<int>, int, DateTime>(null, idParkingCode, DateTime.MinValue);
                 }
                 else { return GetAllUsersVip(idParkingCode); };
 

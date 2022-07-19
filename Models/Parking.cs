@@ -123,6 +123,14 @@ namespace ParkingProject.Models
             return P;
 
         }
+        
+        public static Tuple<Parking, Cars, Cars, User> GetParkingUser(int idUser, int idParking)
+        {
+
+            Tuple<Parking, Cars, Cars, User> P = ds.GetParkingUser(idUser,idParking);
+            return P;
+
+        }
 
         public static Parking[] GetAllOnlyParkingsUser(int id)
         {
