@@ -125,6 +125,7 @@ namespace ParkingProject.Models
         public int UserCodeIn { get => userCodeIn; set => userCodeIn = value; }
         public string NumberCarOut { get => numberCarOut; set => numberCarOut = value; }
         public string NumberCarIn { get => numberCarIn; set => numberCarIn = value; }
+        public DateTime UploadDate { get => uploadDate; set => uploadDate = value; }
 
         public int InsertUserIn(int idUser, int parkingCode)
         {

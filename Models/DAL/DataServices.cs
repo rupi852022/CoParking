@@ -692,11 +692,10 @@ namespace ParkingProject.Models.DAL
 
                 // C - Create Command
                 SqlCommand command = CreateInsertParking(P, con);
-
                 // E - Execute
                 int affected = command.ExecuteNonQuery();
                 idParkingCode = GetParkingId();
-                Parking parking = new Parking(idParkingCode, P.LocationLng, P.LocationLat, P.LocationName, P.ExitDate, P.TypeOfParking, P.SignType, P.UserCodeOut, P.NumberCarOut, P.UserCodeIn, P.NumberCarIn);
+                Parking parking = new Parking(idParkingCode, P.LocationLng, P.LocationLat, P.LocationName, P.ExitDate, P.TypeOfParking, P.SignType, P.UserCodeOut, P.NumberCarOut, P.UserCodeIn, P.NumberCarIn, GetParking(P.ParkingCode).UploadDate);
                 updateWithAlgoritems(parking);
                 if (howMuchUsers() == howMuchUsersVip(idParkingCode))
                 {
@@ -972,7 +971,7 @@ namespace ParkingProject.Models.DAL
             string time = ParkingDate + ",531";
             DateTime myDate = DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.InvariantCulture);
 
-            string uploadDate = P.uploadDate.ToString("yyyy-MM-dd HH:mm:ss");
+            string uploadDate = P.UploadDate.ToString("yyyy-MM-dd HH:mm:ss");
             string timeUpload = uploadDate + ",531";
             DateTime mytimeUpload = DateTime.ParseExact(timeUpload, "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.InvariantCulture);
 
