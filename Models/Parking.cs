@@ -13,6 +13,7 @@ namespace ParkingProject.Models
         private double locationLat;
         private string locationName;
         private DateTime exitDate;
+        private DateTime uploadDate;
         private int typeOfParking;
         private string signType;
         private int userCodeOut;
@@ -49,6 +50,24 @@ namespace ParkingProject.Models
             this.userCodeOut = userCodeOut;
             this.numberCarOut = numberCarOut;
         }
+        public Parking(int parkingCode, double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut, int userCodeIn, string numberCarIn, DateTime uploadDate)
+        {
+            this.parkingCode = parkingCode;
+            this.locationLat = locationLat;
+            this.locationLng = locationLng;
+            this.locationName = locationName;
+            this.exitDate = exitDate;
+            this.typeOfParking = typeOfParking;
+            this.signType = signType;
+            this.userCodeOut = userCodeOut;
+            this.numberCarOut = numberCarOut;
+            this.userCodeIn = userCodeIn;
+            this.numberCarIn = numberCarIn;
+            this.uploadDate = uploadDate;
+
+
+        }
+
         public Parking(int parkingCode, double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut, int userCodeIn, string numberCarIn)
         {
             this.parkingCode = parkingCode;
@@ -63,6 +82,7 @@ namespace ParkingProject.Models
             this.userCodeIn = userCodeIn;
             this.numberCarIn = numberCarIn;
 
+
         }
 
         public Parking(int parkingCode, double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut)
@@ -76,6 +96,21 @@ namespace ParkingProject.Models
             this.signType = signType;
             this.userCodeOut = userCodeOut;
             this.numberCarOut = numberCarOut;
+
+        }
+
+        public Parking(int parkingCode, double locationLng, double locationLat, string locationName, DateTime exitDate, int typeOfParking, string signType, int userCodeOut, string numberCarOut, DateTime uploadDate)
+        {
+            this.parkingCode = parkingCode;
+            this.locationLat = locationLat;
+            this.locationLng = locationLng;
+            this.locationName = locationName;
+            this.exitDate = exitDate;
+            this.typeOfParking = typeOfParking;
+            this.signType = signType;
+            this.userCodeOut = userCodeOut;
+            this.numberCarOut = numberCarOut;
+            this.uploadDate = uploadDate;
 
         }
 
