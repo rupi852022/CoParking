@@ -77,6 +77,14 @@ namespace ParkingProject.Controllers
             return id;
         }
 
+        public int Post(int userRate, int rate)
+        {
+            User u = new User();
+            int id = u.InsertRate(userRate, rate);
+            return id;
+        }
+
+
         // PUT api/<controller>/5
         public string Put()
         {

@@ -83,6 +83,27 @@ namespace ParkingProject.Models.DAL
             return new Tuple<List<int>, int, DateTime>(list, parking, dt) ;
             //return list.ToArray();
         }
+
+        public int GetAvgRate(int u)
+        {
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand("SELECT AVG(rate) as 'rate' FROM [CoParkingReview_2022] WHERE userCode='"+u+"';", con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            int rate = 0;
+
+            SqlDataReader dr = command.ExecuteReader();
+            while (dr.Read())
+            {
+                rate = Convert.ToInt32(dr["rate"]);
+
+            }
+
+            return rate;
+        }
+
+
         public DateTime GetDate(int parking)
         {
             SqlConnection con = this.Connect("webOsDB");
@@ -2189,6 +2210,41 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+      
+
+            
+        public int InsertRate(int userGattingRate, int rate)
+        {
+
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+            try
+            {
+                con = Connect("webOsDB");
+                SqlCommand selectCommand = CreateInsertRate(userGattingRate, rate, con);
+                int affected = selectCommand.ExecuteNonQuery();
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                if (affected != 1)
+                {
+                    ErrorMessage = "The userCode not exist";
+                    Exception ex = new Exception(ErrorMessage);
+                    throw ex;
+                }
+
+                return GetAvgRate(userGattingRate);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorMessage, ex);
+            }
+            finally
+            {
+                if (con != null)
+                    con.Close();
+            }
+        }
+
         SqlCommand CreateUpdateReturnCar(int parkingCode, SqlConnection con)
         {
             SqlCommand command = new SqlCommand(
@@ -2200,6 +2256,18 @@ namespace ParkingProject.Models.DAL
             return command;
 
         }
+
+        SqlCommand CreateInsertRate(int userGattingRate, int rate, SqlConnection con)
+        {
+            string uploadDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            SqlCommand command = new SqlCommand("INSERT INTO[CoParkingReview_2022]([userCode],[Rate],[ReviewDate]) VALUES('"+ userGattingRate + "', '"+ rate + "', '"+ uploadDate + "')",con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+
+        }
+
+
 
         public int CreateUpdatePassword(string mail, string currentPassword, string password1, string password2, SqlConnection con)
         {

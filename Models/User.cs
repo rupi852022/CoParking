@@ -80,6 +80,14 @@ namespace ParkingProject.Models
             return user1;
         }
 
+        public int InsertRate(int userGattingRate, int rate)
+        {
+            DataServices ds = new DataServices();
+            int status = ds.InsertRate(userGattingRate, rate);
+            return status;
+        }
+
+
         public static User readUser(string email, string password)
         {
             DataServices ds = new DataServices();
