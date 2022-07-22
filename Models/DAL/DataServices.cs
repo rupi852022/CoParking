@@ -485,9 +485,8 @@ namespace ParkingProject.Models.DAL
             int userCodeOut=0;
             string numberCarOut="";
             string numberCarIn="";
-            SqlCommand command = new SqlCommand(
-"SELECT [userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn] FROM [igroup85_test2].[dbo].[CoParkingParkings_2022] where [CoParkingParkings_2022].parkingCode='"+idParking+"'"
-                , con);
+            string str = "SELECT [userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn] FROM [igroup85_test2].[dbo].[CoParkingParkings_2022] where [CoParkingParkings_2022].parkingCode='" + idParking + "'";
+            SqlCommand command = new SqlCommand(str, con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
@@ -695,12 +694,17 @@ namespace ParkingProject.Models.DAL
                 // E - Execute
                 int affected = command.ExecuteNonQuery();
                 idParkingCode = GetParkingId();
-                Parking parking = new Parking(idParkingCode, P.LocationLng, P.LocationLat, P.LocationName, P.ExitDate, P.TypeOfParking, P.SignType, P.UserCodeOut, P.NumberCarOut, P.UserCodeIn, P.NumberCarIn, GetParking(P.ParkingCode).UploadDate);
-                updateWithAlgoritems(parking);
-                if (howMuchUsers() == howMuchUsersVip(idParkingCode))
+                Parking parking = new Parking(idParkingCode, P.LocationLng, P.LocationLat, P.LocationName, P.ExitDate, P.TypeOfParking, P.SignType, P.UserCodeOut, P.NumberCarOut, P.UserCodeIn, P.NumberCarIn, GetParking(idParkingCode).UploadDate);
+                bool forAll = updateWithAlgoritems(parking);
+                if (forAll is true)
                 {
                     return new Tuple<List<int>, int, DateTime>(null, idParkingCode, DateTime.MinValue);
                 }
+
+                //if (howMuchUsers() == howMuchUsersVip(idParkingCode))
+                //{
+                //    return new Tuple<List<int>, int, DateTime>(null, idParkingCode, DateTime.MinValue);
+                //}
                 else { return GetAllUsersVip(idParkingCode); };
 
             }
@@ -752,19 +756,22 @@ namespace ParkingProject.Models.DAL
         }
 
 
-        public void updateWithAlgoritems(Parking P)
+        public bool updateWithAlgoritems(Parking P)
         {
             updatePriorityUsers();
             if (checkMinutes(P) == 1)
             {
                 algoritem1(P);
+                return true;
             }
             if (checkMinutes(P) == 2)
             {
                 algoritem2(P);
+                return false;
             }
             else
             algoritem1(P);
+            return true;
         }
 
         public int UpdateParking(Parking P)
@@ -1001,8 +1008,8 @@ namespace ParkingProject.Models.DAL
         {
             string insertStr = "";
             Console.WriteLine(P.ExitDate);
-            string currentexitDate = P.ExitDate.ToString("yyyy-MM-dd hh:mm:ss");
-            string uploadDate = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss");
+            string currentexitDate = P.ExitDate.ToString("yyyy-MM-dd HH:mm:ss");
+            string uploadDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             if (P.UserCodeIn == 0)
             {
                 insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut],[UploadDate]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '" + P.LocationName + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "','"+ uploadDate+"')";
@@ -1037,7 +1044,7 @@ namespace ParkingProject.Models.DAL
         {
             string insertStr = "";
             Console.WriteLine(P.ExitDate);
-            string currentexitDate = P.ExitDate.ToString("yyyy-MM-dd hh:mm:ss");
+            string currentexitDate = P.ExitDate.ToString("yyyy-MM-dd HH:mm:ss");
             insertStr += " DELETE FROM[CoParkingParkings_2022] where parkingCode = " + P.ParkingCode + ";";
             if (P.UserCodeIn == 0)
             {
@@ -1134,7 +1141,7 @@ namespace ParkingProject.Models.DAL
                 }
                 else
                 {
-                    if (C.Idcar != null)
+                    if (C.Idcar != 0)//היה לפני זה במקום 0 null
                     {
 
                         SqlCommand command2 = CreateInsertCar(C, CarExist, con);
