@@ -1285,10 +1285,31 @@ namespace ParkingProject.Models.DAL
 
         SqlCommand CreateUpdateCar(Cars C, SqlConnection con)
         {
-            SqlCommand command = new SqlCommand(
-                  "UPDATE [CoParkingCars_2022] " +
-                  "SET [idCar] = '" + C.Idcar + "', [year] = '" + C.Year + "', [model] = '" + C.Model + "', [color] = '" + C.Color + "', [size] = '" + C.Size + "' WHERE [numberCar] = '" + C.NumberCar + "'",
-                    con);
+            string str = "";
+            str += "UPDATE [CoParkingCars_2022] " + "SET [idCar] = '" + C.Idcar + "', [year] = '" + C.Year + "', [model] = '" + C.Model + "', [color] = '" + C.Color + "', [size] = '" + C.Size + "' WHERE [numberCar] = '" + C.NumberCar + "'";
+                if(C.IsMain==true)
+                {
+                    str += "update[CoParkingUsersCars_2022] set isMain = 'T' where numberCar = '"+C.NumberCar+"'";
+                }
+
+                if(C.IsMain==false)
+                {
+                    str += "update[CoParkingUsersCars_2022] set isMain = 'F' where numberCar = '" + C.NumberCar + "'";
+                }
+                if(C.CarPic.Length>=1)
+            {
+                str += "update[CoParkingUsersCars_2022] set carPic = '"+C.CarPic+"' where numberCar = '" + C.NumberCar + "'";
+            }
+            if (C.Handicapped == true)
+            {
+                str += "update[CoParkingUsersCars_2022] set handicapped = 'T' where numberCar = '" + C.NumberCar + "'";
+            }
+
+            if (C.Handicapped == false)
+            {
+                str += "update[CoParkingUsersCars_2022] set handicapped = 'F' where numberCar = '" + C.NumberCar + "'";
+            }
+            SqlCommand command = new SqlCommand(str,con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             return command;

@@ -42,7 +42,7 @@ namespace ParkingProject.Controllers
             return ParkingProject.Models.Parking.GetParking(parkingCode);
         }
 
-        public Tuple<Parking, Cars, User> Get(int parkingCode, int tmp)
+        public Tuple<Parking, Cars, User> Get(int parkingCode, int temp)
         {
 
             Parking p = ParkingProject.Models.Parking.GetParking(parkingCode);
@@ -66,7 +66,7 @@ namespace ParkingProject.Controllers
             return status;
         }
 
-        public bool Put(int userId, int parkingCode, int tmp)
+        public bool Put(int userId, int parkingCode, int temp)
         {
             return Parking.ApproveParking(userId, parkingCode);
         }
