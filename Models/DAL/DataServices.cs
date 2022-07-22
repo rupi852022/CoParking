@@ -480,7 +480,7 @@ namespace ParkingProject.Models.DAL
         public Tuple<Parking, Cars, Cars, User> GetParkingUser(int idUser, int idParking)
         {
             SqlConnection con = this.Connect("webOsDB");
-            int currentId;
+            int currentId=0;
             int userCodeIn=0;
             int userCodeOut=0;
             string numberCarOut="";
@@ -495,15 +495,21 @@ namespace ParkingProject.Models.DAL
             List<Parking> parkings = new List<Parking>();
             while (dr.Read())
             {
-                 userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
-                 userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
-                 numberCarOut = (string)dr["numberCarOut"];
-                 numberCarIn = (string)dr["numberCarIn"];
+                userCodeOut = Convert.ToInt32(dr["userCodeOut"]);
+                numberCarOut = (string)dr["numberCarOut"];
+
+                if (dr["userCodeIn"] != DBNull.Value)
+                {
+                    userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
+                    numberCarIn = (string)dr["numberCarIn"];
+                }
             }
             
             if(userCodeIn==idUser)
             {
-                currentId = userCodeOut;
+                if(userCodeOut!=0)
+                {currentId = userCodeOut;}
+
             }
             else
             {
@@ -512,11 +518,21 @@ namespace ParkingProject.Models.DAL
 
             Parking p = GetParking(idParking);
             Cars cOut = ReadCar(numberCarOut);
-            Cars cIn = ReadCar(numberCarIn);
-            User u = ReadUserId(currentId);
-
-            return new Tuple<Parking, Cars, Cars, User>(p, cIn, cOut, u);
+            if (userCodeIn!=0&& currentId!=0)
+            {
+                Cars cIn = ReadCar(numberCarIn);
+                User u = ReadUserId(currentId);
+                return new Tuple<Parking, Cars, Cars, User>(p, cIn, cOut, u);
+            }
+            else
+            {
+                return new Tuple<Parking, Cars, Cars, User>(p, null, cOut, null);
+            }
         }
+
+
+
+
 
 
 
