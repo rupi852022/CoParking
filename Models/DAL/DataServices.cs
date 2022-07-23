@@ -2168,6 +2168,52 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+        
+        public bool ReportNotArrived(int idUser, int parkingCode)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = Connect("webOsDB");
+
+                bool userIn;
+                Parking P = GetParking(parkingCode);
+                if (idUser == P.UserCodeIn)
+                { userIn = true; }
+                else
+                {
+                    if (idUser == P.UserCodeOut)
+                    { userIn = false; }
+                    else
+                    {
+                        ErrorMessage = "The userId not exist";
+                        Exception ex = new Exception(ErrorMessage);
+                        throw ex;
+                    }
+                }
+                int status = UpdateNotArrived(parkingCode, userIn, con);
+                if (userIn == true) { userIn = false; } else { userIn = true; };
+                if (checkApprove(parkingCode, userIn) == true)
+                {
+                    updateTokens(P.UserCodeOut, 10);
+                    updateTokens(P.UserCodeIn, -10);
+                }
+                return checkApprove(parkingCode, userIn);
+
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorMessage, ex);
+            }
+            finally
+            {
+                if (con != null)
+                    con.Close();
+            }
+        }
+
         public bool checkApprove(int parkingCode, bool userIn)
         {
 
@@ -2210,6 +2256,7 @@ namespace ParkingProject.Models.DAL
             return false;
 
         }
+
 
 
 
@@ -2366,6 +2413,30 @@ namespace ParkingProject.Models.DAL
             else
             {
                 str = "UPDATE[CoParkingParkings_2022] SET [userCodeOutApprove] = 'Y' WHERE[parkingCode] = '" + parkingCode + "'; ";
+            }
+            selectCommand = new SqlCommand(str, con);
+            int affected = selectCommand.ExecuteNonQuery();
+            selectCommand.CommandType = System.Data.CommandType.Text;
+            selectCommand.CommandTimeout = 30;
+            return affected;
+        }
+
+        
+        public int UpdateNotArrived(int parkingCode, bool userIn, SqlConnection con)
+        {
+            SqlDataReader dr = null;
+            SqlCommand selectCommand = checkParking(parkingCode, con);
+            dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+            selectCommand = null;
+            con = Connect("webOsDB");
+            string str = "";
+            if (userIn == true)
+            {
+                str = "UPDATE[CoParkingParkings_2022] SET [userCodeOutArrived] = 'N' WHERE[parkingCode] = '" + parkingCode + "'; ";
+            }
+            else
+            {
+                str = "UPDATE[CoParkingParkings_2022] SET [userCodeInArrived] = 'N' WHERE[parkingCode] = '" + parkingCode + "'; ";
             }
             selectCommand = new SqlCommand(str, con);
             int affected = selectCommand.ExecuteNonQuery();

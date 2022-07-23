@@ -60,15 +60,20 @@ namespace ParkingProject.Controllers
         }
 
         // PUT api/<controller>/5
-        public int Put(int idUser, int parkingCode)
+        public bool Put(int idUser, int parkingCode)
         {
-            int status = Parking.TakeParking(idUser, parkingCode);
+            bool status = Parking.TakeParking(idUser, parkingCode);
             return status;
         }
 
         public bool Put(int userId, int parkingCode, int temp)
         {
             return Parking.ApproveParking(userId, parkingCode);
+        }
+
+        public bool Put(int userId, int parkingCode, int temp1,int temp2)
+        {
+            return Parking.ReportNotArrived(userId, parkingCode);
         }
 
 
