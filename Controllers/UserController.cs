@@ -77,10 +77,10 @@ namespace ParkingProject.Controllers
             return id;
         }
 
-        public int Post(int userRate, int rate)
+        public int Post(int userGattingRate, int rate)
         {
             User u = new User();
-            int id = u.InsertRate(userRate, rate);
+            int id = u.InsertRate(userGattingRate, rate);
             return id;
         }
 
