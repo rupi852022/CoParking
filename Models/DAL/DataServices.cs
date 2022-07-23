@@ -2003,7 +2003,8 @@ namespace ParkingProject.Models.DAL
                 SqlCommand selectCommand = creatSelectUserCommand(con, email);
                 Random rnd = new Random();
                 string tmpPassword = "CO" + rnd.Next(99) + "!" + rnd.Next(99) + rnd.Next(99);
-                SqlCommand command = createPassword(con, email, tmpPassword);
+                CreateNewPassword(email, tmpPassword);
+                //SqlCommand command = createPassword(con, email, tmpPassword);
                 dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
                 if (dr == null || !dr.Read())
                 {
@@ -2030,6 +2031,40 @@ namespace ParkingProject.Models.DAL
             return command;
 
         }
+
+
+
+        public int CreateNewPassword(string email, string Password)
+        {
+
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+            try
+            {
+                con = Connect("webOsDB");
+                SqlCommand selectCommand = createPassword(con, email, Password);
+                int affected = selectCommand.ExecuteNonQuery();
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+
+                if (affected != 1)
+                {
+                    ErrorMessage = "The email not exist";
+                    Exception ex = new Exception(ErrorMessage);
+                    throw ex;
+                }
+                return affected;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorMessage, ex);
+            }
+            finally
+            {
+                if (con != null)
+                    con.Close();
+            }
+        }
+
 
         public int UpdatePassword(string mail, string currentPassword, string password1, string password2)
         {
