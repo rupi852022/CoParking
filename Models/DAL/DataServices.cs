@@ -586,7 +586,35 @@ namespace ParkingProject.Models.DAL
             }
             return false;
         }
+        
+        public bool checkIfUserInExist(int parkingCode)
+        {
 
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand(
+                "select [parkingCode],[LocationLng],[LocationLat],[LocationName], CONVERT(varchar(30), [exitDate], 0) as [exitDate], CONVERT(varchar(30), [UploadDate], 0) as [UploadDate],[typeOfParking],[signType],[userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn]  from [CoParkingParkings_2022] where [parkingCode] = '" + parkingCode + "';"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            if (dr.Read())
+            {
+                if (dr["userCodeIn"] != DBNull.Value)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+
+            Exception ex = new Exception("the Parking not exist");
+            throw ex;
+        }
         public Parking GetParking(int parkingCode)
         {
 
@@ -2092,7 +2120,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public int TakeParking(int idUser, int parkingCode)
+        public bool TakeParking(int idUser, int parkingCode)
         {
             SqlConnection con = null;
             try
@@ -2100,7 +2128,7 @@ namespace ParkingProject.Models.DAL
                 con = Connect("webOsDB");
                 string numberCar = ReadMainCar(idUser).NumberCar;
 
-                int status = TryTakePariking(idUser, parkingCode, numberCar, con);
+                bool status = TryTakePariking(idUser, parkingCode, numberCar, con);
                 return status;
 
             }
@@ -2257,8 +2285,24 @@ namespace ParkingProject.Models.DAL
 
         }
 
+      
+        public bool DeleteParking(int parkingCode)
+        {
 
+            SqlConnection con = null;
+                con = Connect("webOsDB");
+                if(checkIfUserInExist(parkingCode)==false)
+                {
+                    SqlCommand selectCommand = DeleteTheParking(parkingCode, con);
+                    int affected = selectCommand.ExecuteNonQuery();
+                    if (affected >= 0)
+                    {
+                        return true;
+                    }
+                }
 
+                return false;
+        }
 
         public int ReturnParking(int parkingCode)
         {
@@ -2326,6 +2370,15 @@ namespace ParkingProject.Models.DAL
                     con.Close();
             }
         }
+        
+        SqlCommand DeleteTheParking(int parkingCode, SqlConnection con)
+        {
+            SqlCommand command = new SqlCommand("DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode='"+parkingCode+"';DELETE FROM [CoParkingParkings_2022] WHERE parkingCode='"+parkingCode+"';", con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+
+        }
 
         SqlCommand CreateUpdateReturnCar(int parkingCode, SqlConnection con)
         {
@@ -2375,7 +2428,7 @@ namespace ParkingProject.Models.DAL
             return affected;
         }
 
-        public int TryTakePariking(int idUser, int parkingCode, string numberCar, SqlConnection con)
+        public bool TryTakePariking(int idUser, int parkingCode, string numberCar, SqlConnection con)
         {
             SqlDataReader dr = null;
             SqlCommand selectCommand = checkParking(parkingCode, con);
@@ -2384,9 +2437,10 @@ namespace ParkingProject.Models.DAL
             con = Connect("webOsDB");
             if (dr.Read())
             {
-                ErrorMessage = "The parking have alreday UserIn";
-                Exception ex = new Exception(ErrorMessage);
-                throw ex;
+                return false;
+                //ErrorMessage = "The parking have alreday UserIn";
+                //Exception ex = new Exception(ErrorMessage);
+                //throw ex;
             }
 
             string str = "UPDATE[CoParkingParkings_2022] SET[userCodeIn] = '" + idUser + "' WHERE[parkingCode] = '" + parkingCode + "';";
@@ -2395,7 +2449,7 @@ namespace ParkingProject.Models.DAL
             int affected = selectCommand.ExecuteNonQuery();
             selectCommand.CommandType = System.Data.CommandType.Text;
             selectCommand.CommandTimeout = 30;
-            return affected;
+            return true;
         }
 
         public int UpdateApprove(int parkingCode, bool userIn, SqlConnection con)

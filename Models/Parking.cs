@@ -129,8 +129,8 @@ namespace ParkingProject.Models
 
         public int InsertUserIn(int idUser, int parkingCode)
         {
-            int status = ds.TakeParking(idUser, parkingCode);
-            return status;
+            if (ds.TakeParking(idUser, parkingCode) ==true) { return 1; }
+            return 0;
         }
         public Tuple<List<int>, int, DateTime> Insert()
         {
@@ -196,9 +196,9 @@ namespace ParkingProject.Models
 
 
 
-        public static int TakeParking(int idUser, int parkingCode)
+        public static bool TakeParking(int idUser, int parkingCode)
         {
-            int status = ds.TakeParking(idUser, parkingCode);
+            bool status = ds.TakeParking(idUser, parkingCode);
             return status;
         }
 
@@ -218,6 +218,13 @@ namespace ParkingProject.Models
             int status = ds.ReturnParking(parkingCode);
             return status;
         }
+        
+        public static bool DeleteParking(int parkingCode)
+        {
+            bool status = ds.DeleteParking(parkingCode);
+            return status;
+        }
+
         //public static int park(int parkingCode)
         //{
         //    int status = ds.park(parkingCode);

@@ -83,10 +83,15 @@ namespace ParkingProject.Controllers
         //    return id;
         //}
 
-        public int Delete(int parkingCode)
+        public bool Delete(int parkingCode)
         {
-            int status = Parking.ReturnParking(parkingCode);
+            bool status = Parking.DeleteParking(parkingCode);
             return status;
         }
+        //public int Delete(int parkingCode)
+        //{
+        //    int status = Parking.ReturnParking(parkingCode);
+        //    return status;
+        //}
     }
 }
