@@ -1108,16 +1108,24 @@ namespace ParkingProject.Models.DAL
         SqlCommand CreateUpdateParking(Parking P, SqlConnection con)
         {
             string insertStr = "";
-            Console.WriteLine(P.ExitDate);
+            Console.WriteLine(P);
             string currentexitDate = P.ExitDate.ToString("yyyy-MM-dd HH:mm:ss");
-            insertStr += " DELETE FROM[CoParkingParkings_2022] where parkingCode = " + P.ParkingCode + ";";
+            //insertStr += " DELETE FROM[CoParkingParkings_2022] where parkingCode = " + P.ParkingCode + ";";
+            //if (P.UserCodeIn == 0)
+            //{
+            //    insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '" + P.LocationName + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "')";
+            //}
+            //else
+            //{
+            //    insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut], [userCodeIn], [numberCarIn]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '" + P.LocationName + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "', '" + P.UserCodeIn + "', '" + P.NumberCarIn + "')";
+            //}
             if (P.UserCodeIn == 0)
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '" + P.LocationName + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "')";
+                insertStr += "UPDATE[CoParkingParkings_2022] SET[LocationLng] = '"+P.LocationLng+"', [LocationLat] = '"+P.LocationLat+",[LocationName]= '"+P.LocationName+",[exitDate]= '"+P.ExitDate+",[typeOfParking]= '"+P.TypeOfParking+",[signType]= '"+P.SignType+",[userCodeOut]= '"+P.UserCodeOut+",[numberCarOut]= '"+P.NumberCarOut+" WHERE[parkingCode] = '" + P.ParkingCode+"'";
             }
             else
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut], [userCodeIn], [numberCarIn]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '" + P.LocationName + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "', '" + P.UserCodeIn + "', '" + P.NumberCarIn + "')";
+                insertStr += insertStr += "UPDATE[CoParkingParkings_2022] SET[LocationLng] = '" + P.LocationLng + "', [LocationLat] = '" + P.LocationLat + ",[LocationName]= '" + P.LocationName + ",[exitDate]= '" + P.ExitDate + ",[typeOfParking]= '" + P.TypeOfParking + ",[signType]= '" + P.SignType + ",[userCodeOut]= '" + P.UserCodeOut + ",[numberCarOut]= '" + P.NumberCarOut + ",[numberCarIn]= '"+P.NumberCarIn+ "',[userCodeIn]='"+P.UserCodeIn+"' WHERE[parkingCode] = '" + P.ParkingCode + "'";
             }
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout

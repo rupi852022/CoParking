@@ -76,6 +76,11 @@ namespace ParkingProject.Controllers
             return Parking.ReportNotArrived(userId, parkingCode);
         }
 
+        public int Put(Parking p)
+        {
+            return Parking.UpdateParking(p);
+        }
+
 
         //public int Put([FromBody] Parking P)
         //{

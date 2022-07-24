@@ -213,12 +213,19 @@ namespace ParkingProject.Models
         }
 
 
+
         public static int ReturnParking(int parkingCode)
         {
             int status = ds.ReturnParking(parkingCode);
             return status;
         }
-        
+
+        public static int UpdateParking(Parking parkingCode)
+        {
+            int status = ds.UpdateParking(parkingCode);
+            return status;
+        }
+
         public static bool DeleteParking(int parkingCode)
         {
             bool status = ds.DeleteParking(parkingCode);
