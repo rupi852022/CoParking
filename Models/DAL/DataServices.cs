@@ -1067,10 +1067,12 @@ namespace ParkingProject.Models.DAL
                     return 2;
 
                 }
-                return 1;
+                //return 1;
+                return 2;
             }
 
-            else { return 3; }
+            //else { return 3; }
+            else { return 2; }
         }
 
         SqlCommand CreateInsertParking(Parking P, SqlConnection con)
