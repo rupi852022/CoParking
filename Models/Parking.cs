@@ -231,6 +231,13 @@ namespace ParkingProject.Models
             bool status = ds.DeleteParking(parkingCode);
             return status;
         }
+        
+
+        public static bool DeleteUserIn(int parkingCode)
+        {
+            bool status = ds.DeleteUserIn(parkingCode);
+            return status;
+        }
 
         //public static int park(int parkingCode)
         //{

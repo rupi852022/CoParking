@@ -1121,11 +1121,11 @@ namespace ParkingProject.Models.DAL
             //}
             if (P.UserCodeIn == 0)
             {
-                insertStr += "UPDATE[CoParkingParkings_2022] SET[LocationLng] = '"+P.LocationLng+"', [LocationLat] = '"+P.LocationLat+",[LocationName]= '"+P.LocationName+",[exitDate]= '"+P.ExitDate+",[typeOfParking]= '"+P.TypeOfParking+",[signType]= '"+P.SignType+",[userCodeOut]= '"+P.UserCodeOut+",[numberCarOut]= '"+P.NumberCarOut+" WHERE[parkingCode] = '" + P.ParkingCode+"'";
+                insertStr += "UPDATE[CoParkingParkings_2022] SET[LocationLng] = '"+P.LocationLng+"', [LocationLat] = '"+P.LocationLat+"',[LocationName]= '"+P.LocationName+"',[exitDate]= '"+ currentexitDate + "',[typeOfParking]= '"+P.TypeOfParking+"',[signType]= '"+P.SignType+"',[userCodeOut]= '"+P.UserCodeOut+"',[numberCarOut]= '"+P.NumberCarOut+"' WHERE[parkingCode] = '" + P.ParkingCode+"'";
             }
             else
             {
-                insertStr += insertStr += "UPDATE[CoParkingParkings_2022] SET[LocationLng] = '" + P.LocationLng + "', [LocationLat] = '" + P.LocationLat + ",[LocationName]= '" + P.LocationName + ",[exitDate]= '" + P.ExitDate + ",[typeOfParking]= '" + P.TypeOfParking + ",[signType]= '" + P.SignType + ",[userCodeOut]= '" + P.UserCodeOut + ",[numberCarOut]= '" + P.NumberCarOut + ",[numberCarIn]= '"+P.NumberCarIn+ "',[userCodeIn]='"+P.UserCodeIn+"' WHERE[parkingCode] = '" + P.ParkingCode + "'";
+                insertStr += insertStr += "UPDATE[CoParkingParkings_2022] SET[LocationLng] = '" + P.LocationLng + "', [LocationLat] = '" + P.LocationLat + "',[LocationName]= '" + P.LocationName + "',[exitDate]= '" + currentexitDate + "',[typeOfParking]= '" + P.TypeOfParking + "',[signType]= '" + P.SignType + "',[userCodeOut]= '" + P.UserCodeOut + "',[numberCarOut]= '" + P.NumberCarOut + "',[numberCarIn]= '"+P.NumberCarIn+ "',[userCodeIn]='"+P.UserCodeIn+"' WHERE[parkingCode] = '" + P.ParkingCode + "'";
             }
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
@@ -2312,6 +2312,24 @@ namespace ParkingProject.Models.DAL
                 return false;
         }
 
+        public bool DeleteUserIn(int parkingCode)
+        {
+
+            SqlConnection con = null;
+            con = Connect("webOsDB");
+            if (checkIfUserInExist(parkingCode) == false)
+            {
+                SqlCommand selectCommand = DeleteUserFromParking(parkingCode, con);
+                int affected = selectCommand.ExecuteNonQuery();
+                if (affected >= 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public int ReturnParking(int parkingCode)
         {
 
@@ -2382,6 +2400,17 @@ namespace ParkingProject.Models.DAL
         SqlCommand DeleteTheParking(int parkingCode, SqlConnection con)
         {
             SqlCommand command = new SqlCommand("DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode='"+parkingCode+"';DELETE FROM [CoParkingParkings_2022] WHERE parkingCode='"+parkingCode+"';", con);
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+            return command;
+
+        }
+
+        
+
+        SqlCommand DeleteUserFromParking(int parkingCode, SqlConnection con)
+        {
+            SqlCommand command = new SqlCommand("UPDATE [CoParkingParkings_2022] SET userCodeIn = null, numberCarIn = null,userCodeInApprove = 'N',userCodeInArrived = 'Y' WHERE parkingCode='"+parkingCode+"';", con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             return command;

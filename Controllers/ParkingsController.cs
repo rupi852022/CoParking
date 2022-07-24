@@ -93,6 +93,13 @@ namespace ParkingProject.Controllers
             bool status = Parking.DeleteParking(parkingCode);
             return status;
         }
+
+        public bool Delete(int parkingCode,int temp1)
+        {
+            bool status = Parking.DeleteUserIn(parkingCode);
+            return status;
+        }
+
         //public int Delete(int parkingCode)
         //{
         //    int status = Parking.ReturnParking(parkingCode);
