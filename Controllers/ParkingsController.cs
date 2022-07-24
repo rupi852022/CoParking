@@ -94,9 +94,9 @@ namespace ParkingProject.Controllers
             return status;
         }
 
-        public bool Delete(int parkingCode,int temp1)
+        public Tuple<List<int>, int, DateTime> Delete(int parkingCode,int temp1)
         {
-            bool status = Parking.DeleteUserIn(parkingCode);
+            Tuple<List<int>, int, DateTime> status = Parking.DeleteUserIn(parkingCode);
             return status;
         }
 

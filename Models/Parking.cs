@@ -233,10 +233,9 @@ namespace ParkingProject.Models
         }
         
 
-        public static bool DeleteUserIn(int parkingCode)
+        public static Tuple<List<int>, int, DateTime> DeleteUserIn(int parkingCode)
         {
-            bool status = ds.DeleteUserIn(parkingCode);
-            return status;
+            return ds.DeleteUserIn(parkingCode);
         }
 
         //public static int park(int parkingCode)

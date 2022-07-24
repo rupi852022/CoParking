@@ -13,6 +13,7 @@ namespace ParkingProject.Models.DAL
 
         public string ErrorMessage = "";
         int M = 0;
+        DateTime TimeToRelease;
 
 
         protected SqlConnection Connect(string connectionStringName)
@@ -80,7 +81,7 @@ namespace ParkingProject.Models.DAL
                 list.Add(userCode);
 
             }
-            return new Tuple<List<int>, int, DateTime>(list, parking, dt) ;
+            return new Tuple<List<int>, int, DateTime>(list, parking, TimeToRelease) ;
             //return list.ToArray();
         }
 
@@ -1056,12 +1057,15 @@ namespace ParkingProject.Models.DAL
             if (totalMinute <= 30)
             {
                 return 1;
+
             }
             if (totalMinute <= 690)
             {
                 if (Timer30Min <= timeToRelease)
                 {
+                    TimeToRelease = (DateTime.Now).AddMinutes(timeToRelease*(-1));
                     return 2;
+
                 }
                 return 1;
             }
@@ -1744,10 +1748,10 @@ namespace ParkingProject.Models.DAL
 
                 Cars cars = new Cars(CurrentnumberCar, idCar, year, model, color, size, manufacturer);
 
-                if (dr.Read())
-                {
-                    return null;
-                }
+                //if (dr.Read())
+                //{
+                //    return null;
+                //}
 
                 return cars;
             }
@@ -2312,25 +2316,49 @@ namespace ParkingProject.Models.DAL
                 return false;
         }
 
-        public bool DeleteUserIn(int parkingCode)
+        public Tuple<List<int>, int, DateTime> DeleteUserIn(int parkingCode)
         {
-
-            SqlConnection con = null;
-            con = Connect("webOsDB");
-            if (checkIfUserInExist(parkingCode) == false)
             {
-                SqlCommand selectCommand = DeleteUserFromParking(parkingCode, con);
-                int affected = selectCommand.ExecuteNonQuery();
-                if (affected >= 0)
+                SqlConnection con = null;
+                try
                 {
-                    return true;
+                    // C - Connect
+                    con = Connect("webOsDB");
+
+                    // C - Create Command
+                    SqlCommand selectCommand = DeleteUserFromParking(parkingCode, con);
+                    // E - Execute
+                    int affected = selectCommand.ExecuteNonQuery();
+                    Parking P=GetParking(parkingCode);
+                    Parking parking = new Parking(parkingCode, P.LocationLng, P.LocationLat, P.LocationName, P.ExitDate, P.TypeOfParking, P.SignType, P.UserCodeOut, P.NumberCarOut, P.UserCodeIn, P.NumberCarIn, GetParking(parkingCode).UploadDate);
+                    bool forAll = updateWithAlgoritems(parking);
+                    if (forAll is true)
+                    {
+                        return new Tuple<List<int>, int, DateTime>(null, parkingCode, DateTime.MinValue);
+                    }
+
+                    //if (howMuchUsers() == howMuchUsersVip(idParkingCode))
+                    //{
+                    //    return new Tuple<List<int>, int, DateTime>(null, idParkingCode, DateTime.MinValue);
+                    //}
+                    else { return GetAllUsersVip(parkingCode); };
+
+                }
+                catch (Exception ex)
+                {
+                    // write to log file
+                    ErrorMessage = "proble with insert parking";
+                    throw new Exception(ErrorMessage, ex);
+                }
+                finally
+                {
+                    if (con != null)
+                        con.Close();
                 }
             }
-
-            return false;
         }
 
-        public int ReturnParking(int parkingCode)
+    public int ReturnParking(int parkingCode)
         {
 
             SqlConnection con = null;
