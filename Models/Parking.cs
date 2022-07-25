@@ -207,7 +207,7 @@ namespace ParkingProject.Models
             return ds.ApproveParking(idUser, parkingCode);
         }
         
-        public static bool ReportNotArrived(int idUser, int parkingCode)
+        public static Tuple<bool, bool> ReportNotArrived(int idUser, int parkingCode)
         {
             return ds.ReportNotArrived(idUser, parkingCode);
         }

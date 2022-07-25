@@ -2145,6 +2145,10 @@ namespace ParkingProject.Models.DAL
                 string numberCar = ReadMainCar(idUser).NumberCar;
 
                 bool status = TryTakePariking(idUser, parkingCode, numberCar, con);
+                if (status==true)
+                {
+                    updateTokens(idUser, -10);
+                }
                 return status;
 
             }
@@ -2194,7 +2198,6 @@ namespace ParkingProject.Models.DAL
                 if(checkApprove(parkingCode, userIn)==true)
                 {
                     updateTokens(P.UserCodeOut, 10);
-                    updateTokens(P.UserCodeIn, -10);
                 }
                 return checkApprove(parkingCode, userIn);
 
@@ -2213,8 +2216,9 @@ namespace ParkingProject.Models.DAL
         }
 
         
-        public bool ReportNotArrived(int idUser, int parkingCode)
+        public Tuple<bool, bool> ReportNotArrived(int idUser, int parkingCode)
         {
+            bool tokens = false;
             SqlConnection con = null;
             try
             {
@@ -2235,14 +2239,28 @@ namespace ParkingProject.Models.DAL
                         throw ex;
                     }
                 }
-                int status = UpdateNotArrived(parkingCode, userIn, con);
-                if (userIn == true) { userIn = false; } else { userIn = true; };
-                if (checkApprove(parkingCode, userIn) == true)
+                
+                if (checkApprove(parkingCode, true) == false)
                 {
-                    updateTokens(P.UserCodeOut, 10);
-                    updateTokens(P.UserCodeIn, -10);
+                    int status = UpdateNotArrived(parkingCode, userIn, con);
+                    if (userIn == true) { userIn = false; } else { userIn = true; };
+                    if (checkApprove(parkingCode, userIn) == true)
+                    {
+                        if(checkIfUserIsUserIn(parkingCode,idUser)==true)
+                        {
+                            updateTokens(P.UserCodeIn, 10);
+                            tokens = true;
+                        }
+                    }
+                    return new Tuple<bool, bool>(checkApprove(parkingCode, userIn), tokens);
                 }
-                return checkApprove(parkingCode, userIn);
+                if (checkApprove(parkingCode,false) == false)
+                {
+                    int status = UpdateNotArrived(parkingCode, userIn, con);
+                    if (userIn == true) { userIn = false; } else { userIn = true; };
+                    return new Tuple<bool, bool>(checkApprove(parkingCode, userIn), tokens);
+                }
+                return new Tuple<bool, bool>(false, tokens);
 
 
 
@@ -2300,8 +2318,70 @@ namespace ParkingProject.Models.DAL
             return false;
 
         }
+        public bool checkIfUserIsUserIn(int parkingCode, int userId)
+        {
 
-      
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand(
+                "  select * from [CoParkingParkings_2022] where parkingCode='" + parkingCode + "'"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            if (dr.Read())
+            {
+                if (dr["userCodeIn"] != DBNull.Value)
+                {
+                    int userCodeIn = (int)dr["userCodeIn"];
+                    if (userId == userCodeIn)
+                    {
+                        return true;
+                    }
+
+                }
+                int userCodeOut = (int)dr["userCodeOut"];
+                if (userId == userCodeOut)
+                {
+                    return false;
+                }
+                return false;
+
+            }
+            return false;
+        }
+
+
+
+        public bool checkNotArrived(int parkingCode)
+        {
+
+            SqlConnection con = this.Connect("webOsDB");
+            SqlCommand command = new SqlCommand(
+                "select [userCodeOutArrived],[userCodeInArrived] from [CoParkingParkings_2022] where [parkingCode] = '" + parkingCode + "';"
+                , con);
+            // TBC - Type and Timeout
+            command.CommandType = System.Data.CommandType.Text;
+            command.CommandTimeout = 30;
+
+            SqlDataReader dr = command.ExecuteReader();
+            if (dr.Read())
+            {
+                string userCodeOut = (string)dr["userCodeOutArrived"];
+                string userCodeIn = (string)dr["userCodeInArrived"];
+
+                if (userCodeOut == "N")
+                { return true; }
+                if (userCodeIn == "N")
+                { return true; }
+            }
+
+            return false;
+
+        }
+
+
         public bool DeleteParking(int parkingCode)
         {
 
@@ -2328,14 +2408,20 @@ namespace ParkingProject.Models.DAL
                 {
                     // C - Connect
                     con = Connect("webOsDB");
-
+                    Parking P = GetParking(parkingCode);
+                    if(checkApprove(parkingCode,true)==true|| checkApprove(parkingCode, false) == true|| checkNotArrived(parkingCode)==true)
+                    {
+                        return new Tuple<List<int>, int, DateTime>(null, -1, DateTime.MinValue);
+                    }
                     // C - Create Command
                     SqlCommand selectCommand = DeleteUserFromParking(parkingCode, con);
                     // E - Execute
                     int affected = selectCommand.ExecuteNonQuery();
-                    Parking P=GetParking(parkingCode);
                     Parking parking = new Parking(parkingCode, P.LocationLng, P.LocationLat, P.LocationName, P.ExitDate, P.TypeOfParking, P.SignType, P.UserCodeOut, P.NumberCarOut, P.UserCodeIn, P.NumberCarIn, GetParking(parkingCode).UploadDate);
                     bool forAll = updateWithAlgoritems(parking);
+                    updateTokens(P.UserCodeIn, 10);
+                    
+
                     if (forAll is true)
                     {
                         return new Tuple<List<int>, int, DateTime>(null, parkingCode, DateTime.MinValue);
@@ -2345,7 +2431,9 @@ namespace ParkingProject.Models.DAL
                     //{
                     //    return new Tuple<List<int>, int, DateTime>(null, idParkingCode, DateTime.MinValue);
                     //}
-                    else { return GetAllUsersVip(parkingCode); };
+                    else {
+                        return GetAllUsersVip(parkingCode);
+                    };
 
                 }
                 catch (Exception ex)

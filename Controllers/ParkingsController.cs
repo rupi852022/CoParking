@@ -71,7 +71,7 @@ namespace ParkingProject.Controllers
             return Parking.ApproveParking(userId, parkingCode);
         }
 
-        public bool Put(int userId, int parkingCode, int temp1,int temp2)
+        public Tuple<bool, bool> Put(int userId, int parkingCode, int temp1,int temp2)
         {
             return Parking.ReportNotArrived(userId, parkingCode);
         }
@@ -94,7 +94,7 @@ namespace ParkingProject.Controllers
             return status;
         }
 
-        public Tuple<List<int>, int, DateTime> Delete(int parkingCode,int temp1)
+        public Tuple<List<int>, int, DateTime> Put(int parkingCode,int temp1,int temp2,int temp3,int temp4)
         {
             Tuple<List<int>, int, DateTime> status = Parking.DeleteUserIn(parkingCode);
             return status;
