@@ -757,6 +757,7 @@ namespace ParkingProject.Models.DAL
 
                 // C - Create Command
                 SqlCommand command = CreateInsertParking(P, con);
+                command.Parameters.AddWithValue("LocationName", P.LocationName);
                 // E - Execute
                 int affected = command.ExecuteNonQuery();
                 idParkingCode = GetParkingId();
@@ -1063,7 +1064,7 @@ namespace ParkingProject.Models.DAL
             {
                 if (Timer30Min <= timeToRelease)
                 {
-                    TimeToRelease = (DateTime.Now).AddMinutes(timeToRelease*(1));
+                    TimeToRelease = (DateTime.Now).AddMinutes(timeToRelease);
                     return 2;
 
                 }
@@ -1083,7 +1084,8 @@ namespace ParkingProject.Models.DAL
             string uploadDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             if (P.UserCodeIn == 0)
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut],[UploadDate]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '" + P.LocationName + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "','"+ uploadDate+"')";
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut],[UploadDate]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '@LocationName', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "','"+ uploadDate+"')";
+
             }
             else
             {
