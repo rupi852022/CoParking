@@ -1063,7 +1063,7 @@ namespace ParkingProject.Models.DAL
             {
                 if (Timer30Min <= timeToRelease)
                 {
-                    TimeToRelease = (DateTime.Now).AddMinutes(timeToRelease*(-1));
+                    TimeToRelease = (DateTime.Now).AddMinutes(timeToRelease*(1));
                     return 2;
 
                 }
