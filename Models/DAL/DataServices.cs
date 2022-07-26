@@ -2244,7 +2244,7 @@ namespace ParkingProject.Models.DAL
                 {
                     int status = UpdateNotArrived(parkingCode, userIn, con);
                     if (userIn == true) { userIn = false; } else { userIn = true; };
-                    if (checkApprove(parkingCode, userIn) == true)
+                    if (checkApprove(parkingCode, userIn) == false)
                     {
                         if(checkIfUserIsUserIn(parkingCode,idUser)==true)
                         {
@@ -2252,13 +2252,7 @@ namespace ParkingProject.Models.DAL
                             tokens = true;
                         }
                     }
-                    return new Tuple<bool, bool>(checkApprove(parkingCode, userIn), tokens);
-                }
-                if (checkApprove(parkingCode,false) == false)
-                {
-                    int status = UpdateNotArrived(parkingCode, userIn, con);
-                    if (userIn == true) { userIn = false; } else { userIn = true; };
-                    return new Tuple<bool, bool>(checkApprove(parkingCode, userIn), tokens);
+                    return new Tuple<bool, bool>(true, tokens);
                 }
                 return new Tuple<bool, bool>(false, tokens);
 
