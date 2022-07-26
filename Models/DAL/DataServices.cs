@@ -759,7 +759,7 @@ namespace ParkingProject.Models.DAL
 
                 // C - Create Command
                 SqlCommand command = CreateInsertParking(P, con);
-                command.Parameters.AddWithValue("LocationName", P.LocationName);
+                //command.Parameters.AddWithValue("@LocationName", P.LocationName);
                 // E - Execute
                 int affected = command.ExecuteNonQuery();
                 idParkingCode = GetParkingId();
@@ -1086,18 +1086,20 @@ namespace ParkingProject.Models.DAL
             string uploadDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             if (P.UserCodeIn == 0)
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut],[UploadDate]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '@LocationName', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "','"+ uploadDate+"')";
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut],[UploadDate]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', @LocationName, '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "','"+ uploadDate+"')";
 
             }
             else
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut], [userCodeIn], [numberCarIn],[UploadDate]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', '" + P.LocationName + "', '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "', '" + P.UserCodeIn + "', '" + P.NumberCarIn + "','" + uploadDate + "')";
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut], [userCodeIn], [numberCarIn],[UploadDate]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', @LocationName, '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "', '" + P.UserCodeIn + "', '" + P.NumberCarIn + "','" + uploadDate + "')";
             }
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
+            command.Parameters.AddWithValue("@LocationName", P.LocationName);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             return command;
+
 
         }
 
