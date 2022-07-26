@@ -43,6 +43,17 @@ namespace ParkingProject.Models
             this.size = size;
             this.manufacturer = manufacturer;
         }
+        public Cars(string numberCar, int idCar, int year, string model, string color, int size, string manufacturer, string carPic)
+        {
+            this.numberCar = numberCar;
+            this.idCar = idCar;
+            this.year = year;
+            this.model = model;
+            this.color = color;
+            this.size = size;
+            this.manufacturer = manufacturer;
+            this.carPic = carPic;
+        }
 
         public Cars(int id, string numberCar, bool isMain, bool handicapped, string carPic)
         {

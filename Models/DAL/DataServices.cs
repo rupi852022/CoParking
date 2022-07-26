@@ -539,10 +539,12 @@ namespace ParkingProject.Models.DAL
             }
 
             Parking p = GetParking(idParking);
-            Cars cOut = ReadCar(numberCarOut);
+            //Cars cOut = ReadCar(numberCarOut);
+            Cars cOut = ReadCarAndPic(numberCarOut,userCodeOut);
             if (userCodeIn!=0&& currentId!=0)
             {
-                Cars cIn = ReadCar(numberCarIn);
+                //Cars cIn = ReadCar(numberCarIn);
+                Cars cIn = ReadCarAndPic(numberCarIn,userCodeIn);
                 User u = ReadUserId(currentId);
                 return new Tuple<Parking, Cars, Cars, User>(p, cIn, cOut, u);
             }
@@ -1776,6 +1778,57 @@ namespace ParkingProject.Models.DAL
             }
         }
 
+        public Cars ReadCarAndPic(string numberCar,int userId)
+        {
+            SqlConnection con = null;
+            SqlDataReader dr = null;
+
+            try
+            {
+                con = Connect("webOsDB");
+                SqlCommand selectCommand = GetOneCarAndPic(con, numberCar,userId);
+                dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
+                if (dr == null || !dr.Read())
+                {
+                    return null;
+                }
+
+                string CurrentnumberCar = (string)(dr["numberCar"]);
+                int idCar = Convert.ToInt32(dr["idCar"]);
+                int year = Convert.ToInt32(dr["year"]);
+                string model = (string)dr["model"];
+                string color = (string)dr["color"];
+                int size = Convert.ToInt32(dr["size"]);
+                string manufacturer = (string)dr["manufacturer"];
+                string carPic = (string)dr["carPic"];
+
+
+                Cars cars = new Cars(CurrentnumberCar, idCar, year, model, color, size, manufacturer,carPic);
+
+                //if (dr.Read())
+                //{
+                //    return null;
+                //}
+
+                return cars;
+            }
+
+
+            catch (Exception ex)
+            {
+                throw new Exception("failed in Log In", ex);
+            }
+            finally
+            {
+                if (dr != null)
+                {
+                    dr.Close();
+                }
+                if (con != null)
+                    con.Close();
+            }
+        }
+
         public Cars ReadMainCar(int id)
         {
             SqlConnection con = null;
@@ -1948,6 +2001,15 @@ namespace ParkingProject.Models.DAL
         private SqlCommand GetOneCar(SqlConnection con, string numberCar)
         {
             string commandStr = "  select * from CoParkingCars_2022 LEFT JOIN CoParkingManufacture_2022 ON CoParkingCars_2022.idCar = CoParkingManufacture_2022.idCar where CoParkingCars_2022.numberCar = '" + numberCar + "'";
+            SqlCommand cmd = createCommand(con, commandStr);
+            cmd.Parameters.AddWithValue("@numberCar", numberCar);
+            return cmd;
+        }
+
+        
+        private SqlCommand GetOneCarAndPic(SqlConnection con, string numberCar,int UserId)
+        {
+            string commandStr = "select * from CoParkingCars_2022 LEFT JOIN CoParkingManufacture_2022 ON CoParkingCars_2022.idCar = CoParkingManufacture_2022.idCar left join CoParkingUsersCars_2022 on CoParkingCars_2022.numberCar=CoParkingUsersCars_2022.numberCar where CoParkingCars_2022.numberCar = '"+numberCar+"' and id='"+UserId+"'";
             SqlCommand cmd = createCommand(con, commandStr);
             cmd.Parameters.AddWithValue("@numberCar", numberCar);
             return cmd;
