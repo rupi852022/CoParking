@@ -23,10 +23,8 @@ namespace ParkingProject.Models
 
             DataServices ds = new DataServices();
             string password = ds.ReadPaswword(recipients);
-            //Uri LinkReset = new Uri("https://www.google.co.il/");
             string subject = "Your TempPassword";
             string content = "";
-            //string content = "Your TempPassword is " + password +" Go to "+ LinkReset + " to RESET your password";
             string from = "CoParking@outlook.co.il";
 
             bool success = recipients != null;
@@ -39,7 +37,7 @@ namespace ParkingProject.Models
                     Port = 587,
                     EnableSsl = true,
                     UseDefaultCredentials = false,
-                    Credentials = new System.Net.NetworkCredential("CoParking@outlook.co.il", "I12345678!") //you need to add some valid gmail account credentials to authenticate with gmails SMTP server.
+                    Credentials = new System.Net.NetworkCredential("CoParking@outlook.co.il", "I12345678!")               
                 };
 
                 using (MailMessage gMessage = new MailMessage(from, recipients, subject, content))

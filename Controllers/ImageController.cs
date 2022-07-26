@@ -1,13 +1,6 @@
-﻿//using System;
-//using System.Collections.Generic;
-using System.IO;
-//using System.Linq;
-//using System.Net;
-//using System.Net.Http;
+﻿using System.IO;
 using System.Web;
 using System.Web.Hosting;
-//using System.Web.Http;
-//using ReactFinalProject.Models;
 using ParkingProject.Models;
 using System;
 using System.Collections.Generic;
@@ -21,19 +14,15 @@ namespace ParkingProject.Controllers
 {
     public class ImageController : ApiController
     {
-        // GET api/<controller>
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
         }
 
-        // GET api/<controller>/5
         public string Get(int id)
         {
             return "value";
         }
-
-        // POST api/<controller>
 
         public HttpResponseMessage Post(string filePathDes)
         {
@@ -48,7 +37,6 @@ namespace ParkingProject.Controllers
                     var postedFile = httpRequest.Files[file];
                     var filePath = HttpContext.Current.Server.MapPath("~/Images/" + filePathDes + "/" + postedFile.FileName);
                     postedFile.SaveAs(filePath);
-                    //docfiles.Add(filePath);
                     docfiles.Add("../Images/" + filePathDes + "/" + postedFile.FileName);
 
                 }
@@ -61,12 +49,10 @@ namespace ParkingProject.Controllers
             return result;
         }
 
-        // PUT api/<controller>/5
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE api/<controller>/5
         public void Delete(int id)
         {
         }

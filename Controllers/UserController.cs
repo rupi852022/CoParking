@@ -10,7 +10,6 @@ namespace ParkingProject.Controllers
 {
     public class UsersController : ApiController
     {
-        // GET api/<controller>
         public IEnumerable<string> Get()
         {
             return new string[] { "value1", "value2" };
@@ -40,7 +39,6 @@ namespace ParkingProject.Controllers
             }
         }
 
-        // GET api/<controller>/5
         public Tuple<User, Cars, Manufacture> Get(string email, string password)
         {
 
@@ -70,7 +68,6 @@ namespace ParkingProject.Controllers
             return ParkingProject.Models.User.readUserId(id);
         }
 
-        // POST api/<controller>
         public User Post([FromBody] User U)
         {
             User id = U.Insert();
@@ -85,13 +82,11 @@ namespace ParkingProject.Controllers
         }
 
 
-        // PUT api/<controller>/5
         public string Put()
         {
             return "hello";
         }
 
-        // DELETE api/<controller>/5
         public User[] Delete()
         {
             return ParkingProject.Models.User.GetAll();

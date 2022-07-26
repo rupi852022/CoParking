@@ -52,14 +52,11 @@ namespace ParkingProject.Controllers
             return new Tuple<Parking, Cars, User>(p, c, u);
         }
 
-        // POST api/<controller>
-
         public Tuple<List<int>, int, DateTime> Post([FromBody] Parking P)
         {
             return P.Insert();
         }
 
-        // PUT api/<controller>/5
         public bool Put(int idUser, int parkingCode)
         {
             bool status = Parking.TakeParking(idUser, parkingCode);
@@ -82,12 +79,6 @@ namespace ParkingProject.Controllers
         }
 
 
-        //public int Put([FromBody] Parking P)
-        //{
-        //    int id = P.Insert();
-        //    return id;
-        //}
-
         public bool Delete(int parkingCode)
         {
             bool status = Parking.DeleteParking(parkingCode);
@@ -100,10 +91,5 @@ namespace ParkingProject.Controllers
             return status;
         }
 
-        //public int Delete(int parkingCode)
-        //{
-        //    int status = Parking.ReturnParking(parkingCode);
-        //    return status;
-        //}
     }
 }
