@@ -65,7 +65,7 @@ namespace ParkingProject.Controllers
             }
         }
 
-        public User Get (int id)
+        public User Get(int id)
         {
             return ParkingProject.Models.User.readUserId(id);
         }

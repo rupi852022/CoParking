@@ -92,7 +92,7 @@ namespace ParkingProject.Models
         {
             DataServices ds = new DataServices();
             User user = ds.ReadUserEmail(email, 2);
-            if(user==null)
+            if (user == null)
             {
                 Exception ex = new Exception("the Email is not exist.");
                 throw ex;

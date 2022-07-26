@@ -129,7 +129,7 @@ namespace ParkingProject.Models
 
         public int InsertUserIn(int idUser, int parkingCode)
         {
-            if (ds.TakeParking(idUser, parkingCode) ==true) { return 1; }
+            if (ds.TakeParking(idUser, parkingCode) == true) { return 1; }
             return 0;
         }
         public Tuple<List<int>, int, DateTime> Insert()
@@ -148,7 +148,7 @@ namespace ParkingProject.Models
         {
             return ds.GetAllParkings(id);
         }
-        
+
 
         public static Tuple<Parking, Cars, Cars, User>[] GetAllParkingsUser(int id)
         {
@@ -159,11 +159,11 @@ namespace ParkingProject.Models
             return P;
 
         }
-        
+
         public static Tuple<Parking, Cars, Cars, User> GetParkingUser(int idUser, int idParking)
         {
 
-            Tuple<Parking, Cars, Cars, User> P = ds.GetParkingUser(idUser,idParking);
+            Tuple<Parking, Cars, Cars, User> P = ds.GetParkingUser(idUser, idParking);
             return P;
 
         }
@@ -206,7 +206,7 @@ namespace ParkingProject.Models
         {
             return ds.ApproveParking(idUser, parkingCode);
         }
-        
+
         public static Tuple<bool, bool> ReportNotArrived(int idUser, int parkingCode)
         {
             return ds.ReportNotArrived(idUser, parkingCode);
@@ -231,7 +231,7 @@ namespace ParkingProject.Models
             bool status = ds.DeleteParking(parkingCode);
             return status;
         }
-        
+
 
         public static Tuple<List<int>, int, DateTime> DeleteUserIn(int parkingCode)
         {

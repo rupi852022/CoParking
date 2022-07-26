@@ -81,14 +81,14 @@ namespace ParkingProject.Models.DAL
                 list.Add(userCode);
 
             }
-            return new Tuple<List<int>, int, DateTime>(list, parking, TimeToRelease) ;
+            return new Tuple<List<int>, int, DateTime>(list, parking, TimeToRelease);
             //return list.ToArray();
         }
 
         public int GetAvgRate(int u)
         {
             SqlConnection con = this.Connect("webOsDB");
-            SqlCommand command = new SqlCommand("SELECT AVG(rate) as 'rate' FROM [CoParkingReview_2022] WHERE userCode='"+u+"';", con);
+            SqlCommand command = new SqlCommand("SELECT AVG(rate) as 'rate' FROM [CoParkingReview_2022] WHERE userCode='" + u + "';", con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
@@ -224,7 +224,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public Tuple<Parking,bool, DateTime, Cars,User>[] GetAllParkings(int id)
+        public Tuple<Parking, bool, DateTime, Cars, User>[] GetAllParkings(int id)
         {
 
             SqlConnection con = this.Connect("webOsDB");
@@ -265,7 +265,7 @@ namespace ParkingProject.Models.DAL
                 {
                     releaseDate = DateTime.MinValue;
                 }
-               
+
                 if (dr["parkingCodeVip"] != DBNull.Value)
                 {
                     parkingforuser = true;
@@ -288,7 +288,7 @@ namespace ParkingProject.Models.DAL
                 {
                     int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
                     string numberCarIn = (string)dr["numberCarIn"];
-                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn,uploadDate);
+                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn, uploadDate);
                     Cars c = ParkingProject.Models.Cars.readCar(parking.NumberCarOut, parking.UserCodeOut);
                     User u = ParkingProject.Models.User.readUserId(parking.UserCodeOut);
                     updateWithAlgoritems(parking);
@@ -322,7 +322,7 @@ namespace ParkingProject.Models.DAL
             //return parkings.ToArray();
         }
 
-        
+
         public Tuple<Parking, Cars, Cars, User>[] GetAllParkingsUserFuture(int id)
         {
             var tupleList = new List<Tuple<Parking, Cars, Cars, User>>();
@@ -361,7 +361,7 @@ namespace ParkingProject.Models.DAL
                 //}
                 //else
                 //{
-                Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut,uploadDate);
+                Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, uploadDate);
                 updateWithAlgoritems(parking);
                 if (checkIfParkingForUser(parking.ParkingCode, id) is true)
                 { parkings.Add(parking); }
@@ -383,7 +383,7 @@ namespace ParkingProject.Models.DAL
             //return parkings.ToArray();
             return tupleList.ToArray();
         }
-        
+
         public Parking[] GetAllOnlyParkingsUser(int id)
         {
             var List = new List<Parking>();
@@ -422,7 +422,7 @@ namespace ParkingProject.Models.DAL
                 //}
                 //else
                 //{
-                Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut,uploadDate);
+                Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, uploadDate);
                 updateWithAlgoritems(parking);
                 if (checkIfParkingForUser(parking.ParkingCode, id) is true)
                 { parkings.Add(parking); }
@@ -471,14 +471,14 @@ namespace ParkingProject.Models.DAL
                 //    updateWithAlgoritems(parking);
                 //    if(checkIfParkingForUser(parking.ParkingCode, id) is true)
                 //    { parkings.Add(parking); }
-                    
+
                 //}
                 //else
                 //{
-                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut,uploadDate);
-                    updateWithAlgoritems(parking);
-                    if (checkIfParkingForUser(parking.ParkingCode, id) is true)
-                    { parkings.Add(parking); }
+                Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, uploadDate);
+                updateWithAlgoritems(parking);
+                if (checkIfParkingForUser(parking.ParkingCode, id) is true)
+                { parkings.Add(parking); }
                 //}
 
                 Cars c = ParkingProject.Models.Cars.readCar(parking.NumberCarOut, parking.UserCodeOut);
@@ -490,7 +490,7 @@ namespace ParkingProject.Models.DAL
                     u = ParkingProject.Models.User.readUserId(parking.UserCodeIn);
                 }
 
-                tupleList.Add(new Tuple<Parking, Cars, Cars, User>(parking, c, d,u));
+                tupleList.Add(new Tuple<Parking, Cars, Cars, User>(parking, c, d, u));
             }
 
 
@@ -498,15 +498,15 @@ namespace ParkingProject.Models.DAL
             return tupleList.ToArray();
         }
 
-        
+
         public Tuple<Parking, Cars, Cars, User> GetParkingUser(int idUser, int idParking)
         {
             SqlConnection con = this.Connect("webOsDB");
-            int currentId=0;
-            int userCodeIn=0;
-            int userCodeOut=0;
-            string numberCarOut="";
-            string numberCarIn="";
+            int currentId = 0;
+            int userCodeIn = 0;
+            int userCodeOut = 0;
+            string numberCarOut = "";
+            string numberCarIn = "";
             string str = "SELECT [userCodeOut],[numberCarOut],[userCodeIn],[numberCarIn] FROM [igroup85_test2].[dbo].[CoParkingParkings_2022] where [CoParkingParkings_2022].parkingCode='" + idParking + "'";
             SqlCommand command = new SqlCommand(str, con);
             // TBC - Type and Timeout
@@ -526,11 +526,11 @@ namespace ParkingProject.Models.DAL
                     numberCarIn = (string)dr["numberCarIn"];
                 }
             }
-            
-            if(userCodeIn==idUser)
+
+            if (userCodeIn == idUser)
             {
-                if(userCodeOut!=0)
-                {currentId = userCodeOut;}
+                if (userCodeOut != 0)
+                { currentId = userCodeOut; }
 
             }
             else
@@ -540,11 +540,11 @@ namespace ParkingProject.Models.DAL
 
             Parking p = GetParking(idParking);
             //Cars cOut = ReadCar(numberCarOut);
-            Cars cOut = ReadCarAndPic(numberCarOut,userCodeOut);
-            if (userCodeIn!=0&& currentId!=0)
+            Cars cOut = ReadCarAndPic(numberCarOut, userCodeOut);
+            if (userCodeIn != 0 && currentId != 0)
             {
                 //Cars cIn = ReadCar(numberCarIn);
-                Cars cIn = ReadCarAndPic(numberCarIn,userCodeIn);
+                Cars cIn = ReadCarAndPic(numberCarIn, userCodeIn);
                 User u = ReadUserId(currentId);
                 return new Tuple<Parking, Cars, Cars, User>(p, cIn, cOut, u);
             }
@@ -567,7 +567,7 @@ namespace ParkingProject.Models.DAL
         public bool checkIfParkingForUser(int ParkingCode, int id)
         {
             SqlConnection con = Connect("webOsDB");
-            SqlCommand command = new SqlCommand("select parkingCode from [CoParkingUserVIP_2022] where parkingCode='"+ParkingCode+"' and userCode='"+id+"';", con);
+            SqlCommand command = new SqlCommand("select parkingCode from [CoParkingUserVIP_2022] where parkingCode='" + ParkingCode + "' and userCode='" + id + "';", con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             SqlDataReader dr = command.ExecuteReader();
@@ -589,7 +589,7 @@ namespace ParkingProject.Models.DAL
             }
             return false;
         }
-        
+
         public bool checkIfUserInExist(int parkingCode)
         {
 
@@ -645,12 +645,12 @@ namespace ParkingProject.Models.DAL
                 {
                     int userCodeIn = Convert.ToInt32(dr["userCodeIn"]);
                     string numberCarIn = (string)dr["numberCarIn"];
-                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn,uploadDate);
+                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, userCodeIn, numberCarIn, uploadDate);
                     return parking;
                 }
                 else
                 {
-                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut,uploadDate);
+                    Parking parking = new Parking(parkingCode, locationLng, locationLat, locationName, exitDate, typeOfParking, signType, userCodeOut, numberCarOut, uploadDate);
                     return parking;
                 }
 
@@ -709,7 +709,7 @@ namespace ParkingProject.Models.DAL
 
             SqlConnection con = this.Connect("webOsDB");
             SqlCommand command = new SqlCommand(
-                "select count(distinct userCode) as 'countUser' from CoParkingUserVIP_2022 where userCode is not null and parkingCode = '"+parking+"'"
+                "select count(distinct userCode) as 'countUser' from CoParkingUserVIP_2022 where userCode is not null and parkingCode = '" + parking + "'"
                 , con);
             // TBC - Type and Timeout
             command.CommandType = System.Data.CommandType.Text;
@@ -800,7 +800,7 @@ namespace ParkingProject.Models.DAL
                 User U = ReadUserId(UserId);
                 int oldTokens = U.Tokens;
                 int newTokens = oldTokens + tokens;
-                if (newTokens<=0) { newTokens = 0; };
+                if (newTokens <= 0) { newTokens = 0; };
 
                 // C - Create Command
                 SqlCommand command = CreateupdateTokens(UserId, newTokens, con);
@@ -839,7 +839,7 @@ namespace ParkingProject.Models.DAL
                 return false;
             }
             else
-            algoritem1(P);
+                algoritem1(P);
             return true;
         }
 
@@ -879,7 +879,7 @@ namespace ParkingProject.Models.DAL
             M = numberOfM();
             string str = "";
             SqlConnection con = this.Connect("webOsDB");
-            str += "DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode = '"+ P.ParkingCode + "';";
+            str += "DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode = '" + P.ParkingCode + "';";
 
             if (P.TypeOfParking == 2)
             {
@@ -989,8 +989,8 @@ namespace ParkingProject.Models.DAL
                 int scoreUserPicture = 1;
                 if (String.IsNullOrEmpty(image))
                 { scoreUserPicture = 0; }
-                double newPriority = 0.25 * (Phi((tokens - 30) / (10))) + 0.015 * scoreUserPicture + 0.035* tmpPriority;
-                str += " UPDATE[CoParkingUsers_2022] SET priorityLevel = "+ newPriority + " WHERE id = "+id+" ";
+                double newPriority = 0.25 * (Phi((tokens - 30) / (10))) + 0.015 * scoreUserPicture + 0.035 * tmpPriority;
+                str += " UPDATE[CoParkingUsers_2022] SET priorityLevel = " + newPriority + " WHERE id = " + id + " ";
             }
             if (con != null)
                 con.Close();
@@ -1056,7 +1056,7 @@ namespace ParkingProject.Models.DAL
             int Timer30Min = (int)((DateTime.Now) - mytimeUpload).TotalMinutes;
             Console.WriteLine(totalMinute);
 
-            int timeToRelease = Math.Min(30,(totalMinute/4));
+            int timeToRelease = Math.Min(30, (totalMinute / 4));
             if (totalMinute <= 30)
             {
                 return 1;
@@ -1086,7 +1086,7 @@ namespace ParkingProject.Models.DAL
             string uploadDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             if (P.UserCodeIn == 0)
             {
-                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut],[UploadDate]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', @LocationName, '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "','"+ uploadDate+"')";
+                insertStr += " INSERT INTO [CoParkingParkings_2022] ([LocationLng],[LocationLat],[LocationName], [exitDate], [typeOfParking], [signType], [userCodeOut], [numberCarOut],[UploadDate]) VALUES('" + P.LocationLng + "', '" + P.LocationLat + "', @LocationName, '" + currentexitDate + "', '" + P.TypeOfParking + "', '" + P.SignType + "', '" + P.UserCodeOut + "', '" + P.NumberCarOut + "','" + uploadDate + "')";
 
             }
             else
@@ -1103,10 +1103,10 @@ namespace ParkingProject.Models.DAL
 
         }
 
-        SqlCommand CreateupdateTokens(int UserId,int tokens, SqlConnection con)
+        SqlCommand CreateupdateTokens(int UserId, int tokens, SqlConnection con)
         {
             string str;
-            str = "UPDATE [CoParkingUsers_2022] SET tokens = "+tokens+" WHERE id = "+UserId+";";
+            str = "UPDATE [CoParkingUsers_2022] SET tokens = " + tokens + " WHERE id = " + UserId + ";";
 
 
             SqlCommand command = new SqlCommand(str, con);
@@ -1133,11 +1133,11 @@ namespace ParkingProject.Models.DAL
             //}
             if (P.UserCodeIn == 0)
             {
-                insertStr += "UPDATE[CoParkingParkings_2022] SET[LocationLng] = '"+P.LocationLng+"', [LocationLat] = '"+P.LocationLat+"',[LocationName]= '"+P.LocationName+"',[exitDate]= '"+ currentexitDate + "',[typeOfParking]= '"+P.TypeOfParking+"',[signType]= '"+P.SignType+"',[userCodeOut]= '"+P.UserCodeOut+"',[numberCarOut]= '"+P.NumberCarOut+"' WHERE[parkingCode] = '" + P.ParkingCode+"'";
+                insertStr += "UPDATE[CoParkingParkings_2022] SET[LocationLng] = '" + P.LocationLng + "', [LocationLat] = '" + P.LocationLat + "',[LocationName]= '" + P.LocationName + "',[exitDate]= '" + currentexitDate + "',[typeOfParking]= '" + P.TypeOfParking + "',[signType]= '" + P.SignType + "',[userCodeOut]= '" + P.UserCodeOut + "',[numberCarOut]= '" + P.NumberCarOut + "' WHERE[parkingCode] = '" + P.ParkingCode + "'";
             }
             else
             {
-                insertStr += insertStr += "UPDATE[CoParkingParkings_2022] SET[LocationLng] = '" + P.LocationLng + "', [LocationLat] = '" + P.LocationLat + "',[LocationName]= '" + P.LocationName + "',[exitDate]= '" + currentexitDate + "',[typeOfParking]= '" + P.TypeOfParking + "',[signType]= '" + P.SignType + "',[userCodeOut]= '" + P.UserCodeOut + "',[numberCarOut]= '" + P.NumberCarOut + "',[numberCarIn]= '"+P.NumberCarIn+ "',[userCodeIn]='"+P.UserCodeIn+"' WHERE[parkingCode] = '" + P.ParkingCode + "'";
+                insertStr += insertStr += "UPDATE[CoParkingParkings_2022] SET[LocationLng] = '" + P.LocationLng + "', [LocationLat] = '" + P.LocationLat + "',[LocationName]= '" + P.LocationName + "',[exitDate]= '" + currentexitDate + "',[typeOfParking]= '" + P.TypeOfParking + "',[signType]= '" + P.SignType + "',[userCodeOut]= '" + P.UserCodeOut + "',[numberCarOut]= '" + P.NumberCarOut + "',[numberCarIn]= '" + P.NumberCarIn + "',[userCodeIn]='" + P.UserCodeIn + "' WHERE[parkingCode] = '" + P.ParkingCode + "'";
             }
             SqlCommand command = new SqlCommand(insertStr, con);
             // TBC - Type and Timeout
@@ -1356,18 +1356,18 @@ namespace ParkingProject.Models.DAL
         {
             string str = "";
             str += "UPDATE [CoParkingCars_2022] " + "SET [idCar] = '" + C.Idcar + "', [year] = '" + C.Year + "', [model] = '" + C.Model + "', [color] = '" + C.Color + "', [size] = '" + C.Size + "' WHERE [numberCar] = '" + C.NumberCar + "'";
-                if(C.IsMain==true)
-                {
-                    str += "update[CoParkingUsersCars_2022] set isMain = 'T' where numberCar = '"+C.NumberCar+"'";
-                }
-
-                if(C.IsMain==false)
-                {
-                    str += "update[CoParkingUsersCars_2022] set isMain = 'F' where numberCar = '" + C.NumberCar + "'";
-                }
-                if(C.CarPic.Length>=1)
+            if (C.IsMain == true)
             {
-                str += "update[CoParkingUsersCars_2022] set carPic = '"+C.CarPic+"' where numberCar = '" + C.NumberCar + "'";
+                str += "update[CoParkingUsersCars_2022] set isMain = 'T' where numberCar = '" + C.NumberCar + "'";
+            }
+
+            if (C.IsMain == false)
+            {
+                str += "update[CoParkingUsersCars_2022] set isMain = 'F' where numberCar = '" + C.NumberCar + "'";
+            }
+            if (C.CarPic.Length >= 1)
+            {
+                str += "update[CoParkingUsersCars_2022] set carPic = '" + C.CarPic + "' where numberCar = '" + C.NumberCar + "'";
             }
             if (C.Handicapped == true)
             {
@@ -1378,7 +1378,7 @@ namespace ParkingProject.Models.DAL
             {
                 str += "update[CoParkingUsersCars_2022] set handicapped = 'F' where numberCar = '" + C.NumberCar + "'";
             }
-            SqlCommand command = new SqlCommand(str,con);
+            SqlCommand command = new SqlCommand(str, con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             return command;
@@ -1780,7 +1780,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        public Cars ReadCarAndPic(string numberCar,int userId)
+        public Cars ReadCarAndPic(string numberCar, int userId)
         {
             SqlConnection con = null;
             SqlDataReader dr = null;
@@ -1788,7 +1788,7 @@ namespace ParkingProject.Models.DAL
             try
             {
                 con = Connect("webOsDB");
-                SqlCommand selectCommand = GetOneCarAndPic(con, numberCar,userId);
+                SqlCommand selectCommand = GetOneCarAndPic(con, numberCar, userId);
                 dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
                 if (dr == null || !dr.Read())
                 {
@@ -1805,7 +1805,7 @@ namespace ParkingProject.Models.DAL
                 string carPic = (string)dr["carPic"];
 
 
-                Cars cars = new Cars(CurrentnumberCar, idCar, year, model, color, size, manufacturer,carPic);
+                Cars cars = new Cars(CurrentnumberCar, idCar, year, model, color, size, manufacturer, carPic);
 
                 //if (dr.Read())
                 //{
@@ -2008,10 +2008,10 @@ namespace ParkingProject.Models.DAL
             return cmd;
         }
 
-        
-        private SqlCommand GetOneCarAndPic(SqlConnection con, string numberCar,int UserId)
+
+        private SqlCommand GetOneCarAndPic(SqlConnection con, string numberCar, int UserId)
         {
-            string commandStr = "select * from CoParkingCars_2022 LEFT JOIN CoParkingManufacture_2022 ON CoParkingCars_2022.idCar = CoParkingManufacture_2022.idCar left join CoParkingUsersCars_2022 on CoParkingCars_2022.numberCar=CoParkingUsersCars_2022.numberCar where CoParkingCars_2022.numberCar = '"+numberCar+"' and id='"+UserId+"'";
+            string commandStr = "select * from CoParkingCars_2022 LEFT JOIN CoParkingManufacture_2022 ON CoParkingCars_2022.idCar = CoParkingManufacture_2022.idCar left join CoParkingUsersCars_2022 on CoParkingCars_2022.numberCar=CoParkingUsersCars_2022.numberCar where CoParkingCars_2022.numberCar = '" + numberCar + "' and id='" + UserId + "'";
             SqlCommand cmd = createCommand(con, commandStr);
             cmd.Parameters.AddWithValue("@numberCar", numberCar);
             return cmd;
@@ -2209,7 +2209,7 @@ namespace ParkingProject.Models.DAL
                 string numberCar = ReadMainCar(idUser).NumberCar;
 
                 bool status = TryTakePariking(idUser, parkingCode, numberCar, con);
-                if (status==true)
+                if (status == true)
                 {
                     updateTokens(idUser, -10);
                 }
@@ -2226,7 +2226,7 @@ namespace ParkingProject.Models.DAL
                     con.Close();
             }
         }
-        
+
 
         public bool ApproveParking(int idUser, int parkingCode)
         {
@@ -2251,15 +2251,15 @@ namespace ParkingProject.Models.DAL
                     }
                 }
 
-                if (checkApprove(parkingCode, userIn)==true)
+                if (checkApprove(parkingCode, userIn) == true)
                 {
                     ErrorMessage = "The userId alredy approved";
                     Exception ex = new Exception(ErrorMessage);
                     throw ex;
-                }   
+                }
                 int status = UpdateApprove(parkingCode, userIn, con);
-                if(userIn == true) { userIn = false; } else { userIn = true; };
-                if(checkApprove(parkingCode, userIn)==true)
+                if (userIn == true) { userIn = false; } else { userIn = true; };
+                if (checkApprove(parkingCode, userIn) == true)
                 {
                     updateTokens(P.UserCodeOut, 10);
                 }
@@ -2279,7 +2279,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-        
+
         public Tuple<bool, bool> ReportNotArrived(int idUser, int parkingCode)
         {
             bool tokens = false;
@@ -2303,14 +2303,14 @@ namespace ParkingProject.Models.DAL
                         throw ex;
                     }
                 }
-                
+
                 if (checkApprove(parkingCode, true) == false)
                 {
                     int status = UpdateNotArrived(parkingCode, userIn, con);
                     if (userIn == true) { userIn = false; } else { userIn = true; };
                     if (checkApprove(parkingCode, userIn) == false)
                     {
-                        if(checkIfUserIsUserIn(parkingCode,idUser)==true)
+                        if (checkIfUserIsUserIn(parkingCode, idUser) == true)
                         {
                             updateTokens(P.UserCodeIn, 10);
                             tokens = true;
@@ -2360,7 +2360,7 @@ namespace ParkingProject.Models.DAL
             }
             if (userIn == true)
             {
-                if(userCodeInApprove ==true)
+                if (userCodeInApprove == true)
                 {
                     return true;
                 }
@@ -2444,18 +2444,18 @@ namespace ParkingProject.Models.DAL
         {
 
             SqlConnection con = null;
-                con = Connect("webOsDB");
-                if(checkIfUserInExist(parkingCode)==false)
+            con = Connect("webOsDB");
+            if (checkIfUserInExist(parkingCode) == false)
+            {
+                SqlCommand selectCommand = DeleteTheParking(parkingCode, con);
+                int affected = selectCommand.ExecuteNonQuery();
+                if (affected >= 0)
                 {
-                    SqlCommand selectCommand = DeleteTheParking(parkingCode, con);
-                    int affected = selectCommand.ExecuteNonQuery();
-                    if (affected >= 0)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
+            }
 
-                return false;
+            return false;
         }
 
         public Tuple<List<int>, int, DateTime> DeleteUserIn(int parkingCode)
@@ -2467,7 +2467,7 @@ namespace ParkingProject.Models.DAL
                     // C - Connect
                     con = Connect("webOsDB");
                     Parking P = GetParking(parkingCode);
-                    if(checkApprove(parkingCode,true)==true|| checkApprove(parkingCode, false) == true|| checkNotArrived(parkingCode)==true)
+                    if (checkApprove(parkingCode, true) == true || checkApprove(parkingCode, false) == true || checkNotArrived(parkingCode) == true)
                     {
                         return new Tuple<List<int>, int, DateTime>(null, -1, DateTime.MinValue);
                     }
@@ -2478,7 +2478,7 @@ namespace ParkingProject.Models.DAL
                     Parking parking = new Parking(parkingCode, P.LocationLng, P.LocationLat, P.LocationName, P.ExitDate, P.TypeOfParking, P.SignType, P.UserCodeOut, P.NumberCarOut, P.UserCodeIn, P.NumberCarIn, GetParking(parkingCode).UploadDate);
                     bool forAll = updateWithAlgoritems(parking);
                     updateTokens(P.UserCodeIn, 10);
-                    
+
 
                     if (forAll is true)
                     {
@@ -2489,7 +2489,8 @@ namespace ParkingProject.Models.DAL
                     //{
                     //    return new Tuple<List<int>, int, DateTime>(null, idParkingCode, DateTime.MinValue);
                     //}
-                    else {
+                    else
+                    {
                         return GetAllUsersVip(parkingCode);
                     };
 
@@ -2508,7 +2509,7 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-    public int ReturnParking(int parkingCode)
+        public int ReturnParking(int parkingCode)
         {
 
             SqlConnection con = null;
@@ -2540,9 +2541,9 @@ namespace ParkingProject.Models.DAL
             }
         }
 
-      
 
-            
+
+
         public int InsertRate(int userGattingRate, int rate)
         {
 
@@ -2574,21 +2575,21 @@ namespace ParkingProject.Models.DAL
                     con.Close();
             }
         }
-        
+
         SqlCommand DeleteTheParking(int parkingCode, SqlConnection con)
         {
-            SqlCommand command = new SqlCommand("DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode='"+parkingCode+"';DELETE FROM [CoParkingParkings_2022] WHERE parkingCode='"+parkingCode+"';", con);
+            SqlCommand command = new SqlCommand("DELETE FROM [CoParkingUserVIP_2022] WHERE parkingCode='" + parkingCode + "';DELETE FROM [CoParkingParkings_2022] WHERE parkingCode='" + parkingCode + "';", con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             return command;
 
         }
 
-        
+
 
         SqlCommand DeleteUserFromParking(int parkingCode, SqlConnection con)
         {
-            SqlCommand command = new SqlCommand("UPDATE [CoParkingParkings_2022] SET userCodeIn = null, numberCarIn = null,userCodeInApprove = 'N',userCodeInArrived = 'Y' WHERE parkingCode='"+parkingCode+"';", con);
+            SqlCommand command = new SqlCommand("UPDATE [CoParkingParkings_2022] SET userCodeIn = null, numberCarIn = null,userCodeInApprove = 'N',userCodeInArrived = 'Y' WHERE parkingCode='" + parkingCode + "';", con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             return command;
@@ -2610,7 +2611,7 @@ namespace ParkingProject.Models.DAL
         SqlCommand CreateInsertRate(int userGattingRate, int rate, SqlConnection con)
         {
             string uploadDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            SqlCommand command = new SqlCommand("INSERT INTO[CoParkingReview_2022]([userCode],[Rate],[ReviewDate]) VALUES('"+ userGattingRate + "', '"+ rate + "', '"+ uploadDate + "')",con);
+            SqlCommand command = new SqlCommand("INSERT INTO[CoParkingReview_2022]([userCode],[Rate],[ReviewDate]) VALUES('" + userGattingRate + "', '" + rate + "', '" + uploadDate + "')", con);
             command.CommandType = System.Data.CommandType.Text;
             command.CommandTimeout = 30;
             return command;
@@ -2675,7 +2676,7 @@ namespace ParkingProject.Models.DAL
             selectCommand = null;
             con = Connect("webOsDB");
             string str = "";
-            if (userIn==true)
+            if (userIn == true)
             {
                 str = "UPDATE[CoParkingParkings_2022] SET [userCodeInApprove] = 'Y' WHERE[parkingCode] = '" + parkingCode + "'; ";
             }
@@ -2690,7 +2691,7 @@ namespace ParkingProject.Models.DAL
             return affected;
         }
 
-        
+
         public int UpdateNotArrived(int parkingCode, bool userIn, SqlConnection con)
         {
             SqlDataReader dr = null;
