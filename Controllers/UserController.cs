@@ -74,6 +74,8 @@ namespace ParkingProject.Controllers
             return id;
         }
 
+
+
         public int Post(int userGattingRate, int rate)
         {
             User u = new User();

@@ -238,5 +238,11 @@ namespace ParkingProject.Models
             return ds.DeleteUserIn(parkingCode);
         }
 
+        //public static int park(int parkingCode)
+        //{
+        //    int status = ds.park(parkingCode);
+        //    return status;
+        //}
+
     }
 }
