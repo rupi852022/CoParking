@@ -169,7 +169,7 @@ namespace ParkingProject.Models
 
             if (cars == null)
             {
-                return -1;    
+                return -1; // Cars not exist
             }
 
             int status = ds.UpdateCars(cars);

@@ -19,6 +19,7 @@ namespace ParkingProject.Controllers
         {
 
             User user = Models.User.readUserMail(email);
+            if (user is null) return null;
             if (user.Status == "off")
             {
                 return new Tuple<User, Cars, Manufacture>(user, null, null);
@@ -43,6 +44,7 @@ namespace ParkingProject.Controllers
         {
 
             User user = Models.User.readUser(email, password);
+            if(user is null) { return null; }
             if (user.Status == "off")
             {
                 return new Tuple<User, Cars, Manufacture>(user, null, null);
@@ -73,8 +75,6 @@ namespace ParkingProject.Controllers
             User id = U.Insert();
             return id;
         }
-
-
 
         public int Post(int userGattingRate, int rate)
         {

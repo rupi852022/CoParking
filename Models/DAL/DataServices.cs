@@ -207,6 +207,10 @@ namespace ParkingProject.Models.DAL
                 return U;
 
             }
+            catch(Exception)
+            {
+                return (null);
+            }
 
             finally
             {
@@ -1129,6 +1133,10 @@ namespace ParkingProject.Models.DAL
 
 
             }
+            catch(Exception)
+            {
+                return (null);
+            }
 
             finally
             {
@@ -1379,8 +1387,10 @@ namespace ParkingProject.Models.DAL
                 dr = selectCommand.ExecuteReader(CommandBehavior.CloseConnection);
                 if (TypeOf == 1)
                 {
+                    ErrorMessage = dr.ToString();
                     if (dr == null || !dr.Read())
                     {
+                        ErrorMessage += "               " + dr.ToString() + "        ";
                         ErrorMessage = "the Email is not exist.";
                         Exception ex = new Exception(ErrorMessage);
                         throw ex;
@@ -1413,6 +1423,11 @@ namespace ParkingProject.Models.DAL
                 }
 
                 return user;
+            }
+
+            catch (Exception)
+            {
+                return null;
             }
 
             finally
@@ -1463,6 +1478,10 @@ namespace ParkingProject.Models.DAL
                 }
 
                 return user;
+            }
+            catch (Exception)
+            {
+                return null;
             }
 
             finally
@@ -1882,6 +1901,12 @@ namespace ParkingProject.Models.DAL
                 SqlCommand usersCmd = this.createUserTable(con);
                 usersCmd.ExecuteNonQuery();
             }
+
+            catch(Exception)
+            {
+                return;
+            }
+
             finally
             {
                 if (con != null)
